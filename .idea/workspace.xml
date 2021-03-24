@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="BranchesTreeState">
+    <expand>
+      <path>
+        <item name="ROOT" type="e8cecc67:BranchNodeDescriptor" />
+        <item name="LOCAL_ROOT" type="e8cecc67:BranchNodeDescriptor" />
+      </path>
+      <path>
+        <item name="ROOT" type="e8cecc67:BranchNodeDescriptor" />
+        <item name="REMOTE_ROOT" type="e8cecc67:BranchNodeDescriptor" />
+      </path>
+      <path>
+        <item name="ROOT" type="e8cecc67:BranchNodeDescriptor" />
+        <item name="REMOTE_ROOT" type="e8cecc67:BranchNodeDescriptor" />
+        <item name="GROUP_NODE:origin" type="e8cecc67:BranchNodeDescriptor" />
+      </path>
+    </expand>
+    <select />
+  </component>
+  <component name="ChangeListManager">
+    <list default="true" id="11d14fe0-c74f-4544-8b24-25b3d5dff91b" name="Default Changelist" comment="">
+      <change afterPath="$PROJECT_DIR$/trello_clone/lib/route_generator.dart" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/trello_clone/lib/route_path.dart" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/trello_clone/lib/screens/login_screen/login_screen.dart" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/trello_clone/lib/screens/main_screen/main_screen.dart" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/trello_clone/lib/widgets/login_screen/login_form.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/trello_clone/lib/main.dart" beforeDir="false" afterPath="$PROJECT_DIR$/trello_clone/lib/main.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/trello_clone/pubspec.lock" beforeDir="false" afterPath="$PROJECT_DIR$/trello_clone/pubspec.lock" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/trello_clone/pubspec.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/trello_clone/pubspec.yaml" afterDir="false" />
+    </list>
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="Dart File" />
+      </list>
+    </option>
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="ProjectId" id="1qBjr3kC4VpIeT8tPby40c2qwNZ" />
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent">
+    <property name="RunOnceActivity.OpenProjectViewOnStart" value="true" />
+    <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
+    <property name="dart.analysis.tool.window.visible" value="false" />
+    <property name="io.flutter.reload.alreadyRun" value="true" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$" />
+    <property name="project.structure.last.edited" value="Modules" />
+    <property name="project.structure.proportion" value="0.15" />
+    <property name="project.structure.side.proportion" value="0.2" />
+    <property name="settings.editor.selected.configurable" value="dart.settings" />
+    <property name="show.migrate.to.gradle.popup" value="false" />
+  </component>
+  <component name="RunManager">
+    <configuration name="main.dart" type="FlutterRunConfigurationType" factoryName="Flutter">
+      <option name="filePath" value="$PROJECT_DIR$/trello_clone/lib/main.dart" />
+      <method v="2" />
+    </configuration>
+  </component>
+  <component name="SvnConfiguration">
+    <configuration />
+  </component>
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="11d14fe0-c74f-4544-8b24-25b3d5dff91b" name="Default Changelist" comment="" />
+      <created>1616560072308</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1616560072308</updated>
+    </task>
+    <servers />
+  </component>
+  <component name="Vcs.Log.Tabs.Properties">
+    <option name="TAB_STATES">
+      <map>
+        <entry key="MAIN">
+          <value>
+            <State />
+          </value>
+        </entry>
+      </map>
+    </option>
+  </component>
+  <component name="WindowStateProjectService">
+    <state x="168" y="39" key="#com.intellij.execution.impl.EditConfigurationsDialog" timestamp="1616562346682">
+      <screen x="62" y="0" width="1304" height="768" />
+    </state>
+    <state x="168" y="39" key="#com.intellij.execution.impl.EditConfigurationsDialog/62.0.1304.768@62.0.1304.768" timestamp="1616562346682" />
+    <state x="479" y="186" key="#com.intellij.fileTypes.FileTypeChooser" timestamp="1616562105126">
+      <screen x="62" y="0" width="1304" height="768" />
+    </state>
+    <state x="479" y="186" key="#com.intellij.fileTypes.FileTypeChooser/62.0.1304.768@62.0.1304.768" timestamp="1616562105126" />
+    <state x="154" y="92" width="1120" height="584" key="AVDManager" timestamp="1616565565393">
+      <screen x="62" y="0" width="1304" height="768" />
+    </state>
+    <state x="154" y="92" width="1120" height="584" key="AVDManager/62.0.1304.768@62.0.1304.768" timestamp="1616565565393" />
+    <state x="215" y="0" key="SettingsEditor" timestamp="1616561688659">
+      <screen x="62" y="0" width="1304" height="768" />
+    </state>
+    <state x="215" y="0" key="SettingsEditor/62.0.1304.768@62.0.1304.768" timestamp="1616561688659" />
+    <state x="421" y="88" width="585" height="592" key="find.popup" timestamp="1616561065903">
+      <screen x="62" y="0" width="1304" height="768" />
+    </state>
+    <state x="421" y="88" width="585" height="592" key="find.popup/62.0.1304.768@62.0.1304.768" timestamp="1616561065903" />
+  </component>
+</project>
