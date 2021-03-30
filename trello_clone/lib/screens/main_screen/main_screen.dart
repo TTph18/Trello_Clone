@@ -1,5 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:trello_clone/icons/app_icons.dart';
+import 'dart:math' as math;
 
 class MainScreen extends StatefulWidget {
   @override
@@ -51,9 +53,14 @@ class _MainScreenState extends State<MainScreen> {
         leading: new Container(
           child: new Icon(Icons.menu),
         ),
-        title: Text("Board"),
+        title: Text('Board'),
         actions: [
-          IconButton(icon: const Icon(Icons.search), onPressed: () {},)
+          IconButton(icon: Transform(
+            alignment: Alignment.center,
+            transform: Matrix4.rotationY(math.pi),
+            child: Icon(MyFlutterApp.search),
+          ), onPressed: () {},),
+          IconButton(icon: const Icon(MyFlutterApp.bell), onPressed: () {},)
         ]
       ),
       body: Column(
