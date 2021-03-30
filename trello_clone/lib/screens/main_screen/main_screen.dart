@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 class MainScreen extends StatefulWidget {
@@ -14,6 +15,31 @@ class MyAppBar extends AppBar with PreferredSizeWidget {
     automaticallyImplyLeading: false,
     backgroundColor: Colors.white,
   );
+}
+
+class BoardInfo extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: EdgeInsets.fromLTRB(15, 10, 15, 5),
+      child: Row(
+        children: [
+          Container(
+            padding: EdgeInsets.fromLTRB(0, 0, 15, 0),
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(3.0),
+              child: Image(
+                image: AssetImage('assets/images/BlueBG.png'),
+                width: 50,
+                height: 50,
+              ),
+            ),
+          ),
+          Text("Board's Name", style: TextStyle(fontSize: 20),),
+        ],
+      ),
+    );
+  }
 }
 
 class _MainScreenState extends State<MainScreen> {
@@ -39,6 +65,8 @@ class _MainScreenState extends State<MainScreen> {
               fontSize: 16,
             ),),
           ),
+          BoardInfo()
+          //ListView.builder(itemBuilder: itemBuilder)
         ],
       ),
       floatingActionButton: FloatingActionButton(

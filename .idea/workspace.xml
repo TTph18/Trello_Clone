@@ -19,13 +19,10 @@
     <select />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="11d14fe0-c74f-4544-8b24-25b3d5dff91b" name="Default Changelist" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/Trello_Clone.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/Trello_Clone.iml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/libraries/Dart_Packages.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/libraries/Dart_SDK.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/libraries/Dart_SDK.xml" afterDir="false" />
+    <list default="true" id="11d14fe0-c74f-4544-8b24-25b3d5dff91b" name="Default Changelist" comment="add appbar and round button">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/trello_clone/lib/screens/main_screen/main_screen.dart" beforeDir="false" afterPath="$PROJECT_DIR$/trello_clone/lib/screens/main_screen/main_screen.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/trello_clone/pubspec.lock" beforeDir="false" afterPath="$PROJECT_DIR$/trello_clone/pubspec.lock" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/trello_clone/pubspec.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/trello_clone/pubspec.yaml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -51,6 +48,7 @@
   <component name="PropertiesComponent">
     <property name="RunOnceActivity.OpenProjectViewOnStart" value="true" />
     <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
+    <property name="SHARE_PROJECT_CONFIGURATION_FILES" value="true" />
     <property name="dart.analysis.tool.window.visible" value="false" />
     <property name="io.flutter.reload.alreadyRun" value="true" />
     <property name="last_opened_file_path" value="$PROJECT_DIR$" />
@@ -59,6 +57,11 @@
     <property name="project.structure.side.proportion" value="0.2" />
     <property name="settings.editor.selected.configurable" value="dart.settings" />
     <property name="show.migrate.to.gradle.popup" value="false" />
+  </component>
+  <component name="RecentsManager">
+    <key name="MoveFile.RECENT_KEYS">
+      <recent name="D:\Hoc\DADiDong\Trello_Clone" />
+    </key>
   </component>
   <component name="RunManager">
     <configuration name="main.dart" type="FlutterRunConfigurationType" factoryName="Flutter">
@@ -77,6 +80,14 @@
       <option name="presentableId" value="Default" />
       <updated>1616560072308</updated>
     </task>
+    <task id="LOCAL-00001" summary="add appbar and round button">
+      <created>1617081685093</created>
+      <option name="number" value="00001" />
+      <option name="presentableId" value="LOCAL-00001" />
+      <option name="project" value="LOCAL" />
+      <updated>1617081685093</updated>
+    </task>
+    <option name="localTasksCounter" value="2" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -91,6 +102,10 @@
     </option>
     <option name="oldMeFiltersMigrated" value="true" />
   </component>
+  <component name="VcsManagerConfiguration">
+    <MESSAGE value="add appbar and round button" />
+    <option name="LAST_COMMIT_MESSAGE" value="add appbar and round button" />
+  </component>
   <component name="WindowStateProjectService">
     <state x="168" y="39" key="#com.intellij.execution.impl.EditConfigurationsDialog" timestamp="1616562346682">
       <screen x="62" y="0" width="1304" height="768" />
@@ -104,14 +119,49 @@
       <screen x="62" y="0" width="1304" height="768" />
     </state>
     <state x="154" y="92" width="1120" height="584" key="AVDManager/62.0.1304.768@62.0.1304.768" timestamp="1616565565393" />
+    <state x="0" y="83" key="DiffContextDialog" timestamp="1617082523786">
+      <screen x="0" y="0" width="1536" height="824" />
+    </state>
+    <state x="0" y="83" key="DiffContextDialog/0.0.1536.824@0.0.1536.824" timestamp="1617082523786" />
+    <state width="745" height="198" key="GridCell.Tab.0.bottom" timestamp="1617088017456">
+      <screen x="0" y="0" width="1536" height="824" />
+    </state>
+    <state width="745" height="198" key="GridCell.Tab.0.bottom/0.0.1536.824@0.0.1536.824" timestamp="1617088017456" />
+    <state width="745" height="198" key="GridCell.Tab.0.center" timestamp="1617088017456">
+      <screen x="0" y="0" width="1536" height="824" />
+    </state>
+    <state width="745" height="198" key="GridCell.Tab.0.center/0.0.1536.824@0.0.1536.824" timestamp="1617088017456" />
+    <state width="745" height="198" key="GridCell.Tab.0.left" timestamp="1617088017456">
+      <screen x="0" y="0" width="1536" height="824" />
+    </state>
+    <state width="745" height="198" key="GridCell.Tab.0.left/0.0.1536.824@0.0.1536.824" timestamp="1617088017456" />
+    <state width="745" height="198" key="GridCell.Tab.0.right" timestamp="1617088017456">
+      <screen x="0" y="0" width="1536" height="824" />
+    </state>
+    <state width="745" height="198" key="GridCell.Tab.0.right/0.0.1536.824@0.0.1536.824" timestamp="1617088017456" />
+    <state x="0" y="160" key="IDE.errors.dialog" timestamp="1617081625068">
+      <screen x="0" y="0" width="1536" height="824" />
+    </state>
+    <state x="0" y="160" key="IDE.errors.dialog/0.0.1536.824@0.0.1536.824" timestamp="1617081625068" />
     <state x="180" y="0" key="SettingsEditor" timestamp="1617080650736">
       <screen x="0" y="0" width="1536" height="824" />
     </state>
     <state x="180" y="0" key="SettingsEditor/0.0.1536.824@0.0.1536.824" timestamp="1617080650736" />
     <state x="215" y="0" key="SettingsEditor/62.0.1304.768@62.0.1304.768" timestamp="1616561688659" />
+    <state x="158" y="163" key="Vcs.Push.Dialog.v2" timestamp="1617082527950">
+      <screen x="0" y="0" width="1536" height="824" />
+    </state>
+    <state x="158" y="163" key="Vcs.Push.Dialog.v2/0.0.1536.824@0.0.1536.824" timestamp="1617082527950" />
     <state x="421" y="88" width="585" height="592" key="find.popup" timestamp="1616561065903">
       <screen x="62" y="0" width="1304" height="768" />
     </state>
     <state x="421" y="88" width="585" height="592" key="find.popup/62.0.1304.768@62.0.1304.768" timestamp="1616561065903" />
+  </component>
+  <component name="XDebuggerManager">
+    <breakpoint-manager>
+      <default-breakpoints>
+        <breakpoint suspend="THREAD" type="dart-exception" />
+      </default-breakpoints>
+    </breakpoint-manager>
   </component>
 </project>
