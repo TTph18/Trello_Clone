@@ -1,20 +1,20 @@
 import 'package:flutter/material.dart';
 import 'package:trello_clone/route_path.dart';
 
-class LoginForm extends StatefulWidget {
+class RegisterForm extends StatefulWidget {
   @override
-  _LoginFormState createState() => _LoginFormState();
+  _RegisterFormState createState() => _RegisterFormState();
 }
 
-class _LoginFormState extends State<LoginForm> {
-  var _loginFormKey = GlobalKey<FormState>();
+class _RegisterFormState extends State<RegisterForm> {
+  var _registerFormKey = GlobalKey<FormState>();
   var _usernameTextController = TextEditingController();
   var _passwordTextController = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
     return Form(
-        key: _loginFormKey,
+        key: _registerFormKey,
         child: Padding(
           padding: const EdgeInsets.only(left: 50.0, right: 50.0),
           child: Column(
@@ -22,7 +22,7 @@ class _LoginFormState extends State<LoginForm> {
               TextFormField(
                 controller: _usernameTextController,
                 decoration: InputDecoration(
-                    hintText: "Email"
+                    hintText: "Username"
                 ),
                 validator: (value){
                   if (_usernameTextController.text.length <= 0) {
@@ -37,20 +37,21 @@ class _LoginFormState extends State<LoginForm> {
                 decoration: InputDecoration(
                     hintText: "Mật khẩu"
                 ),
-                validator: (value){
-                  if (_passwordTextController.text.length <= 0) {
-                    return "Mật khẩu không được để trống";
-                  }
-                  return null;
-                },
+              ),
+              TextFormField(
+
+                obscureText: true,
+                decoration: InputDecoration(
+                    hintText: "Nhập lại mật khẩu"
+                ),
               ),
               ElevatedButton(
                   onPressed: () {
-                    if(_loginFormKey.currentState.validate()) {
+                    if(_registerFormKey.currentState.validate()) {
                       Navigator.of(context).pushNamed(MAIN_SCREEN);
                     }
                   },
-                  child: Text("Đăng nhập"))
+                  child: Text("Tạo tài khoản"))
             ],
           ),
         )
