@@ -37,7 +37,7 @@ class BoardInfo extends StatelessWidget {
               ),
             ),
           ),
-          Text("Board's Name", style: TextStyle(fontSize: 20),),
+          Text("Tên bảng", style: TextStyle(fontSize: 20),),
         ],
       ),
     );
@@ -53,7 +53,7 @@ class _MainScreenState extends State<MainScreen> {
         leading: new Container(
           child: new Icon(Icons.menu),
         ),
-        title: Text('Board'),
+        title: Text('Bảng'),
         actions: [
           IconButton(icon: Transform(
             alignment: Alignment.center,
@@ -66,7 +66,7 @@ class _MainScreenState extends State<MainScreen> {
       body: Column(
         children: [
           MyAppBar(
-            title: Text("'s workspace", style: TextStyle(
+            title: Text("Bảng cá nhân", style: TextStyle(
               color: Colors.black,
               fontWeight: FontWeight.normal,
               fontSize: 16,
