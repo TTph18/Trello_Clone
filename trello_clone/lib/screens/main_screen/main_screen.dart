@@ -2,6 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:trello_clone/icons/app_icons.dart';
 import 'dart:math' as math;
+import 'package:trello_clone/route_path.dart';
 
 class MainScreen extends StatefulWidget {
   @override
@@ -77,7 +78,9 @@ class _MainScreenState extends State<MainScreen> {
         ],
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: () {},
+        onPressed: () {
+            Navigator.of(context).pushNamed(CREATE_BOARD_SCREEN);
+        },
         backgroundColor: Colors.green,
         child: Icon(Icons.add),
       ), // This trailing comma makes auto-formatting nicer for build methods.
