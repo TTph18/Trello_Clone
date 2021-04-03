@@ -3,6 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:trello_clone/icons/app_icons.dart';
 import 'dart:math' as math;
 import 'package:trello_clone/route_path.dart';
+import 'package:animate_icons/animate_icons.dart';
+import 'package:flutter_speed_dial/flutter_speed_dial.dart';
 
 class MainScreen extends StatefulWidget {
   @override
@@ -45,9 +47,12 @@ class BoardInfo extends StatelessWidget {
   }
 }
 
+
+
 class _MainScreenState extends State<MainScreen> {
   @override
   Widget build(BuildContext context) {
+    var controller = AnimateIconController();
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.blue,
@@ -85,12 +90,45 @@ class _MainScreenState extends State<MainScreen> {
           ) //ListView.builder(itemBuilder: itemBuilder)
         ],
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-            Navigator.of(context).pushNamed(CREATE_BOARD_SCREEN);
-        },
+      //floatingActionButton: FloatingActionButton(
+      //    onPressed: () {
+      //      Navigator.of(context).pushNamed(CREATE_BOARD_SCREEN);
+      //    },
+      //    backgroundColor: Colors.green,
+      //    child: Icon(Icons.menu),
+      //),
+      floatingActionButton: SpeedDial(
         backgroundColor: Colors.green,
-        child: Icon(Icons.add),
+        child: //Icon(Icons.ac_unit),
+        AnimateIcons(
+          startIcon: Icons.add,
+          endIcon: Icons.remove,
+          controller: controller = AnimateIconController(),
+          onStartIconPress: () {
+            return true;
+          },
+          onEndIconPress: () {
+            return true;
+          },
+          duration: Duration(milliseconds: 100),
+          startIconColor: Colors.white,
+          endIconColor: Colors.white,
+          clockwise: true,
+        ),
+        visible: true,
+        curve: Curves.bounceIn,
+        children: [
+          SpeedDialChild(
+            child: Icon(Icons.accessibility, color: Colors.white,),
+            backgroundColor: Colors.green,
+            onTap: () {},
+          ),
+          SpeedDialChild(
+            child: Icon(Icons.brush, color: Colors.white,),
+            backgroundColor: Colors.green,
+            onTap: () {},
+          ),
+        ],
       ), // This trailing comma makes auto-formatting nicer for build methods.
     );
   }
