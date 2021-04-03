@@ -73,8 +73,16 @@ class _MainScreenState extends State<MainScreen> {
               fontSize: 16,
             ),),
           ),
-          BoardInfo()
-          //ListView.builder(itemBuilder: itemBuilder)
+          Expanded(
+            child: ListView.builder(
+              physics: ClampingScrollPhysics(),
+              shrinkWrap: true,
+              itemCount: 20,
+              itemBuilder: (BuildContext context, int index) {
+                return BoardInfo();
+              },
+            ),
+          ) //ListView.builder(itemBuilder: itemBuilder)
         ],
       ),
       floatingActionButton: FloatingActionButton(
