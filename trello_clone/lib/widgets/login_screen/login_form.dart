@@ -8,7 +8,7 @@ class LoginForm extends StatefulWidget {
 
 class _LoginFormState extends State<LoginForm> {
   var _loginFormKey = GlobalKey<FormState>();
-  var _usernameTextController = TextEditingController();
+  var _emailTextController = TextEditingController();
   var _passwordTextController = TextEditingController();
 
   @override
@@ -20,12 +20,12 @@ class _LoginFormState extends State<LoginForm> {
           child: Column(
             children: [
               TextFormField(
-                controller: _usernameTextController,
+                controller: _emailTextController,
                 decoration: InputDecoration(
                     hintText: "Email"
                 ),
                 validator: (value){
-                  if (_usernameTextController.text.length <= 0) {
+                  if (_emailTextController.text.length <= 0) {
                     return "Email không được để trống";
                   }
                   return null;
@@ -50,7 +50,15 @@ class _LoginFormState extends State<LoginForm> {
                       Navigator.of(context).pushNamed(MAIN_SCREEN);
                     }
                   },
-                  child: Text("Đăng nhập"))
+                  child: Text("Đăng nhập")),
+              TextButton(
+                  onPressed: (){
+                    {
+                      Navigator.of(context).pushNamed(REGISTER_SCREEN);
+                    }
+                  },
+                child: Text("Chưa có tài khoản?")
+              )
             ],
           ),
         )

@@ -8,7 +8,7 @@ class RegisterForm extends StatefulWidget {
 
 class _RegisterFormState extends State<RegisterForm> {
   var _registerFormKey = GlobalKey<FormState>();
-  var _usernameTextController = TextEditingController();
+  var _emailTextController = TextEditingController();
   var _passwordTextController = TextEditingController();
 
   @override
@@ -20,12 +20,12 @@ class _RegisterFormState extends State<RegisterForm> {
           child: Column(
             children: [
               TextFormField(
-                controller: _usernameTextController,
+                controller: _emailTextController,
                 decoration: InputDecoration(
-                    hintText: "Username"
+                    hintText: "Email"
                 ),
                 validator: (value){
-                  if (_usernameTextController.text.length <= 0) {
+                  if (_emailTextController.text.length <= 0) {
                     return "Email không được để trống";
                   }
                   return null;
@@ -39,7 +39,6 @@ class _RegisterFormState extends State<RegisterForm> {
                 ),
               ),
               TextFormField(
-
                 obscureText: true,
                 decoration: InputDecoration(
                     hintText: "Nhập lại mật khẩu"
@@ -48,10 +47,10 @@ class _RegisterFormState extends State<RegisterForm> {
               ElevatedButton(
                   onPressed: () {
                     if(_registerFormKey.currentState.validate()) {
-                      Navigator.of(context).pushNamed(MAIN_SCREEN);
+                      Navigator.of(context).pushNamed(LOGIN);
                     }
                   },
-                  child: Text("Tạo tài khoản"))
+                  child: Text("Xác nhận"))
             ],
           ),
         )
