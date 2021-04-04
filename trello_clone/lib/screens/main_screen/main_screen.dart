@@ -98,38 +98,57 @@ class _MainScreenState extends State<MainScreen> {
       //    child: Icon(Icons.menu),
       //),
       floatingActionButton: SpeedDial(
-        backgroundColor: Colors.green,
-        child: //Icon(Icons.ac_unit),
-        AnimateIcons(
-          startIcon: Icons.add,
-          endIcon: Icons.remove,
-          controller: controller = AnimateIconController(),
-          onStartIconPress: () {
-            return true;
-          },
-          onEndIconPress: () {
-            return true;
-          },
-          duration: Duration(milliseconds: 100),
-          startIconColor: Colors.white,
-          endIconColor: Colors.white,
-          clockwise: true,
-        ),
+        // backgroundColor: Colors.green,
+        // child: //Icon(Icons.ac_unit),
+        // AnimateIcons(
+        //   startIcon: Icons.add,
+        //   endIcon: Icons.remove,
+        //   controller: controller = AnimateIconController(),
+        //   onStartIconPress: () {
+        //     return true;
+        //   },
+        //   onEndIconPress: () {
+        //     return true;
+        //   },
+        //   duration: Duration(milliseconds: 100),
+        //   startIconColor: Colors.white,
+        //   endIconColor: Colors.white,
+        //   clockwise: true,
+        // ),
+        marginEnd: 18,
+        marginBottom: 20,
+        icon: Icons.add,
+        activeIcon: Icons.remove,
+        iconTheme: IconThemeData(color: Colors.white),
+        buttonSize: 56.0,
         visible: true,
-        curve: Curves.bounceIn,
+        closeManually: false,
+        renderOverlay: false,
+        overlayColor: Colors.black,
+        overlayOpacity: 0.5,
+        backgroundColor: Colors.blue,
+        foregroundColor: Colors.white,
+        shape: CircleBorder(),
         children: [
           SpeedDialChild(
-            child: Icon(Icons.accessibility, color: Colors.white,),
+            child: Icon(Icons.accessibility, color: Colors.white),
             backgroundColor: Colors.green,
-            onTap: () {},
+            onTap: () {
+              Navigator.of(context).pushNamed(CREATE_BOARD_SCREEN);
+            },
+            label: 'Tạo bảng',
+            labelStyle: TextStyle(fontSize: 18.0),
           ),
           SpeedDialChild(
-            child: Icon(Icons.brush, color: Colors.white,),
+            child: Icon(Icons.brush, color: Colors.white),
             backgroundColor: Colors.green,
-            onTap: () {},
+            onTap: () {
+            },
+            label: 'Tạo thẻ',
+            labelStyle: TextStyle(fontSize: 18.0),
           ),
         ],
-      ), // This trailing comma makes auto-formatting nicer for build methods.
+      ),// This trailing comma makes auto-formatting nicer for build methods.
     );
   }
 }
