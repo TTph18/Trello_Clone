@@ -110,26 +110,26 @@ class _MainScreenState extends State<MainScreen> {
           onEndIconPress: () {
             return true;
           },
-          duration: Duration(milliseconds: 100),
+          duration: Duration(milliseconds: 50),
           startIconColor: Colors.white,
           endIconColor: Colors.white,
           clockwise: true,
         ),
-        visible: true,
-        curve: Curves.bounceIn,
         children: [
           SpeedDialChild(
             child: Icon(Icons.accessibility, color: Colors.white,),
             backgroundColor: Colors.green,
+            label: 'Bảng',
             onTap: () {},
           ),
           SpeedDialChild(
             child: Icon(Icons.brush, color: Colors.white,),
             backgroundColor: Colors.green,
+            label: 'Thẻ',
             onTap: () {},
           ),
         ],
-      ), // This trailing comma makes auto-formatting nicer for build methods.
+      ),
     );
   }
 }
