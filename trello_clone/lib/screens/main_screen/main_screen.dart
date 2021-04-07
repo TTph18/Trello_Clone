@@ -4,6 +4,7 @@ import 'package:trello_clone/icons/app_icons.dart';
 import 'dart:math' as math;
 import 'package:trello_clone/route_path.dart';
 import 'package:flutter_speed_dial/flutter_speed_dial.dart';
+import 'package:trello_clone/widgets/Navigation.dart';
 
 class MainScreen extends StatefulWidget {
   @override
@@ -46,17 +47,12 @@ class BoardInfo extends StatelessWidget {
   }
 }
 
-
-
 class _MainScreenState extends State<MainScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      drawer: NavigationDrawer(),
       appBar: AppBar(
-        backgroundColor: Colors.blue,
-        leading: new Container(
-          child: new Icon(Icons.menu),
-        ),
         title: Text('Bảng'),
         actions: [
           IconButton(icon: Transform(
@@ -106,7 +102,15 @@ class _MainScreenState extends State<MainScreen> {
         shape: CircleBorder(),
         children: [
           SpeedDialChild(
-            child: Icon(Icons.accessibility, color: Colors.white,),
+            child: Icon(Icons.group, color: Colors.white,),
+            backgroundColor: Colors.green,
+            label: 'Nhóm',
+            labelStyle: TextStyle(fontSize: 18.0),
+            onTap: () {
+            },
+          ),
+          SpeedDialChild(
+            child: Icon(Icons.dashboard_customize, color: Colors.white,),
             backgroundColor: Colors.green,
             label: 'Bảng',
             labelStyle: TextStyle(fontSize: 18.0),
@@ -115,7 +119,7 @@ class _MainScreenState extends State<MainScreen> {
             },
           ),
           SpeedDialChild(
-            child: Icon(Icons.brush, color: Colors.white,),
+            child: Icon(Icons.credit_card, color: Colors.white,),
             backgroundColor: Colors.green,
             label: 'Thẻ',
             labelStyle: TextStyle(fontSize: 18.0),
