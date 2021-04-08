@@ -3,8 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:trello_clone/icons/app_icons.dart';
 import 'dart:math' as math;
 import 'package:trello_clone/route_path.dart';
-import 'package:animate_icons/animate_icons.dart';
 import 'package:flutter_speed_dial/flutter_speed_dial.dart';
+import 'package:trello_clone/widgets/Navigation.dart';
 
 class MainScreen extends StatefulWidget {
   @override
@@ -47,18 +47,12 @@ class BoardInfo extends StatelessWidget {
   }
 }
 
-
-
 class _MainScreenState extends State<MainScreen> {
   @override
   Widget build(BuildContext context) {
-    var controller = AnimateIconController();
     return Scaffold(
+      drawer: NavigationDrawer(),
       appBar: AppBar(
-        backgroundColor: Colors.blue,
-        leading: new Container(
-          child: new Icon(Icons.menu),
-        ),
         title: Text('Bảng'),
         actions: [
           IconButton(icon: Transform(
@@ -90,42 +84,45 @@ class _MainScreenState extends State<MainScreen> {
           ) //ListView.builder(itemBuilder: itemBuilder)
         ],
       ),
-      //floatingActionButton: FloatingActionButton(
-      //    onPressed: () {
-      //      Navigator.of(context).pushNamed(CREATE_BOARD_SCREEN);
-      //    },
-      //    backgroundColor: Colors.green,
-      //    child: Icon(Icons.menu),
-      //),
       floatingActionButton: SpeedDial(
-        backgroundColor: Colors.green,
-        child: //Icon(Icons.ac_unit),
-        AnimateIcons(
-          startIcon: Icons.add,
-          endIcon: Icons.remove,
-          controller: controller = AnimateIconController(),
-          onStartIconPress: () {
-            return true;
-          },
-          onEndIconPress: () {
-            return true;
-          },
-          duration: Duration(milliseconds: 100),
-          startIconColor: Colors.white,
-          endIconColor: Colors.white,
-          clockwise: true,
-        ),
+        //marginEnd: 18,
+        //marginBottom: 20,
+        icon: Icons.add,
+        activeIcon: Icons.remove,
+        //iconTheme: IconThemeData(color: Colors.white),
+        //buttonSize: 56.0,
+        useRotationAnimation: true,
         visible: true,
-        curve: Curves.bounceIn,
+        closeManually: false,
+        renderOverlay: false,
+        overlayColor: Colors.white,
+        overlayOpacity: 0.5,
+        backgroundColor: Colors.green,
+        foregroundColor: Colors.white,
+        shape: CircleBorder(),
         children: [
           SpeedDialChild(
-            child: Icon(Icons.accessibility, color: Colors.white,),
+            child: Icon(Icons.group, color: Colors.white,),
             backgroundColor: Colors.green,
-            onTap: () {},
+            label: 'Nhóm',
+            labelStyle: TextStyle(fontSize: 18.0),
+            onTap: () {
+            },
           ),
           SpeedDialChild(
-            child: Icon(Icons.brush, color: Colors.white,),
+            child: Icon(Icons.dashboard_customize, color: Colors.white,),
             backgroundColor: Colors.green,
+            label: 'Bảng',
+            labelStyle: TextStyle(fontSize: 18.0),
+            onTap: () {
+              Navigator.of(context).pushNamed(CREATE_BOARD_SCREEN);
+            },
+          ),
+          SpeedDialChild(
+            child: Icon(Icons.credit_card, color: Colors.white,),
+            backgroundColor: Colors.green,
+            label: 'Thẻ',
+            labelStyle: TextStyle(fontSize: 18.0),
             onTap: () {},
           ),
         ],
