@@ -1,10 +1,12 @@
+import 'dart:math' as math;
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:trello_clone/icons/app_icons.dart';
-import 'dart:math' as math;
-import 'package:trello_clone/route_path.dart';
 import 'package:flutter_speed_dial/flutter_speed_dial.dart';
-import 'package:trello_clone/widgets/Navigation.dart';
+import 'package:trello_clone/icons/app_icons.dart';
+import 'package:trello_clone/route_path.dart';
+
+import 'file:///D:/Hoc/DADiDong/Trello_Clone/trello_clone/lib/screens/navigation/Navigation.dart';
 
 class MainScreen extends StatefulWidget {
   @override
@@ -14,15 +16,23 @@ class MainScreen extends StatefulWidget {
 class MyAppBar extends AppBar with PreferredSizeWidget {
   @override
   get preferredSize => Size.fromHeight(50);
-  MyAppBar({Key key, Widget title}) : super(
-    key: key,
-    title: title,
-    automaticallyImplyLeading: false,
-    backgroundColor: Colors.white,
-  );
+
+  MyAppBar({Key key, Widget title})
+      : super(
+          key: key,
+          title: title,
+          automaticallyImplyLeading: false,
+          backgroundColor: Colors.white,
+        );
 }
 
 class BoardInfo extends StatelessWidget {
+  AssetImage image;
+  String text;
+  Function onTap;
+
+  BoardInfo(this.image, this.text, this.onTap);
+
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -34,13 +44,16 @@ class BoardInfo extends StatelessWidget {
             child: ClipRRect(
               borderRadius: BorderRadius.circular(3.0),
               child: Image(
-                image: AssetImage('assets/images/BlueBG.png'),
+                image: image,
                 width: 50,
                 height: 50,
               ),
             ),
           ),
-          Text("Tên bảng", style: TextStyle(fontSize: 20),),
+          Text(
+            text,
+            style: TextStyle(fontSize: 20),
+          ),
         ],
       ),
     );
@@ -48,85 +61,111 @@ class BoardInfo extends StatelessWidget {
 }
 
 class _MainScreenState extends State<MainScreen> {
+  List<AssetImage> boardImage = [
+    AssetImage('assets/images/BlueBG.png'),
+    AssetImage('assets/images/BlueBG.png'),
+  ];
+  List<String> boardName = [
+    "Tên bảng 1",
+    "Tên bảng 2",
+  ];
+  List<Function> boardOnPress = [
+    () => {},
+    () => {},
+  ];
+  int selectedIndex = 0;
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      drawer: NavigationDrawer(),
-      appBar: AppBar(
-        title: Text('Bảng'),
-        actions: [
-          IconButton(icon: Transform(
+      drawer: Navigation(),
+      appBar: AppBar(title: Text('Bảng'), actions: [
+        IconButton(
+          icon: Transform(
             alignment: Alignment.center,
             transform: Matrix4.rotationY(math.pi),
             child: Icon(MyFlutterApp.search),
-          ), onPressed: () {},),
-          IconButton(icon: const Icon(MyFlutterApp.bell), onPressed: () {},)
-        ]
-      ),
-      body: Column(
-        children: [
-          MyAppBar(
-            title: Text("Bảng cá nhân", style: TextStyle(
-              color: Colors.black,
-              fontWeight: FontWeight.normal,
-              fontSize: 16,
-            ),),
           ),
-          Expanded(
-            child: ListView.builder(
-              physics: ClampingScrollPhysics(),
-              shrinkWrap: true,
-              itemCount: 20,
-              itemBuilder: (BuildContext context, int index) {
-                return BoardInfo();
-              },
-            ),
-          ) //ListView.builder(itemBuilder: itemBuilder)
-        ],
-      ),
-      floatingActionButton: SpeedDial(
-        //marginEnd: 18,
-        //marginBottom: 20,
-        icon: Icons.add,
-        activeIcon: Icons.remove,
-        //iconTheme: IconThemeData(color: Colors.white),
-        //buttonSize: 56.0,
-        useRotationAnimation: true,
-        visible: true,
-        closeManually: false,
-        renderOverlay: false,
-        overlayColor: Colors.white,
-        overlayOpacity: 0.5,
-        backgroundColor: Colors.green,
-        foregroundColor: Colors.white,
-        shape: CircleBorder(),
-        children: [
-          SpeedDialChild(
-            child: Icon(Icons.group, color: Colors.white,),
+          onPressed: () {},
+        ),
+        IconButton(
+          icon: const Icon(MyFlutterApp.bell),
+          onPressed: () {},
+        )
+      ]),
+      body: Scaffold(
+          body: Column(
+            children: [
+              MyAppBar(
+                title: Text(
+                  "Bảng cá nhân",
+                  style: TextStyle(
+                    color: Colors.black,
+                    fontWeight: FontWeight.normal,
+                    fontSize: 16,
+                  ),
+                ),
+              ),
+              Expanded(
+                child: ListView.builder(
+                  physics: ClampingScrollPhysics(),
+                  shrinkWrap: true,
+                  itemCount: boardName.length,
+                  itemBuilder: (BuildContext context, int index) {
+                    return BoardInfo(boardImage[index], boardName[index],
+                        boardOnPress[index]);
+                  },
+                ),
+              ),
+            ],
+          ),
+          floatingActionButton: SpeedDial(
+            icon: Icons.add,
+            activeIcon: Icons.remove,
+            useRotationAnimation: true,
+            visible: true,
+            closeManually: false,
+            renderOverlay: false,
+            overlayColor: Colors.white,
+            overlayOpacity: 0.5,
             backgroundColor: Colors.green,
-            label: 'Nhóm',
-            labelStyle: TextStyle(fontSize: 18.0),
-            onTap: () {
-            },
-          ),
-          SpeedDialChild(
-            child: Icon(Icons.dashboard_customize, color: Colors.white,),
-            backgroundColor: Colors.green,
-            label: 'Bảng',
-            labelStyle: TextStyle(fontSize: 18.0),
-            onTap: () {
-              Navigator.of(context).pushNamed(CREATE_BOARD_SCREEN);
-            },
-          ),
-          SpeedDialChild(
-            child: Icon(Icons.credit_card, color: Colors.white,),
-            backgroundColor: Colors.green,
-            label: 'Thẻ',
-            labelStyle: TextStyle(fontSize: 18.0),
-            onTap: () {},
-          ),
-        ],
-      ), // This trailing comma makes auto-formatting nicer for build methods.
+            foregroundColor: Colors.white,
+            shape: CircleBorder(),
+            children: [
+              SpeedDialChild(
+                child: Icon(
+                  Icons.group,
+                  color: Colors.white,
+                ),
+                backgroundColor: Colors.green,
+                label: 'Nhóm',
+                labelStyle: TextStyle(fontSize: 18.0),
+                onTap: () {},
+              ),
+              SpeedDialChild(
+                child: Icon(
+                  Icons.dashboard_customize,
+                  color: Colors.white,
+                ),
+                backgroundColor: Colors.green,
+                label: 'Bảng',
+                labelStyle: TextStyle(fontSize: 18.0),
+                onTap: () {
+                  Navigator.of(context).pushNamed(CREATE_BOARD_SCREEN);
+                },
+              ),
+              SpeedDialChild(
+                child: Icon(
+                  Icons.credit_card,
+                  color: Colors.white,
+                ),
+                backgroundColor: Colors.green,
+                label: 'Thẻ',
+                labelStyle: TextStyle(fontSize: 18.0),
+                onTap: () {},
+              ),
+            ],
+          )),
     );
   }
 }

@@ -1,5 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <module type="JAVA_MODULE" version="4">
+  <component name="FacetManager">
+    <facet type="android" name="Android">
+      <configuration>
+        <option name="GEN_FOLDER_RELATIVE_PATH_APT" value="/../../Trello_Clone/gen" />
+        <option name="GEN_FOLDER_RELATIVE_PATH_AIDL" value="/../../Trello_Clone/gen" />
+        <option name="MANIFEST_FILE_RELATIVE_PATH" value="/../../Trello_Clone/AndroidManifest.xml" />
+        <option name="RES_FOLDER_RELATIVE_PATH" value="/../../Trello_Clone/res" />
+        <option name="ASSETS_FOLDER_RELATIVE_PATH" value="/../../Trello_Clone/assets" />
+        <option name="LIBS_FOLDER_RELATIVE_PATH" value="/../../Trello_Clone/libs" />
+        <option name="PROGUARD_LOGS_FOLDER_RELATIVE_PATH" value="/../../Trello_Clone/proguard_logs" />
+      </configuration>
+    </facet>
+  </component>
   <component name="NewModuleRootManager" inherit-compiler-output="true">
     <exclude-output />
     <content url="file://$MODULE_DIR$">
@@ -11,11 +24,12 @@
       <sourceFolder url="file://$MODULE_DIR$/trello_clone/lib/screens/main_screen" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/trello_clone/lib/widgets" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/trello_clone/lib/widgets/login_screen" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/gen" isTestSource="false" generated="true" />
       <excludeFolder url="file://$MODULE_DIR$/trello_clone/.dart_tool" />
       <excludeFolder url="file://$MODULE_DIR$/trello_clone/.pub" />
       <excludeFolder url="file://$MODULE_DIR$/trello_clone/build" />
     </content>
-    <orderEntry type="inheritedJdk" />
+    <orderEntry type="jdk" jdkName="Android API 30 Platform" jdkType="Android SDK" />
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="library" exported="" name="Dart SDK" level="project" />
     <orderEntry type="library" exported="" name="Dart Packages" level="project" />
