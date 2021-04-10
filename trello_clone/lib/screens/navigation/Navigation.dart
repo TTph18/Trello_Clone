@@ -1,13 +1,16 @@
 import 'dart:ui';
-
+import 'package:animated_icon_button/animated_icon_button.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 
 class CustomListTile extends StatelessWidget {
   IconData icon;
   String text;
   Function onTap;
+
   CustomListTile(this.icon, this.text, this.onTap);
+
   @override
   Widget build(BuildContext context) {
     return InkWell(
@@ -32,15 +35,68 @@ class CustomListTile extends StatelessWidget {
   }
 }
 
+class AccountInfo extends StatelessWidget {
+  AssetImage image;
+  String text;
+  String subtext;
+  Function onTap;
+
+  AccountInfo(this.image, this.text, this.subtext, this.onTap);
+
+  @override
+  Widget build(BuildContext context) {
+    return InkWell(
+      onTap: onTap,
+      child: Padding(
+        padding: const EdgeInsets.fromLTRB(16.0, 8.0, 0, 8.0),
+        child: Row(
+          children: <Widget>[
+            Container(
+              width: 45,
+              height: 45,
+              decoration: new BoxDecoration(
+                shape: BoxShape.circle,
+                image: new DecorationImage(
+                  fit: BoxFit.fill,
+                  image: image,
+                ),
+              ),
+            ),
+            SizedBox(
+              width: 30,
+            ),
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: <Widget>[
+                Align(
+                  alignment: Alignment.centerLeft,
+                  child: Text(text,
+                      textAlign: TextAlign.left,
+                      style:
+                          TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+                ),
+                Align(
+                  alignment: Alignment.centerLeft,
+                  child: Text(
+                    '@' + subtext,
+                    textAlign: TextAlign.left,
+                    style: TextStyle(fontSize: 16, fontStyle: FontStyle.italic),
+                  ),
+                ),
+              ],
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
 class NavigationMain extends StatelessWidget {
   List<String> grNames = [
     "Nhóm 1",
     "Nhóm 2"
   ]; //index: 10 + 1, 10 + 2, ... , 10 + n
-  final Function onIndexChange;
-  NavigationMain(this.onIndexChange);
-
-  int selectedIndex = 0;
   @override
   Widget build(BuildContext context) {
     return Column(
@@ -83,13 +139,75 @@ class NavigationMain extends StatelessWidget {
   }
 }
 
+class NavigationAccount extends StatelessWidget {
+  List<AssetImage> avatar = [
+    AssetImage('assets/images/BlueBG.png'),
+    AssetImage('assets/images/BlueBG.png'),
+  ];
+  List<String> name = ["Name 1", "Name 2"];
+  List<String> subname = ["Subname 1", "Subname 2"];
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      children: <Widget>[
+        MediaQuery.removePadding(
+          context: context,
+          removeTop: true,
+          child: ListView.builder(
+              scrollDirection: Axis.vertical,
+              shrinkWrap: true,
+              physics: NeverScrollableScrollPhysics(),
+              itemCount: name.length,
+              itemBuilder: (BuildContext context, int index) {
+                return AccountInfo(
+                    avatar[index], name[index], subname[index], () => {});
+              }),
+        ),
+        InkWell(
+          onTap: () {},
+          child: Padding(
+            padding: EdgeInsets.fromLTRB(15, 20, 15, 20),
+            child: Row(
+              children: [
+                Container(
+                  padding: EdgeInsets.fromLTRB(13, 0, 10, 0),
+                  child: Icon(
+                    Icons.add,
+                    color: Colors.black,
+                  ),
+                ),
+                SizedBox(
+                  width: 30,
+                ),
+                Text(
+                  "Thêm tài khoản",
+                  style: TextStyle(fontSize: 20),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+}
+
 class Navigation extends StatefulWidget {
   @override
   _NavigationState createState() => _NavigationState();
 }
 
-class _NavigationState extends State<Navigation> {
-  int selectedIndex = 0;
+class _NavigationState extends State<Navigation>
+    with SingleTickerProviderStateMixin {
+  bool isMain;
+
+  @override
+  void initState() {
+    super.initState();
+    isMain = true;
+  }
+
   @override
   Widget build(BuildContext context) {
     return Drawer(
@@ -99,15 +217,66 @@ class _NavigationState extends State<Navigation> {
             decoration: BoxDecoration(
               color: Colors.blue,
             ),
+            child: Padding(
+              padding: const EdgeInsets.fromLTRB(0, 4.0, 0, 0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Container(
+                    width: 70,
+                    height: 70,
+                    decoration: new BoxDecoration(
+                      shape: BoxShape.circle,
+                      border: Border.all(color: Colors.grey),
+                      image: new DecorationImage(
+                        fit: BoxFit.fill,
+                        image: AssetImage('assets/images/BlueBG.png'),
+                      ),
+                    ),
+                  ),
+                  SizedBox(
+                    height: 13,
+                  ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text("Name 1",
+                              textAlign: TextAlign.left,
+                              style:
+                              TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.white)),
+                          SizedBox(
+                            height: 6,
+                          ),
+                          Text(
+                            '@' + "Subname1",
+                            textAlign: TextAlign.left,
+                            style: TextStyle(fontSize: 16, fontStyle: FontStyle.italic, color: Colors.white),
+                          ),
+                        ],
+                      ),
+                      AnimatedIconButton(
+                          size: 25,
+                          onPressed: () => {},
+                          icons: [
+                            AnimatedIconItem(
+                              icon: Icon(Icons.keyboard_arrow_down),
+                            ),
+                            AnimatedIconItem(
+                              icon: Icon(Icons.keyboard_arrow_up),
+                            ),
+                          ])
+                    ],
+                  ),
+                ],
+              ),
+            ),
           ),
-          NavigationMain((int index) {
-            setState(() {
-              selectedIndex = index;
-            });
-          }),
+          NavigationAccount(),
         ],
       ),
     );
-    ;
   }
 }
