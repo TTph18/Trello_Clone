@@ -26,7 +26,7 @@ class CustomListTile extends StatelessWidget {
             ),
             Text(
               text,
-              style: TextStyle(fontSize: 16),
+              style: TextStyle(fontSize: 18),
             ),
           ],
         ),
@@ -48,12 +48,12 @@ class AccountInfo extends StatelessWidget {
     return InkWell(
       onTap: onTap,
       child: Padding(
-        padding: const EdgeInsets.fromLTRB(16.0, 8.0, 0, 8.0),
+        padding: const EdgeInsets.fromLTRB(10.0, 8.0, 0, 8.0),
         child: Row(
           children: <Widget>[
             Container(
-              width: 45,
-              height: 45,
+              width: 40,
+              height: 40,
               decoration: new BoxDecoration(
                 shape: BoxShape.circle,
                 image: new DecorationImage(
@@ -63,7 +63,7 @@ class AccountInfo extends StatelessWidget {
               ),
             ),
             SizedBox(
-              width: 30,
+              width: 20,
             ),
             Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -178,7 +178,7 @@ class NavigationAccount extends StatelessWidget {
                   ),
                 ),
                 SizedBox(
-                  width: 30,
+                  width: 20,
                 ),
                 Text(
                   "Thêm tài khoản",
@@ -198,8 +198,7 @@ class Navigation extends StatefulWidget {
   _NavigationState createState() => _NavigationState();
 }
 
-class _NavigationState extends State<Navigation>
-    with SingleTickerProviderStateMixin {
+class _NavigationState extends State<Navigation>{
   bool isMain;
 
   @override
@@ -259,7 +258,11 @@ class _NavigationState extends State<Navigation>
                       ),
                       AnimatedIconButton(
                           size: 25,
-                          onPressed: () => {},
+                          onPressed: () => {
+                            setState(() {
+                            isMain = !isMain;
+                            })
+                          },
                           icons: [
                             AnimatedIconItem(
                               icon: Icon(Icons.keyboard_arrow_down),
@@ -274,7 +277,7 @@ class _NavigationState extends State<Navigation>
               ),
             ),
           ),
-          NavigationAccount(),
+          isMain ? NavigationMain() : NavigationAccount(),
         ],
       ),
     );
