@@ -7,7 +7,7 @@ abstract class CheckListDao
   Future<List<CheckList>> findAll();
 
   @Query('SELECT * FROM CHECKLIST WHERE CardID = :id')
-  Stream<CheckList> findById(int id);
+  Stream<CheckList?> findById(int id);
 
   @insert
   Future<void> insertCheckList(CheckList checkList);

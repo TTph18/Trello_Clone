@@ -7,7 +7,7 @@ import 'package:flutter/widgets.dart';
 class CustomListTile extends StatelessWidget {
   IconData icon;
   String text;
-  Function onTap;
+  VoidCallback onTap;
 
   CustomListTile(this.icon, this.text, this.onTap);
 
@@ -39,7 +39,7 @@ class AccountInfo extends StatelessWidget {
   AssetImage image;
   String text;
   String subtext;
-  Function onTap;
+  VoidCallback onTap;
 
   AccountInfo(this.image, this.text, this.subtext, this.onTap);
 
@@ -199,7 +199,7 @@ class Navigation extends StatefulWidget {
 }
 
 class _NavigationState extends State<Navigation>{
-  bool isMain;
+  late bool isMain;
 
   @override
   void initState() {
@@ -260,7 +260,7 @@ class _NavigationState extends State<Navigation>{
                           size: 25,
                           onPressed: () => {
                             setState(() {
-                            isMain = !isMain;
+                            isMain =  !isMain;
                             })
                           },
                           icons: [

@@ -7,7 +7,7 @@ abstract class AttachmentDetailDao
   Future<List<AttachmentDetail>> findAll();
 
   @Query('SELECT * FROM ATTACHMENTDETAIL WHERE AttachmentID = :id')
-  Stream<AttachmentDetail> findById(int id);
+  Stream<AttachmentDetail?> findById(int id);
 
   @insert
   Future<void> insertAttachmentDetail(AttachmentDetail attachmentDetail);

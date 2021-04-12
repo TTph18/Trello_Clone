@@ -8,7 +8,7 @@ abstract class CommentDetailDao
   Future<List<CommentDetail>> findAll();
 
   @Query('SELECT * FROM COMMENTDETAIL WHERE CommentID = :id')
-  Stream<CommentDetail> findById(int id);
+  Stream<CommentDetail?> findById(int id);
 
   @insert
   Future<void> insertCommentDetail(CommentDetail commentDetail);

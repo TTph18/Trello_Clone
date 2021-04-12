@@ -7,7 +7,7 @@ abstract class GroupDao
   Future<List<Group>> findAll();
 
   @Query('SELECT * FROM CHECKLIST WHERE GroupID = :id')
-  Stream<Group> findById(int id);
+  Stream<Group?> findById(int id);
 
   @insert
   Future<void> insertGroup(Group group);

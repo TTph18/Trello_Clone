@@ -1,16 +1,14 @@
+// @dart=2.12
 import 'package:floor/floor.dart';
 
-@entity
+@Entity(primaryKeys: ['account','commentid'])
 class CommentDetail
 {
-  @Entity(primaryKeys: ['account','commentid'])
   String account;
-
-  @ColumnInfo(name: 'tuong tac', nullable: true)
-  String interactive;
-
-  @ColumnInfo(name: 'ma binh luan', nullable: true)
   String commentid;
+
+  @ColumnInfo(name: 'tuong tac')
+  String interactive;
 
   CommentDetail(this.account, this.interactive, this.commentid);
 }

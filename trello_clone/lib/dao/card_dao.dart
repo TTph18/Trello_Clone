@@ -7,7 +7,7 @@ abstract class CardDao
   Future<List<Card>> findAll();
 
   @Query('SELECT * FROM CARD WHERE CARDID = :id')
-  Stream<Card> findById(int id);
+  Stream<Card?> findById(int id);
 
   @insert
   Future<void> insertCard(Card card);

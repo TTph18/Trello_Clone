@@ -70,7 +70,7 @@ class _LoginFormState extends State<LoginForm> {
                               ),
                             ),
                             onPressed: () {
-                              if(_loginFormKey.currentState.validate()) {
+                              if(_loginFormKey.currentState!.validate()) {
                                 Navigator.of(context).pushNamed(MAIN_SCREEN);
                               }
                             },

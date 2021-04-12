@@ -8,7 +8,7 @@ abstract class HistoryDao
   Future<List<History>> findAll();
 
   @Query('SELECT * FROM HISTORY WHERE ActivityID = :id')
-  Stream<History> findById(int id);
+  Stream<History?> findById(int id);
 
   @insert
   Future<void> insertCheckList(History history);

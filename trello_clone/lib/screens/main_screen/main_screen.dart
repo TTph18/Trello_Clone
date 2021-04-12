@@ -6,7 +6,7 @@ import 'package:flutter_speed_dial/flutter_speed_dial.dart';
 import 'package:trello_clone/icons/app_icons.dart';
 import 'package:trello_clone/route_path.dart';
 
-import 'file:///D:/Hoc/DADiDong/Trello_Clone/trello_clone/lib/screens/navigation/Navigation.dart';
+import 'package:trello_clone/screens/navigation/Navigation.dart';
 
 class MainScreen extends StatefulWidget {
   @override
@@ -17,7 +17,7 @@ class MyAppBar extends AppBar with PreferredSizeWidget {
   @override
   get preferredSize => Size.fromHeight(50);
 
-  MyAppBar({Key key, Widget title})
+  MyAppBar({Key? key, Widget? title})
       : super(
           key: key,
           title: title,

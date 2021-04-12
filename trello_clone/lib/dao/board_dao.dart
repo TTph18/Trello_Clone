@@ -7,7 +7,7 @@ abstract class BoardDao
   Future<List<Board>> findAll();
 
   @Query('SELECT * FROM BOARD WHERE BoardID = :id')
-  Stream<Board> findById(int id);
+  Stream<Board?> findById(int id);
 
   @insert
   Future<void> insertBoard(Board board);

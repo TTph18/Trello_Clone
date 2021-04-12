@@ -7,7 +7,7 @@ abstract class TagDao
   Future<List<Tag>> findAll();
 
   @Query('SELECT * FROM CHECKLIST WHERE TagID = :id')
-  Stream<Tag> findById(int id);
+  Stream<Tag?> findById(int id);
 
   @insert
   Future<void> insertTag(Tag tag);

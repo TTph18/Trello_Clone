@@ -64,8 +64,8 @@ class CreateBoardFormState extends State<CreateBoardForm> {
             ),
             ElevatedButton(
                 onPressed: () {
-                  if(_createBoardFormKey.currentState.validate()) {
-                    Navigator.of(context).pushNamed(MAIN_SCREEN);
+                    if(_createBoardFormKey.currentState!.validate()) {
+                      Navigator.of(context).pushNamed(MAIN_SCREEN);
                   }
                 },
                 child: Text("Tạo bảng")

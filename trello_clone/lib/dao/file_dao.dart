@@ -7,7 +7,7 @@ abstract class FileDao
   Future<List<File>> findAll();
 
   @Query('SELECT * FROM CHECKLIST WHERE FileID = :id')
-  Stream<File> findById(int id);
+  Stream<File?> findById(int id);
 
   @insert
   Future<void> insertCheckList(File file);

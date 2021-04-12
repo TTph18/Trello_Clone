@@ -7,7 +7,7 @@ abstract class GroupDetailDao
   Future<List<GroupDetail>> findAll();
 
   @Query('SELECT * FROM CHECKLIST WHERE GroupID = :id')
-  Stream<GroupDetail> findById(int id);
+  Stream<GroupDetail?> findById(int id);
 
   @insert
   Future<void> insertGroupDetail(GroupDetail groupDetail);

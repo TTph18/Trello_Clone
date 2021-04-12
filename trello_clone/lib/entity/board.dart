@@ -1,3 +1,4 @@
+// @dart=2.12
 import 'package:floor/floor.dart';
 
 @entity
@@ -6,13 +7,13 @@ class Board
   @primaryKey
   int boardid;
 
-  @ColumnInfo(name: 'ten bang', nullable: false)
+  @ColumnInfo(name: 'ten bang')
   String boardname;
 
-  @ColumnInfo(name: 'mo ta', nullable: false)
+  @ColumnInfo(name: 'mo ta')
   String discribe;
 
-  @ColumnInfo(name: 'tai khoan cua nguoi tao bang', nullable: false)
+  @ColumnInfo(name: 'nguoi tao')
   String creator;
 
   Board(this.boardid, this.boardname, this.discribe, this.creator);

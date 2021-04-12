@@ -1,3 +1,4 @@
+
 import 'package:flutter/material.dart';
 import 'package:trello_clone/route_path.dart';
 
@@ -65,7 +66,7 @@ class _RegisterFormState extends State<RegisterForm> {
                                       ),
                                     ),
                                     onPressed: () {
-                                      if(_registerFormKey.currentState.validate()) {
+                                      if(_registerFormKey.currentState!.validate()) {
                                         Navigator.of(context).pushNamed(MAIN_SCREEN);
                                       }
                                     },

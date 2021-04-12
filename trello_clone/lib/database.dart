@@ -13,7 +13,7 @@ import 'package:trello_clone/entity/file.dart';
 import 'package:trello_clone/entity/group.dart';
 import 'package:trello_clone/entity/groupdetail.dart';
 import 'package:trello_clone/entity/history.dart';
-import 'package:trello_clone/entity/list.dart';
+import 'package:trello_clone/entity/list_item.dart';
 import 'package:trello_clone/entity/tag.dart';
 import 'package:trello_clone/entity/tagdetail.dart';
 import 'dao/user_dao.dart';
@@ -32,8 +32,9 @@ import 'dao/tag_dao.dart';
 import 'dao/tagdetail_dao.dart';
 
 import 'entity/user.dart';
+part 'database.g.dart'; // the generated code will be there
 
-@Database(version: 1, entities: [User, AttachmentDetail, Board, Card, CheckList, Comment, CommentDetail, File, Group, GroupDetail, History, List, Tag, TagDetail])
+@Database(version: 1, entities: [User, AttachmentDetail, Board, Card, CheckList, Comment, CommentDetail, File, Group, GroupDetail, History, ListItem, Tag, TagDetail])
 abstract class AppDatabase extends FloorDatabase {
   UserDao get userDao;
   AttachmentDetailDao get attachmentdetailDao;
