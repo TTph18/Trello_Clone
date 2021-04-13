@@ -1,9 +1,8 @@
 import 'package:floor/floor.dart';
 
-@entity
+@Entity(primaryKeys: ['groupid','account'])
 class GroupDetail
 {
-  @Entity(primaryKeys: ['groupid','account'])
   String groupid;
 
   String account;

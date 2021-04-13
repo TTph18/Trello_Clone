@@ -110,29 +110,29 @@ class _$AppDatabase extends AppDatabase {
         await database.execute(
             'CREATE TABLE IF NOT EXISTS `AttachmentDetail` (`fileid` INTEGER NOT NULL, `ma nhan` INTEGER NOT NULL, `ma binh luan` INTEGER NOT NULL, PRIMARY KEY (`fileid`))');
         await database.execute(
-            'CREATE TABLE IF NOT EXISTS `Board` (`boardid` INTEGER NOT NULL, `ten bang` TEXT NOT NULL, `mo ta` TEXT NOT NULL, `nguoi tao` TEXT NOT NULL, PRIMARY KEY (`boardid`))');
+            'CREATE TABLE IF NOT EXISTS `Board` (`boardid` TEXT NOT NULL, `ten bang` TEXT NOT NULL, `mo ta` TEXT NOT NULL, `tai khoan cua nguoi tao bang` TEXT NOT NULL, `ma nhom` TEXT NOT NULL, PRIMARY KEY (`boardid`))');
         await database.execute(
             'CREATE TABLE IF NOT EXISTS `Card` (`cardid` INTEGER NOT NULL, `ten the` TEXT NOT NULL, `noi dung` TEXT NOT NULL, `binh luan` TEXT NOT NULL, `ngay bat dau` TEXT NOT NULL, `ngay ket thuc` TEXT NOT NULL, `so thu tu` INTEGER NOT NULL, PRIMARY KEY (`cardid`))');
         await database.execute(
-            'CREATE TABLE IF NOT EXISTS `CheckList` (`cardid` INTEGER NOT NULL, `noi dung` TEXT NOT NULL, `trang thai` INTEGER NOT NULL, `so thu tu` INTEGER NOT NULL, PRIMARY KEY (`cardid`))');
+            'CREATE TABLE IF NOT EXISTS `CheckList` (`cardid` TEXT NOT NULL, `noi dung` TEXT NOT NULL, `trang thai (done = 1)` INTEGER NOT NULL, `so thu tu` INTEGER NOT NULL, PRIMARY KEY (`cardid`))');
         await database.execute(
-            'CREATE TABLE IF NOT EXISTS `Comment` (`commentid` TEXT NOT NULL, `noi dung` TEXT NOT NULL, `nguoi binh luan` INTEGER NOT NULL, PRIMARY KEY (`commentid`))');
+            'CREATE TABLE IF NOT EXISTS `Comment` (`commentid` TEXT NOT NULL, `noi dung` TEXT NOT NULL, `nguoi binh luan` TEXT NOT NULL, PRIMARY KEY (`commentid`))');
         await database.execute(
-            'CREATE TABLE IF NOT EXISTS `CommentDetail` (`account` TEXT NOT NULL, `commentid` TEXT NOT NULL, `tuong tac` TEXT NOT NULL, PRIMARY KEY (`account`, `commentid`))');
+            'CREATE TABLE IF NOT EXISTS `CommentDetail` (`account` TEXT NOT NULL, `tuong tac` TEXT NOT NULL, `noi dung` TEXT NOT NULL, `ma binh luan` TEXT NOT NULL, PRIMARY KEY (`account`))');
         await database.execute(
-            'CREATE TABLE IF NOT EXISTS `File` (`fileid` INTEGER NOT NULL, `duong dan file` TEXT NOT NULL, PRIMARY KEY (`fileid`))');
+            'CREATE TABLE IF NOT EXISTS `File` (`fileid` TEXT NOT NULL, `duong dan file` TEXT NOT NULL, PRIMARY KEY (`fileid`))');
         await database.execute(
-            'CREATE TABLE IF NOT EXISTS `Group` (`groupid` INTEGER NOT NULL, `ten nhom` TEXT NOT NULL, `mo ta` TEXT NOT NULL, PRIMARY KEY (`groupid`))');
+            'CREATE TABLE IF NOT EXISTS `Group` (`groupid` TEXT NOT NULL, `ten nhom` TEXT NOT NULL, `mo ta` TEXT NOT NULL, PRIMARY KEY (`groupid`))');
         await database.execute(
-            'CREATE TABLE IF NOT EXISTS `GroupDetail` (`groupid` INTEGER NOT NULL, `mat khau` TEXT NOT NULL, `ma bang` INTEGER NOT NULL, PRIMARY KEY (`groupid`))');
+            'CREATE TABLE IF NOT EXISTS `GroupDetail` (`groupid` TEXT NOT NULL, `account` TEXT NOT NULL, PRIMARY KEY (`groupid`, `account`))');
         await database.execute(
-            'CREATE TABLE IF NOT EXISTS `History` (`activityid` TEXT NOT NULL, `tai khoan` TEXT NOT NULL, `noi dung` TEXT NOT NULL, `thoi gian hoat dong` TEXT NOT NULL, PRIMARY KEY (`activityid`))');
+            'CREATE TABLE IF NOT EXISTS `History` (`activityid` TEXT NOT NULL, `tai khoan` TEXT NOT NULL, `noi dung` TEXT NOT NULL, PRIMARY KEY (`activityid`))');
         await database.execute(
-            'CREATE TABLE IF NOT EXISTS `ListItem` (`listid` INTEGER NOT NULL, `ten danh sach` TEXT NOT NULL, `so thu tu` INTEGER NOT NULL, `ma bang` INTEGER NOT NULL, PRIMARY KEY (`listid`))');
+            'CREATE TABLE IF NOT EXISTS `ListItem` (`listid` TEXT NOT NULL, `ten danh sach` TEXT NOT NULL, `so thu tu` INTEGER NOT NULL, `ma bang` TEXT NOT NULL, PRIMARY KEY (`listid`))');
         await database.execute(
-            'CREATE TABLE IF NOT EXISTS `Tag` (`tagname` TEXT NOT NULL, `color` TEXT NOT NULL, `ma bang` INTEGER NOT NULL, PRIMARY KEY (`tagname`))');
+            'CREATE TABLE IF NOT EXISTS `Tag` (`tagid` TEXT NOT NULL, `color` TEXT NOT NULL, PRIMARY KEY (`tagid`))');
         await database.execute(
-            'CREATE TABLE IF NOT EXISTS `TagDetail` (`tagid` INTEGER NOT NULL, `mau` TEXT NOT NULL, PRIMARY KEY (`tagid`))');
+            'CREATE TABLE IF NOT EXISTS `TagDetail` (`tagid` TEXT NOT NULL, `mau` TEXT NOT NULL, `noi dung` TEXT NOT NULL, PRIMARY KEY (`tagid`))');
 
         await callback?.onCreate?.call(database, version);
       },
@@ -260,7 +260,7 @@ class _$UserDao extends UserDao {
 
 class _$AttachmentDetailDao extends AttachmentDetailDao {
   _$AttachmentDetailDao(this.database, this.changeListener)
-      : _queryAdapter = QueryAdapter(database, changeListener),
+      : _queryAdapter = QueryAdapter(database),
         _attachmentDetailInsertionAdapter = InsertionAdapter(
             database,
             'AttachmentDetail',
@@ -268,8 +268,7 @@ class _$AttachmentDetailDao extends AttachmentDetailDao {
                   'fileid': item.fileid,
                   'ma nhan': item.tagid,
                   'ma binh luan': item.commentid
-                },
-            changeListener);
+                });
 
   final sqflite.DatabaseExecutor database;
 
@@ -289,19 +288,6 @@ class _$AttachmentDetailDao extends AttachmentDetailDao {
   }
 
   @override
-  Stream<AttachmentDetail?> findById(int id) {
-    return _queryAdapter.queryStream(
-        'SELECT * FROM ATTACHMENTDETAIL WHERE AttachmentID = ?1',
-        mapper: (Map<String, Object?> row) => AttachmentDetail(
-            row['fileid'] as int,
-            row['ma nhan'] as int,
-            row['ma binh luan'] as int),
-        arguments: [id],
-        queryableName: 'AttachmentDetail',
-        isView: false);
-  }
-
-  @override
   Future<void> insertAttachmentDetail(AttachmentDetail attachmentDetail) async {
     await _attachmentDetailInsertionAdapter.insert(
         attachmentDetail, OnConflictStrategy.abort);
@@ -318,7 +304,8 @@ class _$BoardDao extends BoardDao {
                   'boardid': item.boardid,
                   'ten bang': item.boardname,
                   'mo ta': item.discribe,
-                  'nguoi tao': item.creator
+                  'tai khoan cua nguoi tao bang': item.creator,
+                  'ma nhom': item.groupid
                 },
             changeListener);
 
@@ -334,20 +321,22 @@ class _$BoardDao extends BoardDao {
   Future<List<Board>> findAll() async {
     return _queryAdapter.queryList('SELECT * FROM BOARD',
         mapper: (Map<String, Object?> row) => Board(
-            row['boardid'] as int,
+            row['boardid'] as String,
             row['ten bang'] as String,
             row['mo ta'] as String,
-            row['nguoi tao'] as String));
+            row['tai khoan cua nguoi tao bang'] as String,
+            row['ma nhom'] as String));
   }
 
   @override
   Stream<Board?> findById(int id) {
     return _queryAdapter.queryStream('SELECT * FROM BOARD WHERE BoardID = ?1',
         mapper: (Map<String, Object?> row) => Board(
-            row['boardid'] as int,
+            row['boardid'] as String,
             row['ten bang'] as String,
             row['mo ta'] as String,
-            row['nguoi tao'] as String),
+            row['tai khoan cua nguoi tao bang'] as String,
+            row['ma nhom'] as String),
         arguments: [id],
         queryableName: 'Board',
         isView: false);
@@ -428,7 +417,7 @@ class _$CheckListDao extends CheckListDao {
             (CheckList item) => <String, Object?>{
                   'cardid': item.cardid,
                   'noi dung': item.content,
-                  'trang thai': item.state ? 1 : 0,
+                  'trang thai (done = 1)': item.state,
                   'so thu tu': item.number
                 },
             changeListener);
@@ -445,10 +434,10 @@ class _$CheckListDao extends CheckListDao {
   Future<List<CheckList>> findAll() async {
     return _queryAdapter.queryList('SELECT * FROM CHECKLIST',
         mapper: (Map<String, Object?> row) => CheckList(
-            row['cardid'] as int,
+            row['cardid'] as String,
             row['noi dung'] as String,
-            (row['trang thai'] as int) != 0,
-            row['so thu tu'] as int));
+            row['so thu tu'] as int,
+            row['trang thai (done = 1)'] as int));
   }
 
   @override
@@ -456,10 +445,10 @@ class _$CheckListDao extends CheckListDao {
     return _queryAdapter.queryStream(
         'SELECT * FROM CHECKLIST WHERE CardID = ?1',
         mapper: (Map<String, Object?> row) => CheckList(
-            row['cardid'] as int,
+            row['cardid'] as String,
             row['noi dung'] as String,
-            (row['trang thai'] as int) != 0,
-            row['so thu tu'] as int),
+            row['so thu tu'] as int,
+            row['trang thai (done = 1)'] as int),
         arguments: [id],
         queryableName: 'CheckList',
         isView: false);
@@ -497,9 +486,9 @@ class _$CommentDao extends CommentDao {
   Future<List<Comment>> findAll() async {
     return _queryAdapter.queryList('SELECT * FROM COMMENT',
         mapper: (Map<String, Object?> row) => Comment(
-            row['commentid'] as String,
+            row['nguoi binh luan'] as String,
             row['noi dung'] as String,
-            row['nguoi binh luan'] as int));
+            row['commentid'] as String));
   }
 
   @override
@@ -507,9 +496,9 @@ class _$CommentDao extends CommentDao {
     return _queryAdapter.queryStream(
         'SELECT * FROM COMMENT WHERE CommentID = ?1',
         mapper: (Map<String, Object?> row) => Comment(
-            row['commentid'] as String,
+            row['nguoi binh luan'] as String,
             row['noi dung'] as String,
-            row['nguoi binh luan'] as int),
+            row['commentid'] as String),
         arguments: [id],
         queryableName: 'Comment',
         isView: false);
@@ -529,8 +518,9 @@ class _$CommentDetailDao extends CommentDetailDao {
             'CommentDetail',
             (CommentDetail item) => <String, Object?>{
                   'account': item.account,
-                  'commentid': item.commentid,
-                  'tuong tac': item.interactive
+                  'tuong tac': item.interactive,
+                  'noi dung': item.content,
+                  'ma binh luan': item.commentid
                 },
             changeListener);
 
@@ -548,7 +538,8 @@ class _$CommentDetailDao extends CommentDetailDao {
         mapper: (Map<String, Object?> row) => CommentDetail(
             row['account'] as String,
             row['tuong tac'] as String,
-            row['commentid'] as String));
+            row['noi dung'] as String,
+            row['ma binh luan'] as String));
   }
 
   @override
@@ -558,7 +549,8 @@ class _$CommentDetailDao extends CommentDetailDao {
         mapper: (Map<String, Object?> row) => CommentDetail(
             row['account'] as String,
             row['tuong tac'] as String,
-            row['commentid'] as String),
+            row['noi dung'] as String,
+            row['ma binh luan'] as String),
         arguments: [id],
         queryableName: 'CommentDetail',
         isView: false);
@@ -595,7 +587,7 @@ class _$FileDao extends FileDao {
   Future<List<File>> findAll() async {
     return _queryAdapter.queryList('SELECT * FROM FILE',
         mapper: (Map<String, Object?> row) =>
-            File(row['fileid'] as int, row['duong dan file'] as String));
+            File(row['fileid'] as String, row['duong dan file'] as String));
   }
 
   @override
@@ -603,7 +595,7 @@ class _$FileDao extends FileDao {
     return _queryAdapter.queryStream(
         'SELECT * FROM CHECKLIST WHERE FileID = ?1',
         mapper: (Map<String, Object?> row) =>
-            File(row['fileid'] as int, row['duong dan file'] as String),
+            File(row['fileid'] as String, row['duong dan file'] as String),
         arguments: [id],
         queryableName: 'File',
         isView: false);
@@ -624,7 +616,7 @@ class _$GroupDao extends GroupDao {
             (Group item) => <String, Object?>{
                   'groupid': item.groupid,
                   'ten nhom': item.groupname,
-                  'mo ta': item.description
+                  'mo ta': item.discribe
                 },
             changeListener);
 
@@ -639,7 +631,7 @@ class _$GroupDao extends GroupDao {
   @override
   Future<List<Group>> findAll() async {
     return _queryAdapter.queryList('SELECT * FROM GROUP',
-        mapper: (Map<String, Object?> row) => Group(row['groupid'] as int,
+        mapper: (Map<String, Object?> row) => Group(row['groupid'] as String,
             row['ten nhom'] as String, row['mo ta'] as String));
   }
 
@@ -647,7 +639,7 @@ class _$GroupDao extends GroupDao {
   Stream<Group?> findById(int id) {
     return _queryAdapter.queryStream(
         'SELECT * FROM CHECKLIST WHERE GroupID = ?1',
-        mapper: (Map<String, Object?> row) => Group(row['groupid'] as int,
+        mapper: (Map<String, Object?> row) => Group(row['groupid'] as String,
             row['ten nhom'] as String, row['mo ta'] as String),
         arguments: [id],
         queryableName: 'Group',
@@ -668,8 +660,7 @@ class _$GroupDetailDao extends GroupDetailDao {
             'GroupDetail',
             (GroupDetail item) => <String, Object?>{
                   'groupid': item.groupid,
-                  'mat khau': item.creator,
-                  'ma bang': item.boardid
+                  'account': item.account
                 },
             changeListener);
 
@@ -684,16 +675,16 @@ class _$GroupDetailDao extends GroupDetailDao {
   @override
   Future<List<GroupDetail>> findAll() async {
     return _queryAdapter.queryList('SELECT * FROM CHECKLIST',
-        mapper: (Map<String, Object?> row) => GroupDetail(row['groupid'] as int,
-            row['mat khau'] as String, row['ma bang'] as int));
+        mapper: (Map<String, Object?> row) =>
+            GroupDetail(row['groupid'] as String, row['account'] as String));
   }
 
   @override
   Stream<GroupDetail?> findById(int id) {
     return _queryAdapter.queryStream(
         'SELECT * FROM CHECKLIST WHERE GroupID = ?1',
-        mapper: (Map<String, Object?> row) => GroupDetail(row['groupid'] as int,
-            row['mat khau'] as String, row['ma bang'] as int),
+        mapper: (Map<String, Object?> row) =>
+            GroupDetail(row['groupid'] as String, row['account'] as String),
         arguments: [id],
         queryableName: 'GroupDetail',
         isView: false);
@@ -715,8 +706,7 @@ class _$HistoryDao extends HistoryDao {
             (History item) => <String, Object?>{
                   'activityid': item.activityid,
                   'tai khoan': item.account,
-                  'noi dung': item.content,
-                  'thoi gian hoat dong': item.time
+                  'noi dung': item.content
                 },
             changeListener);
 
@@ -734,8 +724,7 @@ class _$HistoryDao extends HistoryDao {
         mapper: (Map<String, Object?> row) => History(
             row['activityid'] as String,
             row['tai khoan'] as String,
-            row['noi dung'] as String,
-            row['thoi gian hoat dong'] as String));
+            row['noi dung'] as String));
   }
 
   @override
@@ -745,8 +734,7 @@ class _$HistoryDao extends HistoryDao {
         mapper: (Map<String, Object?> row) => History(
             row['activityid'] as String,
             row['tai khoan'] as String,
-            row['noi dung'] as String,
-            row['thoi gian hoat dong'] as String),
+            row['noi dung'] as String),
         arguments: [id],
         queryableName: 'History',
         isView: false);
@@ -785,10 +773,10 @@ class _$ListDao extends ListDao {
     return _queryAdapter.queryStream(
         'SELECT * FROM CHECKLIST WHERE ListID = ?1',
         mapper: (Map<String, Object?> row) => ListItem(
-            row['listid'] as int,
+            row['listid'] as String,
             row['ten danh sach'] as String,
             row['so thu tu'] as int,
-            row['ma bang'] as int),
+            row['ma bang'] as String),
         arguments: [id],
         queryableName: 'ListItem',
         isView: false);
@@ -806,11 +794,8 @@ class _$TagDao extends TagDao {
         _tagInsertionAdapter = InsertionAdapter(
             database,
             'Tag',
-            (Tag item) => <String, Object?>{
-                  'tagname': item.tagname,
-                  'color': item.color,
-                  'ma bang': item.boardid
-                },
+            (Tag item) =>
+                <String, Object?>{'tagid': item.tagid, 'color': item.color},
             changeListener);
 
   final sqflite.DatabaseExecutor database;
@@ -824,15 +809,15 @@ class _$TagDao extends TagDao {
   @override
   Future<List<Tag>> findAll() async {
     return _queryAdapter.queryList('SELECT * FROM CHECKLIST',
-        mapper: (Map<String, Object?> row) => Tag(row['tagname'] as String,
-            row['color'] as String, row['ma bang'] as int));
+        mapper: (Map<String, Object?> row) =>
+            Tag(row['tagid'] as String, row['color'] as String));
   }
 
   @override
   Stream<Tag?> findById(int id) {
     return _queryAdapter.queryStream('SELECT * FROM CHECKLIST WHERE TagID = ?1',
-        mapper: (Map<String, Object?> row) => Tag(row['tagname'] as String,
-            row['color'] as String, row['ma bang'] as int),
+        mapper: (Map<String, Object?> row) =>
+            Tag(row['tagid'] as String, row['color'] as String),
         arguments: [id],
         queryableName: 'Tag',
         isView: false);
@@ -850,8 +835,11 @@ class _$TagDetailDao extends TagDetailDao {
         _tagDetailInsertionAdapter = InsertionAdapter(
             database,
             'TagDetail',
-            (TagDetail item) =>
-                <String, Object?>{'tagid': item.tagid, 'mau': item.color},
+            (TagDetail item) => <String, Object?>{
+                  'tagid': item.tagid,
+                  'mau': item.color,
+                  'noi dung': item.content
+                },
             changeListener);
 
   final sqflite.DatabaseExecutor database;
@@ -865,15 +853,15 @@ class _$TagDetailDao extends TagDetailDao {
   @override
   Future<List<TagDetail>> findAll() async {
     return _queryAdapter.queryList('SELECT * FROM CHECKLIST',
-        mapper: (Map<String, Object?> row) =>
-            TagDetail(row['tagid'] as int, row['mau'] as String));
+        mapper: (Map<String, Object?> row) => TagDetail(row['tagid'] as String,
+            row['mau'] as String, row['noi dung'] as String));
   }
 
   @override
   Stream<TagDetail?> findById(int id) {
     return _queryAdapter.queryStream('SELECT * FROM CHECKLIST WHERE TagID = ?1',
-        mapper: (Map<String, Object?> row) =>
-            TagDetail(row['tagid'] as int, row['mau'] as String),
+        mapper: (Map<String, Object?> row) => TagDetail(row['tagid'] as String,
+            row['mau'] as String, row['noi dung'] as String),
         arguments: [id],
         queryableName: 'TagDetail',
         isView: false);

@@ -1,9 +1,8 @@
 import 'package:floor/floor.dart';
 
-@entity
+@Entity(primaryKeys: ['account','commentid'])
 class CommentDetail
 {
-  @Entity(primaryKeys: ['account','commentid'])
   String account;
 
   @ColumnInfo(name: 'tuong tac')

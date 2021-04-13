@@ -12,8 +12,8 @@ class History
   @ColumnInfo(name: 'noi dung')
   String content;
 
-  @ColumnInfo(name: 'thoi gian hoat dong')
-  DateTime time;
+  //@ColumnInfo(name: 'thoi gian hoat dong')
+  //DateTime time;
 
-  History(this.activityid, this.account, this.content, this.time);
+  History(this.activityid, this.account, this.content);
 }
