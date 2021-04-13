@@ -16,7 +16,7 @@ class ListItem
     ],
   )
   @primaryKey
-  late int listid;
+  late String listid;
 
   @ColumnInfo(name: 'ten danh sach')
   late String listname;
@@ -25,7 +25,7 @@ class ListItem
   late int number;
 
   @ColumnInfo(name: 'ma bang')
-  int boardid;
+  String boardid;
 
   ListItem(this.listid, this.listname, this.number, this.boardid);
 }

@@ -1,14 +1,19 @@
-// @dart=2.12
 import 'package:floor/floor.dart';
 
 @entity
 class File
 {
   @primaryKey
-  int fileid;
+  String fileid;
+
+  @ColumnInfo(name: 'anh dai dien file')
+  var picture;
 
   @ColumnInfo(name: 'duong dan file')
   String link;
 
-  File(this.fileid, this.link);
+  @ColumnInfo(name: 'file')
+  File file;
+
+  File(this.fileid, this.picture, this.link, this.file);
 }

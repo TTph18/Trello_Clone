@@ -1,4 +1,3 @@
-// @dart=2.12
 import 'package:floor/floor.dart';
 
 @entity
@@ -14,7 +13,7 @@ class History
   String content;
 
   @ColumnInfo(name: 'thoi gian hoat dong')
-  String time;
+  DateTime time;
 
   History(this.activityid, this.account, this.content, this.time);
 }

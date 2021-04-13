@@ -1,17 +1,12 @@
-// @dart=2.12
 import 'package:floor/floor.dart';
 
 @entity
 class GroupDetail
 {
-  @primaryKey
-  int groupid;
+  @Entity(primaryKeys: ['groupid','account'])
+  String groupid;
 
-  @ColumnInfo(name: 'mat khau')
-  String creator;
+  String account;
 
-  @ColumnInfo(name: 'ma bang')
-  int boardid;
-
-  GroupDetail(this.groupid, this.creator, this.boardid);
+  GroupDetail(this.groupid, this.account);
 }

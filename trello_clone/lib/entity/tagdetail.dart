@@ -1,14 +1,15 @@
-// @dart=2.12
 import 'package:floor/floor.dart';
 
 @entity
 class TagDetail
 {
   @primaryKey
-  int tagid;
+  String tagid;
 
   @ColumnInfo(name: 'mau')
   String color;
 
-  TagDetail(this.tagid, this.color);
+  @ColumnInfo(name: 'noi dung')
+  String content;
+  TagDetail(this.tagid, this.color, this.content);
 }

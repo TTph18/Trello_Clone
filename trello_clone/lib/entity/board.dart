@@ -5,7 +5,7 @@ import 'package:floor/floor.dart';
 class Board
 {
   @primaryKey
-  int boardid;
+  String boardid;
 
   @ColumnInfo(name: 'ten bang')
   String boardname;
@@ -13,8 +13,11 @@ class Board
   @ColumnInfo(name: 'mo ta')
   String discribe;
 
-  @ColumnInfo(name: 'nguoi tao')
+  @ColumnInfo(name: 'tai khoan cua nguoi tao bang')
   String creator;
 
-  Board(this.boardid, this.boardname, this.discribe, this.creator);
+  @ColumnInfo(name: 'ma nhom')
+  String groupid;
+
+  Board(this.boardid, this.boardname, this.discribe, this.creator, this.groupid);
 }

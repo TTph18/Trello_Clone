@@ -10,6 +10,8 @@ class User
   @ColumnInfo(name: 'mat khau')
   String password;
 
+  var picture;
+
   @ColumnInfo(name: 'ten nguoi dung')
   String user_name;
 
