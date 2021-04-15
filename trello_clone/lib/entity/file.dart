@@ -4,9 +4,9 @@ import 'package:floor/floor.dart';
 class File
 {
   @primaryKey
-  String fileid;
+  int fileid;
 
-  @ColumnInfo(name: 'duong dan file')
+  //@ColumnInfo(name: 'duong dan file')
   String link;
 
   File(this.fileid, this.link);

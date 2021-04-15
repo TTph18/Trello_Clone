@@ -18,14 +18,14 @@ class ListItem
   @primaryKey
   late String listid;
 
-  @ColumnInfo(name: 'ten danh sach')
+  //@ColumnInfo(name: 'ten danh sach')
   late String listname;
 
-  @ColumnInfo(name: 'so thu tu')
+  //@ColumnInfo(name: 'so thu tu')
   late int number;
 
-  @ColumnInfo(name: 'ma bang')
-  String boardid;
+  //@ColumnInfo(name: 'ma bang')
+  int boardid;
 
   ListItem(this.listid, this.listname, this.number, this.boardid);
 }

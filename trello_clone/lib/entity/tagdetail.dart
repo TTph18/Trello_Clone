@@ -4,12 +4,12 @@ import 'package:floor/floor.dart';
 class TagDetail
 {
   @primaryKey
-  String tagid;
+  int tagid;
 
-  @ColumnInfo(name: 'mau')
+  //@ColumnInfo(name: 'mau')
   String color;
 
-  @ColumnInfo(name: 'noi dung')
+  //@ColumnInfo(name: 'noi dung')
   String content;
   TagDetail(this.tagid, this.color, this.content);
 }

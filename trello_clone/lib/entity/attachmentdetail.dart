@@ -7,11 +7,9 @@ class AttachmentDetail
   @primaryKey
   int fileid;
 
-  @ColumnInfo(name: 'ma nhan')
-  int tagid;
+  int tagid; //ma nhan
 
-  @ColumnInfo(name: 'ma binh luan')
-  int commentid;
+  int commentid; //ma binh luan
 
   AttachmentDetail(this.fileid, this.tagid, this.commentid);
 }

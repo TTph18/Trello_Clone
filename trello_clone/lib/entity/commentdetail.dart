@@ -5,14 +5,14 @@ class CommentDetail
 {
   String account;
 
-  @ColumnInfo(name: 'tuong tac')
+  //@ColumnInfo(name: 'tuong tac')
   String interactive;
 
-  @ColumnInfo(name: 'noi dung')
+  //@ColumnInfo(name: 'noi dung')
   String content;
 
-  @ColumnInfo(name: 'ma binh luan')
-  String commentid;
+  //@ColumnInfo(name: 'ma binh luan')
+  int commentid;
 
   CommentDetail(this.account, this.interactive, this.content, this.commentid);
 }

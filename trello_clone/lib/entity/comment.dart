@@ -4,12 +4,12 @@ import 'package:floor/floor.dart';
 class Comment
 {
   @primaryKey
-  String commentid;
+  int commentid;
 
-  @ColumnInfo(name: 'noi dung')
+  //@ColumnInfo(name: 'noi dung')
   String content;
 
-  @ColumnInfo(name: 'nguoi binh luan')
+  //@ColumnInfo(name: 'nguoi binh luan')
   String account;
 
   Comment(this.account, this.content, this.commentid);

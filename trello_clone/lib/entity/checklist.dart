@@ -4,15 +4,15 @@ import 'package:floor/floor.dart';
 class CheckList
 {
   @primaryKey
-  String cardid;
+  int cardid;
 
-  @ColumnInfo(name: 'noi dung')
+  //@ColumnInfo(name: 'noi dung')
   String content;
 
-  @ColumnInfo(name: 'trang thai (done = 1)')
+  //@ColumnInfo(name: 'trang thai (done = 1)')
   int state;
 
-  @ColumnInfo(name: 'so thu tu')
+  //@ColumnInfo(name: 'so thu tu')
   int number;
 
   CheckList(this.cardid, this.content, this.number, this.state);

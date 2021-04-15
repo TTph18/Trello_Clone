@@ -5,19 +5,19 @@ import 'package:floor/floor.dart';
 class Board
 {
   @primaryKey
-  String boardid;
+  int boardid;
 
-  @ColumnInfo(name: 'ten bang')
+  //@ColumnInfo(name: 'ten bang')
   String boardname;
 
-  @ColumnInfo(name: 'mo ta')
+  //@ColumnInfo(name: 'mo ta')
   String discribe;
 
-  @ColumnInfo(name: 'tai khoan cua nguoi tao bang')
+  //@ColumnInfo(name: 'tai khoan cua nguoi tao bang')
   String creator;
 
-  @ColumnInfo(name: 'ma nhom')
-  String groupid;
+  //@ColumnInfo(name: 'ma nhom')
+  int groupid;
 
   Board(this.boardid, this.boardname, this.discribe, this.creator, this.groupid);
 }

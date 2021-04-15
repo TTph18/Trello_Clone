@@ -4,12 +4,12 @@ import 'package:floor/floor.dart';
 class History
 {
   @primaryKey
-  String activityid;
+  int activityid;
 
-  @ColumnInfo(name: 'tai khoan')
+  //@ColumnInfo(name: 'tai khoan')
   String account;
 
-  @ColumnInfo(name: 'noi dung')
+  //@ColumnInfo(name: 'noi dung')
   String content;
 
   //@ColumnInfo(name: 'thoi gian hoat dong')

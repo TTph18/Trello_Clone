@@ -4,7 +4,7 @@ import 'package:floor/floor.dart';
 class Tag
 {
   @primaryKey
-  String tagid;
+  int tagid;
 
   String color;
 

@@ -4,12 +4,12 @@ import 'package:floor/floor.dart';
 class Group
 {
   @primaryKey
-  String groupid;
+  int groupid;
 
-  @ColumnInfo(name: 'ten nhom')
+  //@ColumnInfo(name: 'ten nhom')
   String groupname;
 
-  @ColumnInfo(name: 'mo ta')
+  //@ColumnInfo(name: 'mo ta')
   String discribe;
 
   Group(this.groupid, this.groupname, this.discribe);
