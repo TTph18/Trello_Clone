@@ -8,6 +8,8 @@ import 'package:trello_clone/route_path.dart';
 
 import 'package:trello_clone/screens/navigation/Navigation.dart';
 
+import '../../route_path.dart';
+
 class MainScreen extends StatefulWidget {
   @override
   _MainScreenState createState() => _MainScreenState();
@@ -162,7 +164,9 @@ class _MainScreenState extends State<MainScreen> {
                 backgroundColor: Colors.green,
                 label: 'Thẻ',
                 labelStyle: TextStyle(fontSize: 18.0),
-                onTap: () {},
+                onTap: () {
+                  Navigator.of(context).pushNamed(CREATE_CARD_SCREEN);
+                },
               ),
             ],
           )),

@@ -1,10 +1,11 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:trello_clone/screens/create_board_screen/create_board_screen.dart';
 import 'route_path.dart';
 import 'screens/login_screen/login_screen.dart';
 import 'screens/register_screen/register_screen.dart';
 import 'screens/main_screen/main_screen.dart';
+import 'screens/create_board_screen/create_board_screen.dart';
+import 'screens/create_card_screen/create_card_screen.dart';
 
 class RouteGenerator{
   static Route<dynamic> generateRoute(RouteSettings settings){
@@ -31,6 +32,12 @@ class RouteGenerator{
         return MaterialPageRoute(
             settings: RouteSettings(name: CREATE_BOARD_SCREEN),
             builder: (_) => CreateBoardScreen(),
+            maintainState: false
+        );
+      case CREATE_CARD_SCREEN:
+        return MaterialPageRoute(
+            settings: RouteSettings(name: CREATE_CARD_SCREEN),
+            builder: (_) => CreateCardScreen(),
             maintainState: false
         );
       default:
