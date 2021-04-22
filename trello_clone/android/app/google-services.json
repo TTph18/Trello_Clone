@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "749378128453",
+    "firebase_url": "https://trelloclone-2f58d-default-rtdb.firebaseio.com",
+    "project_id": "trelloclone-2f58d",
+    "storage_bucket": "trelloclone-2f58d.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:749378128453:android:6fa6c1b36944842ca5b12c",
+        "android_client_info": {
+          "package_name": "com.example.trello_clone"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "749378128453-osfi79cd53okodt953h9qgr2qop9d1ai.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCXZsztQMrfaFQ6WgtKonf3ZvQ-BgBCSOc"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "749378128453-osfi79cd53okodt953h9qgr2qop9d1ai.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

@@ -23,7 +23,9 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-  floor: ^1.0.1
+  firebase_core: ^1.0.4
+  cloud_firestore: ^1.0.6
+  firebase_auth: ^1.1.1
   animate_icons: ^2.0.0
   flutter_speed_dial: ^3.0.5
   animated_icon_button: ^1.0.0
@@ -36,8 +38,6 @@ dependencies:
 dev_dependencies:
   flutter_test:
     sdk: flutter
-  floor_generator: ^1.0.0
-  build_runner: ^1.12.2
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
