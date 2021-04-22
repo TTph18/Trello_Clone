@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:trello_clone/route_path.dart';
+import 'package:trello_clone/screens/main_screen/main_screen.dart';
+import 'package:trello_clone/services/authentication_service.dart';
 
 class LoginForm extends StatefulWidget {
   @override
@@ -69,9 +71,12 @@ class _LoginFormState extends State<LoginForm> {
                                 },
                               ),
                             ),
-                            onPressed: () {
+                            onPressed: () async {
                               if(_loginFormKey.currentState!.validate()) {
-                                Navigator.of(context).pushNamed(MAIN_SCREEN);
+                                bool shouldNavigate =  await signIn(_emailTextController.text, _passwordTextController.text);
+                                if (shouldNavigate) {
+                                  Navigator.of(context).pushNamed(MAIN_SCREEN);
+                                }
                               }
                             },
                             child: Text("Đăng nhập", style: TextStyle(
