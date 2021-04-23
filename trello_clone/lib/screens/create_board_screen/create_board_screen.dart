@@ -10,9 +10,13 @@ class CreateBoardScreenState extends State<CreateBoardScreen> {
 
   final _createBoardFormKey = GlobalKey<FormState>();
   var _nameTxtCtrl = TextEditingController();
-  var _groupTxtCtrl = TextEditingController();
-  var _permissionTxtCtrl = TextEditingController();
-  String? _groupCtrl = "Ngáo";
+  String? selectedGroup = "Ngáo";
+  List<String> groupList = ["Ngáo", "Shop Ngáo", "Ngáo Ngơ"];
+  String? selectedPermission = "Không gian làm việc";
+  List<String> permissionList = ["Riêng tư", "Không gian làm việc", "Công khai"];
+  Map<String, String> permissionDetailList = {"Riêng tư": "Đây là bảng riêng tư. Chỉ những người được thêm vào bảng mới có thể xem và chỉnh sửa bảng.",
+                                              "Không gian làm việc": "Bảng hiển thị với các thành viên của Không gian làm việc <TÊN KHÔNG GIAN LÀM VIỆC ĐƯỢC CHỌN>. Chỉ những người được thêm vào bảng mới có quyền chỉnh sửa.",
+                                              "Công khai":"Đây là bảng công khai. Bất kỳ ai có liên kết tới bảng này đều có thể xem bảng. Bảng có thể được tìm thấy trên các công cụ tìm kiếm như Google. Chỉ những người được thêm vào bảng mới có quyền chỉnh sửa."};
 
   @override
   Widget build(BuildContext context) {
@@ -49,16 +53,18 @@ class CreateBoardScreenState extends State<CreateBoardScreen> {
                 TextFormField(
                   controller: _nameTxtCtrl,
                   decoration: InputDecoration(
-                    labelStyle: TextStyle(fontSize: 18.0, color: Colors.green),
+                    labelStyle: TextStyle(fontSize: 18.0, color: Colors.green, decoration: TextDecoration.none),
                     labelText: "Tên bảng",
                     floatingLabelBehavior: FloatingLabelBehavior.always,
                     contentPadding: EdgeInsets.only(bottom: 0.0),
-                    focusedBorder:UnderlineInputBorder(
+                    focusedBorder: UnderlineInputBorder(
+                      borderSide: const BorderSide(color: Colors.green),
+                    ),
+                    enabledBorder:UnderlineInputBorder(
                       borderSide: const BorderSide(color: Colors.green),
                     ),
                   ),
-                  textAlign: TextAlign.left,
-                  style: TextStyle(fontSize: 22.0),
+                  style: TextStyle(fontSize: 20.0, decoration: TextDecoration.underline),
                   // The validator receives the text that the user has entered.
                   validator: (value) {
                     if (value == null || value.isEmpty) {
@@ -67,48 +73,77 @@ class CreateBoardScreenState extends State<CreateBoardScreen> {
                     return null;
                     },
                 ),
-                TextFormField(
-                  controller: _groupTxtCtrl,
-                  decoration: InputDecoration(
-                      hintText: "Nhóm"
-                  ),
-                  // The validator receives the text that the user has entered.
-                  validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return 'Nhóm không được để trống';
-                    }
-                    return null;
-                    },
-                ),
-                TextFormField(
-                  controller: _permissionTxtCtrl,
-                  decoration: InputDecoration(
-                      hintText: "Quyền xem"
-                  ),
-                  // The validator receives the text that the user has entered.
-                  validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return 'Quyền xem không được để trống';
-                    }
-                    return null;
-                    },
-                ),
                 DropdownButtonFormField<String>(
-                  value: _groupCtrl,
-                  items: ["Ngáo", "Shop Ngáo", "Ngáo Ngơ"].map((group) => DropdownMenuItem(
-                    child: Text(group),
-                    value: group,
-                  )).toList(),
+                  value: selectedGroup,
                   decoration: InputDecoration(
-                    labelStyle: TextStyle(fontSize: 18.0, color: Colors.green),
-                    labelText: "Nhóm",
+                    labelStyle: TextStyle(fontSize: 18.0, height: 0.9),
+                    labelText: "Không gian làm việc",
                     floatingLabelBehavior: FloatingLabelBehavior.always,
+                    contentPadding: EdgeInsets.only(top: 15, bottom: 4),
+                    focusedBorder:UnderlineInputBorder(
+                      borderSide: const BorderSide(color: Colors.green),
+                    ),
                   ),
+
                   onChanged: (value) {
                     setState(() {
-                      _groupCtrl = value;
+                      selectedGroup = value;
                     });
-                    },
+                  },
+
+                  selectedItemBuilder: (BuildContext context) {
+                    return groupList.map<Widget>((String item) {
+                      return Text(item, style: TextStyle(fontSize: 20.0,),);
+                    }).toList();
+                  },
+                  items: groupList.map((String item) {
+                    return DropdownMenuItem<String>(
+                        value: item,
+                        child: Row(
+                          children: [
+                            Icon(Icons.group),
+                            SizedBox(width: 15,),
+                            Text(item, style: TextStyle(fontSize: 20.0)),
+                          ],
+                        )
+                    );
+                  }).toList(),
+                ),
+                DropdownButtonFormField<String>(
+                  value: selectedPermission,
+                  decoration: InputDecoration(
+                    labelStyle: TextStyle(fontSize: 18.0, height: 0.9),
+                    labelText: "Quyền xem",
+                    floatingLabelBehavior: FloatingLabelBehavior.always,
+                    contentPadding: EdgeInsets.only(top: 15, bottom: 4),
+                    focusedBorder:UnderlineInputBorder(
+                      borderSide: const BorderSide(color: Colors.green),
+                    ),
+                  ),
+
+                  onChanged: (value) {
+                    setState(() {
+                      selectedPermission = value;
+                    });
+                  },
+
+                  selectedItemBuilder: (BuildContext context) {
+                    return permissionList.map<Widget>((String item) {
+                      return Text(item, style: TextStyle(fontSize: 20.0,),);
+                    }).toList();
+                  },
+                  items: permissionList.map((String item) {
+                    return DropdownMenuItem<String>(
+                        value: item,
+                        child: Row(
+                          children: [
+                            Icon(Icons.lock_outline),
+                            SizedBox(width: 15,),
+                            Text(item, style: TextStyle(fontSize: 20.0)),
+                          ],
+                        )
+                    );
+                  }).toList(),
                 ),
               ],
             ),
