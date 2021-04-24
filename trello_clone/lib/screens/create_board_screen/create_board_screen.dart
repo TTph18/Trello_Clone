@@ -84,7 +84,6 @@ class CreateBoardScreenState extends State<CreateBoardScreen> {
                       borderSide: const BorderSide(color: Colors.green),
                     ),
                   ),
-
                   onChanged: (value) {
                     setState(() {
                       selectedGroup = value;
@@ -132,18 +131,58 @@ class CreateBoardScreenState extends State<CreateBoardScreen> {
                       return Text(item, style: TextStyle(fontSize: 20.0,),);
                     }).toList();
                   },
-                  items: permissionList.map((String item) {
-                    return DropdownMenuItem<String>(
-                        value: item,
-                        child: Row(
-                          children: [
-                            Icon(Icons.lock_outline),
-                            SizedBox(width: 15,),
-                            Text(item, style: TextStyle(fontSize: 20.0)),
-                          ],
-                        )
-                    );
-                  }).toList(),
+                  items: [
+                    DropdownMenuItem(
+                      value: "Riêng tư",
+                      child: Column(
+                        children: [
+                          Row(
+                            children: [
+                              Icon(Icons.lock),
+                              SizedBox(width: 15,),
+                              Text("Riêng tư", style: TextStyle(fontSize: 20.0)),
+                            ],
+                          ),
+                          SizedBox(height: 5,),
+                          Text("Đây là bảng riêng tư. Chỉ những người được thêm vào bảng mới có thể xem và chỉnh sửa bảng.", style: TextStyle(fontSize: 18.0)),
+                          SizedBox(height: 15,),
+                        ],
+                      ),
+                    ),
+                    DropdownMenuItem(
+                      value: "Không gian làm việc",
+                      child: Column(
+                        children: [
+                          Row(
+                            children: [
+                              Icon(Icons.group),
+                              SizedBox(width: 15,),
+                              Text("Không gian làm việc", style: TextStyle(fontSize: 20.0)),
+                            ],
+                          ),
+                          SizedBox(height: 5,),
+                          Text("Bảng hiển thị với các thành viên của Không gian làm việc $selectedGroup. Chỉ những người được thêm vào bảng mới có quyền chỉnh sửa.", style: TextStyle(fontSize: 18.0)),
+                          SizedBox(height: 15,),
+                        ],
+                      ),
+                    ),
+                    DropdownMenuItem(
+                      value: "Công khai",
+                      child: Column(
+                        children: [
+                          Row(
+                            children: [
+                              Icon(Icons.public),
+                              SizedBox(width: 15,),
+                              Text("Công khai", style: TextStyle(fontSize: 20.0)),
+                            ],
+                          ),
+                          SizedBox(height: 5,),
+                          Text("Đây là bảng công khai. Bất kỳ ai có liên kết tới bảng này đều có thể xem bảng. Bảng có thể được tìm thấy trên các công cụ tìm kiếm như Google. Chỉ những người được thêm vào bảng mới có quyền chỉnh sửa.", style: TextStyle(fontSize: 18.0)),
+                        ],
+                      ),
+                    ),
+                  ]
                 ),
               ],
             ),
