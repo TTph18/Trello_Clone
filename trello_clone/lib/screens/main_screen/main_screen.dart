@@ -140,20 +140,11 @@ class GroupInfo extends StatelessWidget {
 }
 
 class _MainScreenState extends State<MainScreen> {
-  List<AssetImage> boardImage = [
-    AssetImage('assets/images/BlueBG.png'),
-    AssetImage('assets/images/BlueBG.png'),
-  ];
-  List<String> boardName = [
+  int selectedIndex = 0;
+  List<String> groupName = [
     "Tên bảng 1",
     "Tên bảng 2",
   ];
-  List<Function> boardOnPress = [
-    () => {},
-    () => {},
-  ];
-  int selectedIndex = 0;
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -179,7 +170,7 @@ class _MainScreenState extends State<MainScreen> {
                 child: ListView.builder(
                   physics: ClampingScrollPhysics(),
                   shrinkWrap: true,
-                  itemCount: boardName.length,
+                  itemCount: groupName.length,
                   itemBuilder: (BuildContext context, int index) {
                     return GroupInfo("Bảng cá nhân");
                   },
