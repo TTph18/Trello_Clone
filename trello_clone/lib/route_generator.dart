@@ -17,7 +17,7 @@ class RouteGenerator{
             builder:(_) => LoginScreen(),
             maintainState: false
         );
-      case MAIN_SCREEN :
+      case MAIN_SCREEN:
         return MaterialPageRoute(
           settings: RouteSettings(name: MAIN_SCREEN),
           builder: (_) => MainScreen(),

@@ -3,6 +3,7 @@ import 'package:animated_icon_button/animated_icon_button.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:trello_clone/route_path.dart';
 
 class CustomListTile extends StatelessWidget {
   IconData icon;
@@ -165,7 +166,9 @@ class NavigationAccount extends StatelessWidget {
               }),
         ),
         InkWell(
-          onTap: () {},
+          onTap: () {
+            Navigator.of(context).pushNamed(LOGIN);
+          },
           child: Padding(
             padding: EdgeInsets.fromLTRB(15, 20, 15, 20),
             child: Row(
