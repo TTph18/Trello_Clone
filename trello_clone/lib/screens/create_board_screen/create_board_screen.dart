@@ -8,8 +8,8 @@ class CreateBoardScreen extends StatefulWidget {
 
 class CreateBoardScreenState extends State<CreateBoardScreen> {
 
-  final _createBoardFormKey = GlobalKey<FormState>();
-  var _nameTxtCtrl = TextEditingController();
+  final formKey = GlobalKey<FormState>();
+  var nameTxtCtrl = TextEditingController();
   String? selectedGroup = "Ngáo";
   List<String> groupList = ["Ngáo", "Shop Ngáo", "Ngáo Ngơ"];
   String? selectedPermission = "Không gian làm việc";
@@ -34,7 +34,7 @@ class CreateBoardScreenState extends State<CreateBoardScreen> {
             IconButton(
               icon: const Icon(Icons.check),
               onPressed: () {
-                if (_createBoardFormKey.currentState!.validate())
+                if (formKey.currentState!.validate())
                 {
                   Navigator.of(context).pushNamed(MAIN_SCREEN);
                 }
@@ -44,14 +44,14 @@ class CreateBoardScreenState extends State<CreateBoardScreen> {
       ),
 
       body: Form(
-        key: _createBoardFormKey,
+        key: formKey,
         child: Padding(
           padding: const EdgeInsets.only(left: 25.0, right: 25.0, top: 25.0),
           child: Column(
             children: <Widget>[
 
               TextFormField(
-                controller: _nameTxtCtrl,
+                controller: nameTxtCtrl,
                 decoration: InputDecoration(
                   labelStyle: TextStyle(fontSize: 18.0, color: Colors.green, decoration: TextDecoration.none),
                   labelText: "Tên bảng",
