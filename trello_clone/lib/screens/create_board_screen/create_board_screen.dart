@@ -14,9 +14,6 @@ class CreateBoardScreenState extends State<CreateBoardScreen> {
   List<String> groupList = ["Ngáo", "Shop Ngáo", "Ngáo Ngơ"];
   String? selectedPermission = "Không gian làm việc";
   List<String> permissionList = ["Riêng tư", "Không gian làm việc", "Công khai"];
-  Map<String, String> permissionDetailList = {"Riêng tư": "Đây là bảng riêng tư. Chỉ những người được thêm vào bảng mới có thể xem và chỉnh sửa bảng.",
-                                              "Không gian làm việc": "Bảng hiển thị với các thành viên của Không gian làm việc <TÊN KHÔNG GIAN LÀM VIỆC ĐƯỢC CHỌN>. Chỉ những người được thêm vào bảng mới có quyền chỉnh sửa.",
-                                              "Công khai":"Đây là bảng công khai. Bất kỳ ai có liên kết tới bảng này đều có thể xem bảng. Bảng có thể được tìm thấy trên các công cụ tìm kiếm như Google. Chỉ những người được thêm vào bảng mới có quyền chỉnh sửa."};
 
   @override
   Widget build(BuildContext context) {
