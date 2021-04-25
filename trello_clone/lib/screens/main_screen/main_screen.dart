@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_speed_dial/flutter_speed_dial.dart';
 import 'package:trello_clone/icons/app_icons.dart';
 import 'package:trello_clone/route_path.dart';
+import 'package:trello_clone/screens/board_screen/board_screen.dart';
 import 'package:trello_clone/screens/navigation/Navigation.dart';
 
 import '../../route_path.dart';
@@ -12,19 +13,6 @@ import '../../route_path.dart';
 class MainScreen extends StatefulWidget {
   @override
   _MainScreenState createState() => _MainScreenState();
-}
-
-class MyAppBar extends AppBar with PreferredSizeWidget {
-  @override
-  get preferredSize => Size.fromHeight(50);
-
-  MyAppBar({Key? key, Widget? title})
-      : super(
-          key: key,
-          title: title,
-          automaticallyImplyLeading: false,
-          backgroundColor: Colors.white,
-        );
 }
 
 class BoardInfo extends StatelessWidget {
@@ -37,7 +25,10 @@ class BoardInfo extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return InkWell(
-      onTap: () {},
+      onTap: () {
+        Route route = MaterialPageRoute(builder: (context)=>BoardScreen(text));
+        Navigator.push(context, route);
+      },
       child: Container(
         padding: EdgeInsets.fromLTRB(15, 7, 15, 7),
         child: Row(
@@ -149,7 +140,9 @@ class _MainScreenState extends State<MainScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       drawer: Navigation(),
-      appBar: AppBar(title: Text('Bảng'), actions: [
+      appBar: AppBar(
+        backgroundColor: const Color.fromRGBO(0, 121, 191, 1.0),
+          title: Text('Bảng'), actions: [
         IconButton(
           icon: Transform(
             alignment: Alignment.center,

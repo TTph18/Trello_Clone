@@ -97,7 +97,11 @@ class NavigationMain extends StatelessWidget {
   List<String> grNames = [
     "Nhóm 1",
     "Nhóm 2"
-  ]; //index: 10 + 1, 10 + 2, ... , 10 + n
+  ];
+  List<Function> grOnPress = [
+        () => {},
+        () => {},
+  ];
   @override
   Widget build(BuildContext context) {
     return Column(
