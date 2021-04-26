@@ -3,6 +3,7 @@ import 'dart:ui';
 import 'package:animate_icons/animate_icons.dart';
 import 'package:flutter/material.dart';
 import 'package:trello_clone/icons/app_icons.dart';
+// ignore: import_of_legacy_library_into_null_safe
 import 'package:drag_and_drop_lists/drag_and_drop_lists.dart';
 
 import '../../route_path.dart';
