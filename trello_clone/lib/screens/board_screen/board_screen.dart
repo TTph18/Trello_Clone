@@ -2,6 +2,8 @@ import 'dart:ui';
 
 import 'package:animate_icons/animate_icons.dart';
 import 'package:flutter/material.dart';
+import 'package:trello_clone/icons/app_icons.dart';
+import 'package:drag_and_drop_lists/drag_and_drop_lists.dart';
 
 import '../../route_path.dart';
 
@@ -49,11 +51,44 @@ class AddListCard extends StatelessWidget {
   }
 }
 
-class ListCard extends StatelessWidget {
+class ListCard extends StatefulWidget {
+  late String listName;
+  ListCard(this.listName);
+
+  @override
+  ListCardState createState() => ListCardState(listName);
+}
+
+class ListCardState extends State<ListCard> {
   late String listName;
   List<String> cardNames = ["Thẻ 1", "Thẻ 2"];
 
-  ListCard(this.listName);
+  ListCardState(this.listName);
+
+  List<DragAndDropList> _contents = [];
+
+  @override
+  void initState() {
+    super.initState();
+
+    // Generate a list
+    _contents = List.generate(10, (index) {
+      return DragAndDropList(
+        header: Text('Header $index'),
+        children: <DragAndDropItem>[
+          DragAndDropItem(
+            child: Text('$index.1'),
+          ),
+          DragAndDropItem(
+            child: Text('$index.2'),
+          ),
+          DragAndDropItem(
+            child: Text('$index.3'),
+          ),
+        ],
+      );
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -162,7 +197,7 @@ class BoardScreenState extends State<BoardScreen> {
           backgroundColor: const Color.fromRGBO(0, 64, 126, 1.0),
           leading: Builder(builder: (BuildContext context) {
             return IconButton(
-              icon: const Icon(Icons.clear),
+              icon: const Icon(Icons.arrow_back),
               onPressed: () {
                 Navigator.of(context).pushNamed(MAIN_SCREEN);
               },
@@ -170,7 +205,15 @@ class BoardScreenState extends State<BoardScreen> {
           }),
           actions: [
             IconButton(
-              icon: const Icon(Icons.check),
+              icon: const Icon(Icons.filter_list),
+              onPressed: () {},
+            ),
+            IconButton(
+              icon: const Icon(MyFlutterApp.bell),
+              onPressed: () {},
+            ),
+            IconButton(
+              icon: const Icon(Icons.more_horiz),
               onPressed: () {},
             ),
           ]),

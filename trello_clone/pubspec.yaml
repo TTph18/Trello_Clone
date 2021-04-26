@@ -29,7 +29,7 @@ dependencies:
   animate_icons: ^2.0.0
   flutter_speed_dial: ^3.0.5
   animated_icon_button: ^1.0.0
-  drag_and_drop_lists: ^0.3.2
+  drag_and_drop_lists: ^0.2.1
 
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
