@@ -1,13 +1,16 @@
 import 'package:firebase_auth/firebase_auth.dart';
 
-Future<bool> signIn(String email, String password) async {
+Future<String?> signIn(String email, String password) async {
   try {
     await FirebaseAuth.instance
         .signInWithEmailAndPassword(email: email, password: password);
-    return true;
+    return "Signed In";
+  } on FirebaseAuthException catch (e) {
+    if (e.code == 'user-not-found' )
+    return "Tài khoản không tồn tại";
   } catch (e) {
-    print(e);
-    return false;
+    print(e.toString());
+    return e.toString();
   }
 }
 

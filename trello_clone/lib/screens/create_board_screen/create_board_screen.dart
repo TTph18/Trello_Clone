@@ -57,12 +57,6 @@ class CreateBoardScreenState extends State<CreateBoardScreen> {
                   labelText: "Tên bảng",
                   floatingLabelBehavior: FloatingLabelBehavior.always,
                   contentPadding: EdgeInsets.only(bottom: 0.0),
-                  focusedBorder: UnderlineInputBorder(
-                    borderSide: const BorderSide(color: Colors.green),
-                  ),
-                  enabledBorder:UnderlineInputBorder(
-                    borderSide: const BorderSide(color: Colors.green),
-                  ),
                 ),
                 style: TextStyle(fontSize: 20.0, decoration: TextDecoration.underline),
                 // The validator receives the text that the user has entered.
@@ -81,9 +75,6 @@ class CreateBoardScreenState extends State<CreateBoardScreen> {
                   labelText: "Không gian làm việc",
                   floatingLabelBehavior: FloatingLabelBehavior.always,
                   contentPadding: EdgeInsets.only(top: 15, bottom: 4),
-                  focusedBorder:UnderlineInputBorder(
-                    borderSide: const BorderSide(color: Colors.green),
-                  ),
                 ),
                 onChanged: (value) {
                   setState(() {
@@ -116,9 +107,6 @@ class CreateBoardScreenState extends State<CreateBoardScreen> {
                   labelText: "Quyền xem",
                   floatingLabelBehavior: FloatingLabelBehavior.always,
                   contentPadding: EdgeInsets.only(top: 15, bottom: 4),
-                  focusedBorder:UnderlineInputBorder(
-                    borderSide: const BorderSide(color: Colors.green),
-                  ),
                 ),
 
                 onChanged: (value) {

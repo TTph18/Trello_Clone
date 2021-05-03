@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:trello_clone/route_path.dart';
 import 'package:trello_clone/screens/main_screen/main_screen.dart';
 import 'package:trello_clone/services/authentication_service.dart';
+import 'package:trello_clone/services/validate_service.dart';
 
 class LoginForm extends StatefulWidget {
   @override
@@ -41,8 +42,9 @@ class _LoginFormState extends State<LoginForm> {
                         validator: (value){
                           if (_emailTextController.text.length <= 0) {
                             return "Email không được để trống";
-                          }
-                          return null;
+                          } /*else if (!validateEmail(_emailTextController.toString())) {
+                            return "Email không hợp lệ"; //Bo sung sau
+                          }*/ else return null;
                         },
                       ),
                         TextFormField(
@@ -73,10 +75,10 @@ class _LoginFormState extends State<LoginForm> {
                             ),
                             onPressed: () async {
                               if(_loginFormKey.currentState!.validate()) {
-                                bool shouldNavigate =  await signIn(_emailTextController.text, _passwordTextController.text);
-                                if (shouldNavigate) {
+                                String? shouldNavigate =  await signIn(_emailTextController.text, _passwordTextController.text);
+                                if (shouldNavigate=="Signed In") {
                                   Navigator.of(context).pushNamed(MAIN_SCREEN);
-                                }
+                                } /*else AlertDialog( content: Text(shouldNavigate!));*/
                               }
                             },
                             child: Text("Đăng nhập", style: TextStyle(
