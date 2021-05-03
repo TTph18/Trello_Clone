@@ -86,13 +86,6 @@
             </list>
           </value>
         </entry>
-        <entry key="drag_and_drop_lists">
-          <value>
-            <list>
-              <option value="C:/Program Files/flutter/.pub-cache/hosted/pub.dartlang.org/drag_and_drop_lists-0.2.10/lib" />
-            </list>
-          </value>
-        </entry>
         <entry key="fake_async">
           <value>
             <list>
@@ -325,7 +318,6 @@
       <root url="file://C:/Program Files/flutter/.pub-cache/hosted/pub.dartlang.org/cloud_firestore_web-1.0.6/lib" />
       <root url="file://C:/Program Files/flutter/.pub-cache/hosted/pub.dartlang.org/collection-1.15.0/lib" />
       <root url="file://C:/Program Files/flutter/.pub-cache/hosted/pub.dartlang.org/cupertino_icons-1.0.2/lib" />
-      <root url="file://C:/Program Files/flutter/.pub-cache/hosted/pub.dartlang.org/drag_and_drop_lists-0.2.10/lib" />
       <root url="file://C:/Program Files/flutter/.pub-cache/hosted/pub.dartlang.org/fake_async-1.2.0/lib" />
       <root url="file://C:/Program Files/flutter/.pub-cache/hosted/pub.dartlang.org/firebase_auth-1.1.1/lib" />
       <root url="file://C:/Program Files/flutter/.pub-cache/hosted/pub.dartlang.org/firebase_auth_platform_interface-4.1.1/lib" />
