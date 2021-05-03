@@ -17,13 +17,13 @@ class CreateCardScreenState extends State<CreateCardScreen> {
     "Tên danh sách 2",
     "Tên danh sách 3"
   ];
-  AssetImage img = AssetImage("assets/images/BlueBG.png");
   var cardNameTxtCtrl = TextEditingController();
   var descriptionTxtCtrl = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      resizeToAvoidBottomInset: false,
       appBar: AppBar(
           title: Text('Thêm thẻ'),
           leading: Builder(builder: (BuildContext context) {
@@ -47,11 +47,12 @@ class CreateCardScreenState extends State<CreateCardScreen> {
             Padding(
               padding: const EdgeInsets.only(left: 20, right: 20, top: 20),
               child: DropdownButtonFormField<String>(
+                icon: Icon(Icons.keyboard_arrow_down),
                 hint: Align(
                   alignment: Alignment.centerLeft,
                   child: Text(
                     "Chọn bảng",
-                    style: TextStyle(color: Colors.black),
+                    style: TextStyle(fontSize: 20.0, color: Colors.black),
                   ),
                 ),
                 decoration: InputDecoration(
@@ -59,9 +60,6 @@ class CreateCardScreenState extends State<CreateCardScreen> {
                   labelText: "Bảng",
                   floatingLabelBehavior: FloatingLabelBehavior.always,
                   contentPadding: EdgeInsets.only(bottom: 0),
-                  focusedBorder: UnderlineInputBorder(
-                    borderSide: const BorderSide(color: Colors.green),
-                  ),
                 ),
                 onChanged: (value) {
                   setState(() {
@@ -92,11 +90,12 @@ class CreateCardScreenState extends State<CreateCardScreen> {
             Padding(
               padding: const EdgeInsets.only(left: 20, right: 20, top: 20),
               child: DropdownButtonFormField<String>(
+                icon: Icon(Icons.keyboard_arrow_down),
                 hint: Align(
                   alignment: Alignment.centerLeft,
                   child: Text(
                     "Chọn danh sách",
-                    style: TextStyle(color: Colors.black),
+                    style: TextStyle(fontSize: 20.0, color: Colors.black),
                   ),
                 ),
                 decoration: InputDecoration(
@@ -104,9 +103,6 @@ class CreateCardScreenState extends State<CreateCardScreen> {
                   labelText: "Danh sách",
                   floatingLabelBehavior: FloatingLabelBehavior.always,
                   contentPadding: EdgeInsets.only(bottom: 0),
-                  focusedBorder: UnderlineInputBorder(
-                    borderSide: const BorderSide(color: Colors.green),
-                  ),
                 ),
                 onChanged: (value) {
                   setState(() {
@@ -134,132 +130,120 @@ class CreateCardScreenState extends State<CreateCardScreen> {
                 }).toList(),
               ),
             ),
-            Stack(
-              alignment: Alignment.center,
-              children: [
-                Padding(
-                  padding: const EdgeInsets.only(top: 20),
-                  child: Image(
-                    image: img,
-                    width: MediaQuery.of(context).size.width,
-                    fit: BoxFit.fill,
+            Padding(
+              padding: const EdgeInsets.only(top: 20),
+              child: Container(
+                padding: const EdgeInsets.all(20),
+                decoration: BoxDecoration(
+                  image: DecorationImage(
+                    image: AssetImage("assets/images/BlueBG.png"),
+                    fit: BoxFit.cover,
                   ),
                 ),
-                Padding(
-                  padding: const EdgeInsets.only(left: 20, right: 20,),
-                  child: Container(
-                    color: Colors.white,
-                    child: Padding(
-                      padding: const EdgeInsets.only(left: 20, right: 20, bottom: 20),
-                      child: Column(
-                        children: [
-                          TextFormField(
-                            controller: cardNameTxtCtrl,
-                            decoration: InputDecoration(
-                              alignLabelWithHint: true,
-                              labelStyle: TextStyle(fontSize: 22.0, height: 0.9,),
-                              labelText: "Tên thẻ",
-                              contentPadding: EdgeInsets.only(top: 20, bottom: 5),
-                              focusedBorder: UnderlineInputBorder(
-                                borderSide: const BorderSide(color: Colors.green),
-                              ),
-                              enabledBorder: UnderlineInputBorder(
-                                borderSide:
-                                    const BorderSide(color: Colors.black),
-                              ),
-                            ),
-                            style: TextStyle(fontSize: 22.0),
+                child: Container(
+                  padding: const EdgeInsets.all(20),
+                  color: Colors.white,
+                  child: Column(
+                    children: [
+                      TextFormField(
+                        controller: cardNameTxtCtrl,
+                        decoration: InputDecoration(
+                          alignLabelWithHint: true,
+                          labelStyle: TextStyle(
+                            fontSize: 22.0,
+                            height: 0.9,
+                          ),
+                          labelText: "Tên thẻ",
+                          contentPadding: EdgeInsets.only(bottom: 5),
+                          enabledBorder: UnderlineInputBorder(
+                            borderSide: const BorderSide(color: Colors.black),
+                          ),
+                        ),
+                        style: TextStyle(fontSize: 22.0),
 
-                            // The validator receives the text that the user has entered.
-                            validator: (value) {
-                              if (value == null || value.isEmpty) {
-                                return 'Tên thẻ không được để trống';
-                              }
-                              return null;
-                            },
+                        // The validator receives the text that the user has entered.
+                        validator: (value) {
+                          if (value == null || value.isEmpty) {
+                            return 'Tên thẻ không được để trống';
+                          }
+                          return null;
+                        },
+                      ),
+                      TextFormField(
+                        controller: descriptionTxtCtrl,
+                        decoration: InputDecoration(
+                          alignLabelWithHint: true,
+                          labelStyle: TextStyle(
+                            fontSize: 22.0,
+                            height: 0.9,
                           ),
-                          TextFormField(
-                            controller: descriptionTxtCtrl,
-                            decoration: InputDecoration(
-                              alignLabelWithHint: true,
-                              labelStyle: TextStyle(fontSize: 22.0, height: 0.9,),
-                              labelText: "Mô tả",
-                              contentPadding:
-                                  EdgeInsets.only(top: 20, bottom: 5),
-                              focusedBorder: UnderlineInputBorder(
-                                borderSide:
-                                    const BorderSide(color: Colors.black),
-                              ),
-                              enabledBorder: UnderlineInputBorder(
-                                borderSide:
-                                    const BorderSide(color: Colors.black),
-                              ),
-                            ),
-                            style: TextStyle(fontSize: 22.0),
+                          labelText: "Mô tả",
+                          contentPadding: EdgeInsets.only(top: 20, bottom: 5),
+                          enabledBorder: UnderlineInputBorder(
+                            borderSide: const BorderSide(color: Colors.black),
                           ),
-                          Padding(
-                            padding: const EdgeInsets.only(top: 15),
-                            child: Table(
-                              columnWidths: const <int, TableColumnWidth>{
-                                0: IntrinsicColumnWidth(),
-                                1: FlexColumnWidth(),
-                              },
+                        ),
+                        style: TextStyle(fontSize: 22.0),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.only(top: 15),
+                        child: Table(
+                          columnWidths: const <int, TableColumnWidth>{
+                            0: IntrinsicColumnWidth(),
+                            1: FlexColumnWidth(),
+                          },
+                          children: [
+                            TableRow(
                               children: [
-                                TableRow(
-                                  children: [
-                                    IconButton(
-                                      icon: Icon(MyFlutterApp.clock),
-                                      alignment: Alignment.centerLeft,
-                                      onPressed: () {},
-                                    ),
-                                    TextButton(
-                                      onPressed: () {},
-                                      child: Text("Ngày bắt đầu...",
-                                          style: TextStyle(
-                                              fontSize: 18.0,
-                                              color: Colors.black87)),
-                                      style: ButtonStyle(
-                                        alignment: Alignment.bottomLeft,
-                                        overlayColor:
-                                            MaterialStateProperty.all<Color>(
-                                                Colors.white),
-                                      ),
-                                    ),
-                                  ],
+                                IconButton(
+                                  icon: Icon(MyFlutterApp.clock),
+                                  alignment: Alignment.centerLeft,
+                                  onPressed: () {},
                                 ),
-                                TableRow(
-                                  children: [
-                                    SizedBox(),
-                                    SizedBox(),
-                                  ],
-                                ),
-                                TableRow(
-                                  children: [
-                                    SizedBox(),
-                                    TextButton(
-                                      onPressed: () {},
-                                      child: Text("Ngày hết hạn...",
-                                          style: TextStyle(
-                                              fontSize: 18.0,
-                                              color: Colors.black87)),
-                                      style: ButtonStyle(
-                                        alignment: Alignment.centerLeft,
-                                        overlayColor:
-                                            MaterialStateProperty.all<Color>(
-                                                Colors.white),
-                                      ),
-                                    ),
-                                  ],
+                                TextButton(
+                                  onPressed: () {},
+                                  child: Text("Ngày bắt đầu...",
+                                      style: TextStyle(
+                                          fontSize: 18.0, color: Colors.black87)),
+                                  style: ButtonStyle(
+                                    alignment: Alignment.bottomLeft,
+                                    overlayColor:
+                                    MaterialStateProperty.all<Color>(
+                                        Colors.white),
+                                  ),
                                 ),
                               ],
                             ),
-                          ),
-                        ],
+                            TableRow(
+                              children: [
+                                SizedBox(),
+                                SizedBox(),
+                              ],
+                            ),
+                            TableRow(
+                              children: [
+                                SizedBox(),
+                                TextButton(
+                                  onPressed: () {},
+                                  child: Text("Ngày hết hạn...",
+                                      style: TextStyle(
+                                          fontSize: 18.0, color: Colors.black87)),
+                                  style: ButtonStyle(
+                                    alignment: Alignment.centerLeft,
+                                    overlayColor:
+                                    MaterialStateProperty.all<Color>(
+                                        Colors.white),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ],
+                        ),
                       ),
-                    ),
+                    ],
                   ),
                 ),
-              ],
+              ),
             ),
           ],
         ),
