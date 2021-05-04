@@ -150,12 +150,9 @@ class DragAndDropListExpansion implements DragAndDropListExpansionInterface {
     } else {
       contents.add(
         contentsWhenEmpty ??
-            Text(
-              'Empty list',
-              style: TextStyle(
-                fontStyle: FontStyle.italic,
-              ),
-            ),
+            SizedBox(
+              height: 10,
+            )
       );
       contents.add(
         DragAndDropItemTarget(
@@ -164,7 +161,7 @@ class DragAndDropListExpansion implements DragAndDropListExpansionInterface {
           onReorderOrAdd: parameters.onItemDropOnLastTarget!,
           child: lastTarget ??
               Container(
-                height: parameters.lastItemTargetHeight,
+                height: parameters.lastItemTargetHeight * 0.1,
               ),
         ),
       );

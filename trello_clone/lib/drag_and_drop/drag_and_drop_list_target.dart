@@ -18,7 +18,7 @@ class DragAndDropListTarget extends StatefulWidget {
       {this.child,
       required this.parameters,
       required this.onDropOnLastTarget,
-      this.lastListTargetSize = 110,
+      this.lastListTargetSize = 0,
       Key? key})
       : super(key: key);
 
@@ -51,12 +51,14 @@ class _DragAndDropListTarget extends State<DragAndDropListTarget>
         ),
         widget.child ??
             Container(
-              height: widget.parameters.axis == Axis.vertical
-                  ? widget.lastListTargetSize
-                  : null,
-              width: widget.parameters.axis == Axis.horizontal
-                  ? 110
-                  : widget.lastListTargetSize,
+              height: 1,
+              //widget.parameters.axis == Axis.vertical
+              //    ? widget.lastListTargetSize
+              //    : 0,
+              width: 1,
+              //widget.parameters.axis == Axis.horizontal
+              //    ? 0
+              //    : widget.lastListTargetSize,
             ),
       ],
     );

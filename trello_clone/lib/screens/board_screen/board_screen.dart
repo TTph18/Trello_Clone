@@ -16,14 +16,11 @@ class AddListCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.all(8),
+      padding: const EdgeInsets.all(0),
       child: Container(
         child: Card(
           color: Color.fromRGBO(244, 245, 247, 1),
           child: InkWell(
-            customBorder: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(6),
-            ),
             onTap: () {},
             child: Ink(
               width: 250,
@@ -34,12 +31,15 @@ class AddListCard extends StatelessWidget {
                   ),
                   Align(
                     alignment: Alignment.center,
-                    child: Text("Add Card",
+                    child: Text("Thêm danh sách",
                         style: TextStyle(
                           fontWeight: FontWeight.bold,
                           fontSize: 16,
                           color: Colors.green,
                         )),
+                  ),
+                  SizedBox(
+                    height: 15,
                   ),
                 ],
               ),
@@ -90,6 +90,56 @@ class _card extends StatelessWidget {
   }
 }
 
+class ListCard {
+  final String name;
+  List<_card> children;
+  bool isLast;
+
+  ListCard({required this.name, required this.children, required this.isLast});
+}
+
+Widget PopMenu() {
+  return Container(
+    height: 18,
+    width: 20,
+    child: PopupMenuButton(
+        iconSize: 25,
+        padding: EdgeInsets.zero,
+        icon: Icon(Icons.more_vert),
+        onSelected: (value) {},
+        itemBuilder: (context) => [
+              PopupMenuItem(
+                value: 1,
+                child: Text('Di chuyển danh sách'),
+              ),
+              PopupMenuItem(
+                value: 2,
+                child: Text('Sao chép danh sách'),
+              ),
+              PopupMenuItem(
+                value: 3,
+                child: Text('Lưu trữ danh sách'),
+              ),
+              PopupMenuItem(
+                value: 4,
+                child: Text('Di chuyển tất cả các thẻ trong danh sách'),
+              ),
+              PopupMenuItem(
+                value: 5,
+                child: Text('Lưu trữ tất cả các thẻ'),
+              ),
+              PopupMenuItem(
+                value: 6,
+                child: Text('Xem'),
+              ),
+              PopupMenuItem(
+                  value: 7,
+                  child: Text('Sắp xếp danh sách'),
+              ),
+            ]),
+  );
+}
+
 class BoardScreen extends StatefulWidget {
   late String boardName;
 
@@ -99,17 +149,11 @@ class BoardScreen extends StatefulWidget {
   BoardScreenState createState() => BoardScreenState(boardName);
 }
 
-class ListCard {
-  final String name;
-  List<String> children;
-
-  ListCard({required this.name, required this.children});
-}
-
 class BoardScreenState extends State<BoardScreen> {
   late String boardName;
 
   late List<String> listName;
+  late List<_card> cards;
   var controller = AnimateIconController();
 
   BoardScreenState(this.boardName);
@@ -121,12 +165,27 @@ class BoardScreenState extends State<BoardScreen> {
     super.initState();
 
     listName = ["To Do", "Completed"];
-
-    _lists = List.generate(listName.length, (outerIndex) {
-      return ListCard(
-        name: listName[outerIndex],
-        children: List.generate(12, (innerIndex) => '$outerIndex.$innerIndex'),
-      );
+    cards = [
+      _card("Thẻ 1"),
+      _card("Thẻ 2"),
+      _card("Thẻ 3"),
+      _card("Thẻ 4"),
+      _card("Thẻ 5"),
+    ];
+    _lists = List.generate(listName.length + 1, (outerIndex) {
+      if (outerIndex < listName.length)
+        return ListCard(
+          name: listName[outerIndex],
+          children:
+              List.generate(cards.length, (innerIndex) => cards[innerIndex]),
+          isLast: false,
+        );
+      else
+        return ListCard(
+          name: "Add List",
+          children: [],
+          isLast: true,
+        );
     });
   }
 
@@ -180,7 +239,6 @@ class BoardScreenState extends State<BoardScreen> {
         ),
         listPadding: EdgeInsets.fromLTRB(16, 8, 16, 8),
       ),
-      //AddListCard(),
       floatingActionButton: FloatingActionButton(
         onPressed: () {},
         child: AnimateIcons(
@@ -205,68 +263,94 @@ class BoardScreenState extends State<BoardScreen> {
 
   _buildList(int outerIndex) {
     var innerList = _lists[outerIndex];
-    return DragAndDropList(
-      header: Row(
-        children: <Widget>[
-          Expanded(
-            child: Container(
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.vertical(top: Radius.circular(7.0)),
-                color: Color.fromRGBO(244, 245, 247, 1.0),
-              ),
-              padding: EdgeInsets.all(10),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text(
-                    '${innerList.name}',
-                    style: TextStyle(color: Colors.black, fontSize: 16),
-                  ),
-                  GestureDetector( onTap: () {}, child: Icon(Icons.more_vert)),
-                ],
-              ),
-            ),
-          ),
-        ],
-      ),
-      footer: TextButton(
-        style: TextButton.styleFrom(
-          backgroundColor: Color.fromRGBO(244, 245, 247, 1.0),
-        ),
-        onPressed: () {},
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.center,
+    if (!innerList.isLast)
+      return DragAndDropList(
+        header: Row(
           children: <Widget>[
-            Icon(
-              Icons.add,
-              color: Color.fromRGBO(139, 196, 134, 1.0),
-            ),
-            Text(
-              "Thêm thẻ",
-              style: TextStyle(color: Color.fromRGBO(129, 184, 120, 1.0)),
+            Expanded(
+              child: Container(
+                decoration: BoxDecoration(
+                  borderRadius:
+                      BorderRadius.vertical(top: Radius.circular(7.0)),
+                  color: Color.fromRGBO(244, 245, 247, 1.0),
+                ),
+                padding: EdgeInsets.all(10),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(
+                      '${innerList.name}',
+                      style: TextStyle(color: Colors.black, fontSize: 16),
+                    ),
+                    PopMenu(),
+                  ],
+                ),
+              ),
             ),
           ],
         ),
-      ),
-      leftSide: VerticalDivider(
-        color: Color.fromRGBO(244, 245, 247, 1.0),
-        width: 6,
-        thickness: 6,
-      ),
-      rightSide: VerticalDivider(
-        color: Color.fromRGBO(244, 245, 247, 1.0),
-        width: 6,
-        thickness: 6,
-      ),
-      maxheight: MediaQuery.of(context).size.height,
-      children: List.generate(innerList.children.length,
-          (index) => _buildItem(innerList.children[index])),
-    );
+        footer: TextButton(
+          style: TextButton.styleFrom(
+            backgroundColor: Color.fromRGBO(244, 245, 247, 1.0),
+          ),
+          onPressed: () {},
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: <Widget>[
+              Icon(
+                Icons.add,
+                color: Color.fromRGBO(139, 196, 134, 1.0),
+              ),
+              Text(
+                "Thêm thẻ",
+                style: TextStyle(color: Color.fromRGBO(129, 184, 120, 1.0)),
+              ),
+            ],
+          ),
+        ),
+        leftSide: VerticalDivider(
+          color: Color.fromRGBO(244, 245, 247, 1.0),
+          width: 6,
+          thickness: 6,
+        ),
+        rightSide: VerticalDivider(
+          color: Color.fromRGBO(244, 245, 247, 1.0),
+          width: 6,
+          thickness: 6,
+        ),
+        maxheight: MediaQuery.of(context).size.height,
+        children: List.generate(
+          innerList.children.length - 1,
+          (index) => _buildItem(innerList.children[index]),
+        ),
+      );
+    else {
+      return DragAndDropList(
+        header: TextButton(
+          style: TextButton.styleFrom(
+            backgroundColor: Color.fromRGBO(244, 245, 247, 1.0),
+          ),
+          onPressed: () {},
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: <Widget>[
+              Text(
+                "Thêm danh sách",
+                style: TextStyle(color: Color.fromRGBO(129, 184, 120, 1.0)),
+              ),
+            ],
+          ),
+        ),
+        backgroundColor: Color.fromRGBO(244, 245, 247, 0),
+        canDrag: false,
+        children: [],
+      );
+    }
   }
 
-  _buildItem(String item) {
+  _buildItem(_card item) {
     return DragAndDropItem(
-      child: _card(item),
+      child: item,
     );
   }
 

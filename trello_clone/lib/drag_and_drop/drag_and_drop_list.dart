@@ -43,8 +43,11 @@ class DragAndDropList implements DragAndDropListInterface {
   /// It is possible to not provide any children when an empty list is desired.
   final List<DragAndDropItem> children;
 
-  ///
+  /// max height of list
   final double maxheight;
+
+  /// background color of list
+  final Color backgroundColor;
 
   /// Whether or not this item can be dragged.
   /// Set to true if it can be reordered.
@@ -64,6 +67,7 @@ class DragAndDropList implements DragAndDropListInterface {
     this.verticalAlignment = CrossAxisAlignment.start,
     this.canDrag = true,
     this.maxheight = double.infinity,
+    this.backgroundColor = const Color.fromRGBO(244, 245, 247, 1.0),
   });
 
   @override
@@ -73,9 +77,9 @@ class DragAndDropList implements DragAndDropListInterface {
       contents.add(Flexible(child: header!));
     }
     Widget intrinsicHeight = Container(
-      color: Color.fromRGBO(244, 245, 247, 1.0),
+      color: backgroundColor,
       constraints: BoxConstraints(
-          minHeight: 100, minWidth: double.infinity, maxHeight: maxheight*0.7),
+          minHeight: 0, minWidth: double.infinity, maxHeight: maxheight*0.7),
       child: ListView(
         shrinkWrap: true,
         children: _generateDragAndDropListInnerContents(params),
@@ -140,7 +144,7 @@ class DragAndDropList implements DragAndDropListInterface {
         onReorderOrAdd: parameters.onItemDropOnLastTarget!,
         child: lastTarget ??
             Container(
-              height: parameters.lastItemTargetHeight,
+              height: 1,//parameters.lastItemTargetHeight,
             ),
       ));
       contents.add(
@@ -164,19 +168,14 @@ class DragAndDropList implements DragAndDropListInterface {
               mainAxisSize: MainAxisSize.max,
               children: <Widget>[
                 contentsWhenEmpty ??
-                    Text(
-                      'Empty list',
-                      style: TextStyle(
-                        fontStyle: FontStyle.italic,
-                      ),
-                    ),
+                    SizedBox(height: 1,),
                 DragAndDropItemTarget(
                   parent: this,
                   parameters: parameters,
                   onReorderOrAdd: parameters.onItemDropOnLastTarget!,
                   child: lastTarget ??
                       Container(
-                        height: parameters.lastItemTargetHeight,
+                        height: 1,//parameters.lastItemTargetHeight,
                       ),
                 ),
               ],
