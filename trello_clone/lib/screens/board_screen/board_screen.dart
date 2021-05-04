@@ -2,9 +2,13 @@ import 'dart:ui';
 
 import 'package:animate_icons/animate_icons.dart';
 import 'package:flutter/material.dart';
-import 'package:trello_clone/icons/app_icons.dart';
+import 'package:flutter/widgets.dart';
+
 // ignore: import_of_legacy_library_into_null_safe
-import 'package:drag_and_drop_lists/drag_and_drop_lists.dart';
+import 'package:trello_clone/drag_and_drop/drag_and_drop_item.dart';
+import 'package:trello_clone/drag_and_drop/drag_and_drop_list.dart';
+import 'package:trello_clone/drag_and_drop/drag_and_drop_lists.dart';
+import 'package:trello_clone/icons/app_icons.dart';
 
 import '../../route_path.dart';
 
@@ -12,164 +16,77 @@ class AddListCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.fromLTRB(9, 8, 9, 0),
+      padding: const EdgeInsets.all(8),
       child: Container(
-        child: Stack(
-          children: [
-            Card(
-              color: Color.fromRGBO(244, 245, 247, 1),
-              child: InkWell(
-                customBorder: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(6),
-                ),
-                onTap: () {},
-                child: Ink(
-                  width: 250,
-                  height: 50,
-                  child: Column(
-                    children: [
-                      SizedBox(
-                        height: 15,
-                      ),
-                      Align(
-                        alignment: Alignment.center,
-                        child: Text("Add Card",
-                            style: TextStyle(
-                              fontWeight: FontWeight.bold,
-                              fontSize: 16,
-                              color: Colors.green,
-                            )),
-                      ),
-                    ],
+        child: Card(
+          color: Color.fromRGBO(244, 245, 247, 1),
+          child: InkWell(
+            customBorder: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(6),
+            ),
+            onTap: () {},
+            child: Ink(
+              width: 250,
+              child: Column(
+                children: [
+                  SizedBox(
+                    height: 15,
                   ),
-                ),
+                  Align(
+                    alignment: Alignment.center,
+                    child: Text("Add Card",
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 16,
+                          color: Colors.green,
+                        )),
+                  ),
+                ],
               ),
             ),
-          ],
+          ),
         ),
       ),
     );
   }
 }
 
-class ListCard extends StatefulWidget {
-  late String listName;
-  ListCard(this.listName);
+class _card extends StatelessWidget {
+  late String item;
 
-  @override
-  ListCardState createState() => ListCardState(listName);
-}
-
-class ListCardState extends State<ListCard> {
-  late String listName;
-  List<String> cardNames = ["Thẻ 1", "Thẻ 2"];
-
-  ListCardState(this.listName);
-
-  List<DragAndDropList> _contents = [];
-
-  @override
-  void initState() {
-    super.initState();
-
-    // Generate a list
-    _contents = List.generate(10, (index) {
-      return DragAndDropList(
-        header: Text('Header $index'),
-        children: <DragAndDropItem>[
-          DragAndDropItem(
-            child: Text('$index.1'),
-          ),
-          DragAndDropItem(
-            child: Text('$index.2'),
-          ),
-          DragAndDropItem(
-            child: Text('$index.3'),
-          ),
-        ],
-      );
-    });
-  }
+  _card(this.item);
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-        padding: const EdgeInsets.fromLTRB(9, 4, 9, 0),
-        child: Container(
-          child: Stack(
+    return Card(
+      color: Colors.white,
+      child: InkWell(
+        customBorder: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(6),
+        ),
+        onTap: () {},
+        child: Ink(
+          width: 238,
+          height: 50,
+          child: Column(
             children: [
-              Card(
-                color: Color.fromRGBO(244, 245, 247, 1),
-                child: Container(
-                  width: 250.0,
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: <Widget>[
-                      Padding(
-                        padding: const EdgeInsets.all(16.0),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Text(
-                              listName, //cardNames[index],
-                              style: TextStyle(
-                                fontSize: 16.0,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                            SizedBox(
-                                height: 17,
-                                width: 17,
-                                child: IconButton(
-                                  padding: new EdgeInsets.all(0.0),
-                                  onPressed: () {},
-                                  icon: Icon(
-                                    Icons.more_vert,
-                                    color: Colors.black,
-                                    size: 18,
-                                  ),
-                                ))
-                          ],
-                        ),
-                      ),
-                      SingleChildScrollView(
-                        child: Container(
-                          height: MediaQuery.of(context).size.height * 0.7,
-                          child: Column(
-                            children: [],
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
+              SizedBox(
+                height: 15,
               ),
-              //Positioned.fill(
-              //  child: DragTarget<dynamic>(
-              //    onWillAccept: (data) {
-              //      print(data);
-              //      return true;
-              //    },
-              //    onLeave: (data) {},
-              //    onAccept: (data) {
-              //      if (data['from'] == index) {
-              //        return;
-              //      }
-              //      childres[data['from']].remove(data['string']);
-              //      childres[index].add(data['string']);
-              //      print(data);
-              //      setState(() {});
-              //    },
-              //    builder: (context, accept, reject) {
-              //      print("--- > $accept");
-              //      print(reject);
-              //      return Container();
-              //    },
-              //  ),
-              //),
+              Align(
+                alignment: Alignment.center,
+                child: Text("Add Card",
+                    style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 16,
+                      color: Colors.green,
+                    )),
+              ),
             ],
           ),
-        ));
+        ),
+      ),
+    );
   }
 }
 
@@ -182,12 +99,36 @@ class BoardScreen extends StatefulWidget {
   BoardScreenState createState() => BoardScreenState(boardName);
 }
 
+class ListCard {
+  final String name;
+  List<String> children;
+
+  ListCard({required this.name, required this.children});
+}
+
 class BoardScreenState extends State<BoardScreen> {
   late String boardName;
 
-  List<String> listName = ["ToDo", "Completed"];
+  late List<String> listName;
   var controller = AnimateIconController();
+
   BoardScreenState(this.boardName);
+
+  late List<ListCard> _lists;
+
+  @override
+  void initState() {
+    super.initState();
+
+    listName = ["To Do", "Completed"];
+
+    _lists = List.generate(listName.length, (outerIndex) {
+      return ListCard(
+        name: listName[outerIndex],
+        children: List.generate(12, (innerIndex) => '$outerIndex.$innerIndex'),
+      );
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -218,16 +159,28 @@ class BoardScreenState extends State<BoardScreen> {
               onPressed: () {},
             ),
           ]),
-      body: ListView.builder(
-        scrollDirection: Axis.horizontal,
-        itemCount: listName.length + 1,
-        itemBuilder: (context, index) {
-          if (index == listName.length)
-            return AddListCard();
-          else
-            return ListCard(listName[index]);
-        },
+      body: DragAndDropLists(
+        children: List.generate(_lists.length, (index) => _buildList(index)),
+        onItemReorder: _onItemReorder,
+        onListReorder: _onListReorder,
+        axis: Axis.horizontal,
+        listWidth: 250,
+        listDraggingWidth: 238,
+        listDecoration: BoxDecoration(
+          color: Color.fromRGBO(244, 245, 247, 1.0),
+          borderRadius: BorderRadius.all(Radius.circular(7.0)),
+          boxShadow: <BoxShadow>[
+            BoxShadow(
+              color: Colors.black45,
+              spreadRadius: 3.0,
+              blurRadius: 6.0,
+              offset: Offset(2, 3),
+            ),
+          ],
+        ),
+        listPadding: EdgeInsets.fromLTRB(16, 8, 16, 8),
       ),
+      //AddListCard(),
       floatingActionButton: FloatingActionButton(
         onPressed: () {},
         child: AnimateIcons(
@@ -248,5 +201,87 @@ class BoardScreenState extends State<BoardScreen> {
         backgroundColor: Colors.green,
       ),
     );
+  }
+
+  _buildList(int outerIndex) {
+    var innerList = _lists[outerIndex];
+    return DragAndDropList(
+      header: Row(
+        children: <Widget>[
+          Expanded(
+            child: Container(
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.vertical(top: Radius.circular(7.0)),
+                color: Color.fromRGBO(244, 245, 247, 1.0),
+              ),
+              padding: EdgeInsets.all(10),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    '${innerList.name}',
+                    style: TextStyle(color: Colors.black, fontSize: 16),
+                  ),
+                  GestureDetector( onTap: () {}, child: Icon(Icons.more_vert)),
+                ],
+              ),
+            ),
+          ),
+        ],
+      ),
+      footer: TextButton(
+        style: TextButton.styleFrom(
+          backgroundColor: Color.fromRGBO(244, 245, 247, 1.0),
+        ),
+        onPressed: () {},
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: <Widget>[
+            Icon(
+              Icons.add,
+              color: Color.fromRGBO(139, 196, 134, 1.0),
+            ),
+            Text(
+              "Thêm thẻ",
+              style: TextStyle(color: Color.fromRGBO(129, 184, 120, 1.0)),
+            ),
+          ],
+        ),
+      ),
+      leftSide: VerticalDivider(
+        color: Color.fromRGBO(244, 245, 247, 1.0),
+        width: 6,
+        thickness: 6,
+      ),
+      rightSide: VerticalDivider(
+        color: Color.fromRGBO(244, 245, 247, 1.0),
+        width: 6,
+        thickness: 6,
+      ),
+      maxheight: MediaQuery.of(context).size.height,
+      children: List.generate(innerList.children.length,
+          (index) => _buildItem(innerList.children[index])),
+    );
+  }
+
+  _buildItem(String item) {
+    return DragAndDropItem(
+      child: _card(item),
+    );
+  }
+
+  _onItemReorder(
+      int oldItemIndex, int oldListIndex, int newItemIndex, int newListIndex) {
+    setState(() {
+      var movedItem = _lists[oldListIndex].children.removeAt(oldItemIndex);
+      _lists[newListIndex].children.insert(newItemIndex, movedItem);
+    });
+  }
+
+  _onListReorder(int oldListIndex, int newListIndex) {
+    setState(() {
+      var movedList = _lists.removeAt(oldListIndex);
+      _lists.insert(newListIndex, movedList);
+    });
   }
 }
