@@ -49,6 +49,8 @@ class MyFlutterApp {
   static const IconData clock = IconData(0xe805, fontFamily: _kFontFam, fontPackage: _kFontPkg);
   static const IconData add = IconData(0xe806, fontFamily: _kFontFam, fontPackage: _kFontPkg);
   static const IconData clear = IconData(0xe807, fontFamily: _kFontFam, fontPackage: _kFontPkg);
+  static const IconData person_outline = IconData(0xe808, fontFamily: _kFontFam, fontPackage: _kFontPkg);
+  static const IconData perm_identity = IconData(0xe809, fontFamily: _kFontFam, fontPackage: _kFontPkg);
   static const IconData lock = IconData(0xe80f, fontFamily: _kFontFam, fontPackage: _kFontPkg);
   static const IconData ellipsis_vert = IconData(0xf142, fontFamily: _kFontFam, fontPackage: _kFontPkg);
 }

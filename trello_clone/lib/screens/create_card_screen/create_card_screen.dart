@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:trello_clone/icons/app_icons.dart';
+import 'package:trello_clone/screens/main_screen/main_screen.dart';
 import '../../route_path.dart';
 
 class CreateCardScreen extends StatefulWidget {
@@ -52,7 +53,7 @@ class CreateCardScreenState extends State<CreateCardScreen> {
                   alignment: Alignment.centerLeft,
                   child: Text(
                     "Chọn bảng",
-                    style: TextStyle(fontSize: 20.0, color: Colors.black),
+                    style: TextStyle(fontSize: 20.0),
                   ),
                 ),
                 decoration: InputDecoration(
@@ -95,7 +96,7 @@ class CreateCardScreenState extends State<CreateCardScreen> {
                   alignment: Alignment.centerLeft,
                   child: Text(
                     "Chọn danh sách",
-                    style: TextStyle(fontSize: 20.0, color: Colors.black),
+                    style: TextStyle(fontSize: 20.0),
                   ),
                 ),
                 decoration: InputDecoration(
@@ -104,11 +105,13 @@ class CreateCardScreenState extends State<CreateCardScreen> {
                   floatingLabelBehavior: FloatingLabelBehavior.always,
                   contentPadding: EdgeInsets.only(bottom: 0),
                 ),
-                onChanged: (value) {
-                  setState(() {
-                    selectedList = value;
-                  });
-                },
+                onChanged: selectedBoard == ""
+                    ? null
+                    : (value) {
+                        setState(() {
+                          selectedList = value;
+                        });
+                      },
                 selectedItemBuilder: (BuildContext context) {
                   return listList.map<Widget>((String item) {
                     return Text(
@@ -155,9 +158,6 @@ class CreateCardScreenState extends State<CreateCardScreen> {
                           ),
                           labelText: "Tên thẻ",
                           contentPadding: EdgeInsets.only(bottom: 5),
-                          enabledBorder: UnderlineInputBorder(
-                            borderSide: const BorderSide(color: Colors.black),
-                          ),
                         ),
                         style: TextStyle(fontSize: 22.0),
 
@@ -193,6 +193,34 @@ class CreateCardScreenState extends State<CreateCardScreen> {
                             1: FlexColumnWidth(),
                           },
                           children: [
+                            selectedBoard == ""
+                                ? TableRow(
+                                    children: [
+                                      SizedBox(),
+                                      SizedBox(),
+                                    ],
+                                  )
+                                : TableRow(
+                                    children: [
+                                      IconButton(
+                                        icon: Icon(MyFlutterApp.clock),
+                                        alignment: Alignment.centerLeft,
+                                        onPressed: () {},
+                                      ),
+                                      CircleAvatar(
+                                        radius: 25,
+                                        backgroundColor: Colors.green,
+                                        child: IconButton(
+                                          icon: Icon(
+                                            Icons.add,
+                                            color: Colors.white,
+                                            size: 18,
+                                          ),
+                                          onPressed: () {},
+                                        ),
+                                      ),
+                                    ],
+                                  ),
                             TableRow(
                               children: [
                                 IconButton(
@@ -204,20 +232,15 @@ class CreateCardScreenState extends State<CreateCardScreen> {
                                   onPressed: () {},
                                   child: Text("Ngày bắt đầu...",
                                       style: TextStyle(
-                                          fontSize: 18.0, color: Colors.black87)),
+                                          fontSize: 18.0,
+                                          color: Colors.black87)),
                                   style: ButtonStyle(
                                     alignment: Alignment.bottomLeft,
                                     overlayColor:
-                                    MaterialStateProperty.all<Color>(
-                                        Colors.white),
+                                        MaterialStateProperty.all<Color>(
+                                            Colors.white),
                                   ),
                                 ),
-                              ],
-                            ),
-                            TableRow(
-                              children: [
-                                SizedBox(),
-                                SizedBox(),
                               ],
                             ),
                             TableRow(
@@ -227,12 +250,13 @@ class CreateCardScreenState extends State<CreateCardScreen> {
                                   onPressed: () {},
                                   child: Text("Ngày hết hạn...",
                                       style: TextStyle(
-                                          fontSize: 18.0, color: Colors.black87)),
+                                          fontSize: 18.0,
+                                          color: Colors.black87)),
                                   style: ButtonStyle(
                                     alignment: Alignment.centerLeft,
                                     overlayColor:
-                                    MaterialStateProperty.all<Color>(
-                                        Colors.white),
+                                        MaterialStateProperty.all<Color>(
+                                            Colors.white),
                                   ),
                                 ),
                               ],
