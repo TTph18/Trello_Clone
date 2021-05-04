@@ -4,6 +4,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:trello_clone/route_path.dart';
+import 'package:trello_clone/widgets/reuse_widget/avatar.dart';
 
 class CustomListTile extends StatelessWidget {
   IconData icon;
@@ -228,18 +229,7 @@ class _NavigationState extends State<Navigation>{
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Container(
-                    width: 70,
-                    height: 70,
-                    decoration: new BoxDecoration(
-                      shape: BoxShape.circle,
-                      border: Border.all(color: Colors.grey),
-                      image: new DecorationImage(
-                        fit: BoxFit.fill,
-                        image: AssetImage('assets/images/BlueBG.png'),
-                      ),
-                    ),
-                  ),
+                  avatar(70, 70, Colors.grey, AssetImage('assets/images/BlueBG.png')),
                   SizedBox(
                     height: 13,
                   ),

@@ -52,5 +52,6 @@ class MyFlutterApp {
   static const IconData person_outline = IconData(0xe808, fontFamily: _kFontFam, fontPackage: _kFontPkg);
   static const IconData perm_identity = IconData(0xe809, fontFamily: _kFontFam, fontPackage: _kFontPkg);
   static const IconData lock = IconData(0xe80f, fontFamily: _kFontFam, fontPackage: _kFontPkg);
+  static const IconData comment_empty = IconData(0xf0e5, fontFamily: _kFontFam, fontPackage: _kFontPkg);
   static const IconData ellipsis_vert = IconData(0xf142, fontFamily: _kFontFam, fontPackage: _kFontPkg);
 }

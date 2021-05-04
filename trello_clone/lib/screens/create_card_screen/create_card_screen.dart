@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:trello_clone/icons/app_icons.dart';
-import 'package:trello_clone/screens/main_screen/main_screen.dart';
 import '../../route_path.dart';
 
 class CreateCardScreen extends StatefulWidget {
@@ -203,7 +202,7 @@ class CreateCardScreenState extends State<CreateCardScreen> {
                                 : TableRow(
                                     children: [
                                       IconButton(
-                                        icon: Icon(MyFlutterApp.clock),
+                                        icon: Icon(MyFlutterApp.person_outline),
                                         alignment: Alignment.centerLeft,
                                         onPressed: () {},
                                       ),

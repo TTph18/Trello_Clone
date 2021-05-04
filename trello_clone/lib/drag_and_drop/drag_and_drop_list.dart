@@ -144,7 +144,7 @@ class DragAndDropList implements DragAndDropListInterface {
         onReorderOrAdd: parameters.onItemDropOnLastTarget!,
         child: lastTarget ??
             Container(
-              height: 1,//parameters.lastItemTargetHeight,
+              height: 5,//parameters.lastItemTargetHeight,
             ),
       ));
       contents.add(

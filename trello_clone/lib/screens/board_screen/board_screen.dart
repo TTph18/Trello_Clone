@@ -1,7 +1,9 @@
 import 'dart:ui';
 
 import 'package:animate_icons/animate_icons.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/painting.dart';
 import 'package:flutter/widgets.dart';
 
 // ignore: import_of_legacy_library_into_null_safe
@@ -9,6 +11,7 @@ import 'package:trello_clone/drag_and_drop/drag_and_drop_item.dart';
 import 'package:trello_clone/drag_and_drop/drag_and_drop_list.dart';
 import 'package:trello_clone/drag_and_drop/drag_and_drop_lists.dart';
 import 'package:trello_clone/icons/app_icons.dart';
+import 'package:trello_clone/widgets/reuse_widget/avatar.dart';
 
 import '../../route_path.dart';
 
@@ -23,7 +26,7 @@ class AddListCard extends StatelessWidget {
           child: InkWell(
             onTap: () {},
             child: Ink(
-              width: 250,
+              width: 320,
               child: Column(
                 children: [
                   SizedBox(
@@ -51,13 +54,147 @@ class AddListCard extends StatelessWidget {
   }
 }
 
-class _card extends StatelessWidget {
-  late String item;
+class tag extends StatelessWidget {
+  Color tagColor;
 
-  _card(this.item);
+  tag(this.tagColor);
 
   @override
   Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(0, 0, 8, 8),
+      child: Container(
+        width: 35,
+        height: 20,
+        decoration: BoxDecoration(
+          color: tagColor,
+          borderRadius: BorderRadius.all(Radius.circular(2)),
+        ),
+      ),
+    );
+  }
+}
+
+class tagList extends StatelessWidget {
+  List<tag> _list;
+
+  tagList(this._list);
+
+  @override
+  Widget build(BuildContext context) {
+    return Wrap(
+      children: [for (var i = 0; i < _list.length; i++) _list[i]],
+    );
+  }
+}
+
+class _card extends StatefulWidget {
+  late String name;
+
+  _card(this.name);
+
+  @override
+  _cardState createState() => _cardState(name);
+}
+
+class _cardState extends State<_card> {
+  late String name;
+  List<tag> tags = [];
+  bool iconSeen = false;
+  bool iconDetail = false;
+  int numCom = 0;
+  List<AssetImage> avas = [];
+
+  _cardState(this.name);
+
+  @override
+  void initState() {
+    super.initState();
+
+    tags = [
+      tag(Colors.red),
+      tag(Colors.green),
+      tag(Colors.blue),
+    ];
+    iconSeen = true;
+    iconDetail = false;
+    numCom = 2;
+    avas = [
+      AssetImage('assets/images/BlueBG.png'),
+      AssetImage('assets/images/BlueBG.png'),
+    ];
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    var contents = <Widget>[];
+    /// Tag line
+    var contentItem = <Widget>[];
+    if (tags.length != 0)
+      for (var i = 0; i < tags.length; i++) contentItem.add(tags[i]);
+    contents.add(Align(
+      alignment: Alignment.centerLeft,
+      child: Wrap(
+        children: contentItem,
+      ),
+    ));
+    /// Title line
+    contents.add(
+      Align(
+        alignment: Alignment.centerLeft,
+        child: Text(name,
+            style: TextStyle(
+              fontSize: 18,
+              color: Colors.black,
+            )),
+      ),
+    );
+    /// Icons line
+    contentItem = <Widget>[];
+    if (iconSeen)
+      contentItem.add(Padding(
+        padding: const EdgeInsets.fromLTRB(0, 0, 4, 0),
+        child: Icon(
+          Icons.remove_red_eye_outlined,
+          size: 20,
+        ),
+      ));
+    if (iconDetail)
+      contentItem.add(Padding(
+        padding: const EdgeInsets.fromLTRB(0, 0, 4, 0),
+        child: Icon(
+          Icons.subject,
+          size: 20,
+        ),
+      ));
+    if (numCom > 0) {
+      contentItem.add(Padding(
+        padding: const EdgeInsets.fromLTRB(0, 0, 4, 0),
+        child: Icon(
+          MyFlutterApp.comment_empty,
+          size: 20,
+        ),
+      ));
+      contentItem.add(Text(numCom.toString()));
+    }
+    contents.add(Padding(
+        padding: const EdgeInsets.fromLTRB(0, 8, 0, 0),
+        child: Row(children: contentItem)));
+    /// Avatar line
+    contentItem = <Widget>[];
+    if (avas.length != 0)
+      for (var i = 0; i < avas.length; i++)
+        contentItem.add(Padding(
+          padding: const EdgeInsets.fromLTRB(8, 0, 0, 0),
+          child: avatar(40, 40, Color.fromRGBO(255, 255, 255, 0), avas[i]),
+        ));
+    contents.add(Padding(
+        padding: const EdgeInsets.fromLTRB(0, 8, 0, 0),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.end,
+          children: contentItem,)
+    ));
+
     return Card(
       color: Colors.white,
       child: InkWell(
@@ -66,23 +203,14 @@ class _card extends StatelessWidget {
         ),
         onTap: () {},
         child: Ink(
-          width: 238,
-          height: 50,
-          child: Column(
-            children: [
-              SizedBox(
-                height: 15,
+          width: 308,
+          child: Container(
+            child: Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Column(
+                children: contents,
               ),
-              Align(
-                alignment: Alignment.center,
-                child: Text("Add Card",
-                    style: TextStyle(
-                      fontWeight: FontWeight.bold,
-                      fontSize: 16,
-                      color: Colors.green,
-                    )),
-              ),
-            ],
+            ),
           ),
         ),
       ),
@@ -133,8 +261,8 @@ Widget PopMenu() {
                 child: Text('Xem'),
               ),
               PopupMenuItem(
-                  value: 7,
-                  child: Text('Sắp xếp danh sách'),
+                value: 7,
+                child: Text('Sắp xếp danh sách'),
               ),
             ]),
   );
@@ -223,8 +351,8 @@ class BoardScreenState extends State<BoardScreen> {
         onItemReorder: _onItemReorder,
         onListReorder: _onListReorder,
         axis: Axis.horizontal,
-        listWidth: 250,
-        listDraggingWidth: 238,
+        listWidth: 320,
+        listDraggingWidth: 288,
         listDecoration: BoxDecoration(
           color: Color.fromRGBO(244, 245, 247, 1.0),
           borderRadius: BorderRadius.all(Radius.circular(7.0)),
@@ -280,7 +408,10 @@ class BoardScreenState extends State<BoardScreen> {
                   children: [
                     Text(
                       '${innerList.name}',
-                      style: TextStyle(color: Colors.black, fontSize: 16),
+                      style: TextStyle(
+                          color: Colors.black,
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold),
                     ),
                     PopMenu(),
                   ],
@@ -320,7 +451,7 @@ class BoardScreenState extends State<BoardScreen> {
         ),
         maxheight: MediaQuery.of(context).size.height,
         children: List.generate(
-          innerList.children.length - 1,
+          innerList.children.length,
           (index) => _buildItem(innerList.children[index]),
         ),
       );
