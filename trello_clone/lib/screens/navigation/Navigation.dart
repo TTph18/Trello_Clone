@@ -5,37 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:trello_clone/route_path.dart';
 import 'package:trello_clone/widgets/reuse_widget/avatar.dart';
-
-class CustomListTile extends StatelessWidget {
-  IconData icon;
-  String text;
-  VoidCallback onTap;
-
-  CustomListTile(this.icon, this.text, this.onTap);
-
-  @override
-  Widget build(BuildContext context) {
-    return InkWell(
-      splashColor: Colors.cyanAccent,
-      onTap: onTap,
-      child: Padding(
-        padding: const EdgeInsets.fromLTRB(16.0, 8.0, 0, 8.0),
-        child: Row(
-          children: <Widget>[
-            Icon(icon),
-            SizedBox(
-              width: 30,
-            ),
-            Text(
-              text,
-              style: TextStyle(fontSize: 18),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-}
+import 'package:trello_clone/widgets/reuse_widget/custom_list_tile.dart';
 
 class AccountInfo extends StatelessWidget {
   AssetImage image;

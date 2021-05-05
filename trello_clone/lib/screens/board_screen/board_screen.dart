@@ -11,6 +11,7 @@ import 'package:trello_clone/drag_and_drop/drag_and_drop_item.dart';
 import 'package:trello_clone/drag_and_drop/drag_and_drop_list.dart';
 import 'package:trello_clone/drag_and_drop/drag_and_drop_lists.dart';
 import 'package:trello_clone/icons/app_icons.dart';
+import 'package:trello_clone/screens/board_screen/end_drawer.dart';
 import 'package:trello_clone/widgets/reuse_widget/avatar.dart';
 
 import '../../route_path.dart';
@@ -103,6 +104,7 @@ class _cardState extends State<_card> {
   bool iconSeen = false;
   bool iconDetail = false;
   int numCom = 0;
+  int numFile = 0;
   List<AssetImage> avas = [];
 
   _cardState(this.name);
@@ -119,6 +121,7 @@ class _cardState extends State<_card> {
     iconSeen = true;
     iconDetail = false;
     numCom = 2;
+    numFile = 3;
     avas = [
       AssetImage('assets/images/BlueBG.png'),
       AssetImage('assets/images/BlueBG.png'),
@@ -153,7 +156,7 @@ class _cardState extends State<_card> {
     contentItem = <Widget>[];
     if (iconSeen)
       contentItem.add(Padding(
-        padding: const EdgeInsets.fromLTRB(0, 0, 4, 0),
+        padding: const EdgeInsets.fromLTRB(0, 0, 10, 0),
         child: Icon(
           Icons.remove_red_eye_outlined,
           size: 20,
@@ -161,7 +164,7 @@ class _cardState extends State<_card> {
       ));
     if (iconDetail)
       contentItem.add(Padding(
-        padding: const EdgeInsets.fromLTRB(0, 0, 4, 0),
+        padding: const EdgeInsets.fromLTRB(0, 0, 0, 0),
         child: Icon(
           Icons.subject,
           size: 20,
@@ -169,13 +172,23 @@ class _cardState extends State<_card> {
       ));
     if (numCom > 0) {
       contentItem.add(Padding(
-        padding: const EdgeInsets.fromLTRB(0, 0, 4, 0),
+          padding: const EdgeInsets.fromLTRB(10, 0, 0, 0),
         child: Icon(
           MyFlutterApp.comment_empty,
-          size: 20,
+          size: 17,
         ),
       ));
-      contentItem.add(Text(numCom.toString()));
+      contentItem.add(Text(numCom.toString(),));
+    }
+    if (numFile > 0) {
+      contentItem.add(Padding(
+        padding: const EdgeInsets.fromLTRB(10, 0, 0, 0),
+        child: Icon(
+          Icons.attach_file,
+          size: 17,
+        ),
+      ));
+      contentItem.add(Text(numFile.toString(),));
     }
     contents.add(Padding(
         padding: const EdgeInsets.fromLTRB(0, 8, 0, 0),
@@ -269,7 +282,7 @@ Widget PopMenu() {
 }
 
 class BoardScreen extends StatefulWidget {
-  late String boardName;
+  String boardName;
 
   BoardScreen(this.boardName);
 
@@ -316,10 +329,12 @@ class BoardScreenState extends State<BoardScreen> {
         );
     });
   }
-
+  final _scaffoldKey = GlobalKey<ScaffoldState>();
   @override
   Widget build(BuildContext context) {
+
     return Scaffold(
+      key: _scaffoldKey,
       backgroundColor: const Color.fromRGBO(0, 121, 190, 1.0),
       appBar: AppBar(
           title: Text(boardName),
@@ -343,9 +358,10 @@ class BoardScreenState extends State<BoardScreen> {
             ),
             IconButton(
               icon: const Icon(Icons.more_horiz),
-              onPressed: () {},
+              onPressed: () { _scaffoldKey.currentState!.openEndDrawer();}
             ),
           ]),
+      endDrawer: mainMenu(),
       body: DragAndDropLists(
         children: List.generate(_lists.length, (index) => _buildList(index)),
         onItemReorder: _onItemReorder,
