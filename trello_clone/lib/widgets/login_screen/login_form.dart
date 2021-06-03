@@ -82,17 +82,17 @@ class _LoginFormState extends State<LoginForm> {
                                         ),
                                       ),
                                       onPressed: () async {
-                                        if (_loginFormKey.currentState!
-                                            .validate()) {
+                                        if (_loginFormKey.currentState!.validate()) {
                                           String? shouldNavigate = await signIn(
                                               _emailTextController.text,
                                               _passwordTextController.text);
                                           if (shouldNavigate == "Signed In") {
                                             Navigator.of(context).pushNamed(
                                                 MAIN_SCREEN);
-                                          } else
+                                          } else {
                                             _error = shouldNavigate!;
-                                          showAlertDialog(context);
+                                            showAlertDialog(context);
+                                          }
                                         }
                                       },
                                       child: Text("Đăng nhập", style: TextStyle(

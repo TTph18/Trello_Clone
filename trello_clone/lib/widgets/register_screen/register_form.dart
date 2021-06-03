@@ -12,6 +12,7 @@ class _RegisterFormState extends State<RegisterForm> {
   var _registerFormKey = GlobalKey<FormState>();
   var _emailTextController = TextEditingController();
   var _passwordTextController = TextEditingController();
+  String _error = "";
 
   @override
   Widget build(BuildContext context) {
@@ -71,7 +72,10 @@ class _RegisterFormState extends State<RegisterForm> {
                                         String? shouldNavigate =  await register(_emailTextController.text, _passwordTextController.text);
                                         if (shouldNavigate=="Registered") {
                                           Navigator.of(context).pushNamed(LOGIN);
-                                        } /*else AlertDialog( content: Text(shouldNavigate!));*/
+                                        } else {
+                                          _error = shouldNavigate!;
+                                          showAlertDialog(context);
+                                        }
                                       }
                                     },
                                     child: Text("Xác nhận", style: TextStyle(
@@ -85,5 +89,29 @@ class _RegisterFormState extends State<RegisterForm> {
                         )
                       ]))))),
       );
+  }
+  showAlertDialog(BuildContext context) {
+
+    // set up the buttons
+    Widget cancelButton = ElevatedButton(
+      child: Text("Cancel"),
+      onPressed:  () {Navigator.of(context).pop();},
+    );
+
+    // set up the AlertDialog
+    AlertDialog alert = AlertDialog(
+      content: Text(_error),
+      actions: [
+        cancelButton,
+      ],
+    );
+
+    // show the dialog
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return alert;
+      },
+    );
   }
 }
