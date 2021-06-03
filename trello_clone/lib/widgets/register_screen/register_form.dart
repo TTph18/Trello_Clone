@@ -1,6 +1,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:trello_clone/route_path.dart';
+import 'package:trello_clone/services/authentication_service.dart';
 
 class RegisterForm extends StatefulWidget {
   @override
@@ -65,9 +66,12 @@ class _RegisterFormState extends State<RegisterForm> {
                                         },
                                       ),
                                     ),
-                                    onPressed: () {
+                                    onPressed: () async {
                                       if(_registerFormKey.currentState!.validate()) {
-                                        Navigator.of(context).pushNamed(MAIN_SCREEN);
+                                        String? shouldNavigate =  await register(_emailTextController.text, _passwordTextController.text);
+                                        if (shouldNavigate=="Registered") {
+                                          Navigator.of(context).pushNamed(LOGIN);
+                                        } /*else AlertDialog( content: Text(shouldNavigate!));*/
                                       }
                                     },
                                     child: Text("Xác nhận", style: TextStyle(
