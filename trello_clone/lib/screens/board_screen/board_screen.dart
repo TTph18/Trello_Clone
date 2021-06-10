@@ -56,7 +56,7 @@ class AddListCard extends StatelessWidget {
 }
 
 class tag extends StatelessWidget {
-  Color tagColor;
+  final Color tagColor;
 
   tag(this.tagColor);
 
@@ -77,7 +77,7 @@ class tag extends StatelessWidget {
 }
 
 class tagList extends StatelessWidget {
-  List<tag> _list;
+  final List<tag> _list;
 
   tagList(this._list);
 
@@ -90,7 +90,7 @@ class tagList extends StatelessWidget {
 }
 
 class _card extends StatefulWidget {
-  late String name;
+  final String name;
 
   _card(this.name);
 
@@ -102,9 +102,15 @@ class _cardState extends State<_card> {
   late String name;
   List<tag> tags = [];
   bool iconSeen = false;
+  DateTime dateStart = DateTime.utc(2001, 11, 9); ///Set year 2000 if user didn't chose time
+  DateTime dateEnd = DateTime.utc(2021, 6, 12, 10, 11, 12); ///Set year 2000 if user didn't chose time
+  late bool isFinish = false;
   bool iconDetail = false;
+  bool iconChecklist = false;
   int numCom = 0;
   int numFile = 0;
+  int numFinish = 4;
+  int numTotal = 4;
   List<AssetImage> avas = [];
 
   _cardState(this.name);
@@ -119,7 +125,8 @@ class _cardState extends State<_card> {
       tag(Colors.blue),
     ];
     iconSeen = true;
-    iconDetail = false;
+
+    iconDetail = true;
     numCom = 2;
     numFile = 3;
     avas = [
@@ -137,9 +144,7 @@ class _cardState extends State<_card> {
       for (var i = 0; i < tags.length; i++) contentItem.add(tags[i]);
     contents.add(Align(
       alignment: Alignment.centerLeft,
-      child: Wrap(
-        children: contentItem,
-      ),
+      child: Wrap(children: contentItem,),
     ));
     /// Title line
     contents.add(
@@ -155,44 +160,50 @@ class _cardState extends State<_card> {
     /// Icons line
     contentItem = <Widget>[];
     if (iconSeen)
-      contentItem.add(Padding(
-        padding: const EdgeInsets.fromLTRB(0, 0, 10, 0),
-        child: Icon(
+      contentItem.add(Icon(
           Icons.remove_red_eye_outlined,
           size: 20,
-        ),
-      ));
+        ),);
+    if(dateStart.year > 2000 || dateEnd.year > 2000)
+        contentItem.add(CreateDateString(dateStart, dateEnd, isFinish));
     if (iconDetail)
-      contentItem.add(Padding(
-        padding: const EdgeInsets.fromLTRB(0, 0, 0, 0),
-        child: Icon(
+      contentItem.add(Icon(
           Icons.subject,
           size: 20,
-        ),
-      ));
+        ),);
     if (numCom > 0) {
-      contentItem.add(Padding(
-          padding: const EdgeInsets.fromLTRB(10, 0, 0, 0),
-        child: Icon(
-          MyFlutterApp.comment_empty,
-          size: 17,
-        ),
+      contentItem.add(Wrap(
+        spacing: 2,
+        children: [
+          Icon(
+            MyFlutterApp.comment_empty,
+            size: 17,
+          ),
+          Text(numCom.toString(),),
+        ],
       ));
-      contentItem.add(Text(numCom.toString(),));
     }
     if (numFile > 0) {
-      contentItem.add(Padding(
-        padding: const EdgeInsets.fromLTRB(10, 0, 0, 0),
-        child: Icon(
-          Icons.attach_file,
-          size: 17,
-        ),
+      contentItem.add(Wrap(
+        spacing: 2,
+        children: [
+          Icon(
+            Icons.attach_file,
+            size: 17,
+          ),
+          Text(numFile.toString(),),
+        ]
       ));
-      contentItem.add(Text(numFile.toString(),));
     }
+    if(numTotal > 0)
+      contentItem.add(CreateChecklistItem(numFinish, numTotal));
     contents.add(Padding(
         padding: const EdgeInsets.fromLTRB(0, 8, 0, 0),
-        child: Row(children: contentItem)));
+        child: Wrap(
+          spacing: 4,
+          runSpacing: 4,
+            children: contentItem)));
+
     /// Avatar line
     contentItem = <Widget>[];
     if (avas.length != 0)
@@ -281,8 +292,82 @@ Widget PopMenu() {
   );
 }
 
+Widget CreateDateString(DateTime dateStart, DateTime dateEnd, bool isFinish) {
+  var contents = <Widget>[];
+  var color = const Color(0xffFFFFFF);
+  if (dateEnd.year > 2000)
+    if (isFinish)
+      color = const Color(0xff00AF00);
+    else
+    if (dateEnd.isBefore(DateTime.now()))
+      color = const Color(0xffFF0000);
+    else if (dateEnd.isBefore(DateTime.now().add(Duration(days: 1))))
+      color = const Color(0xffFFFF00);
+
+  /// Icons
+  contents.add(Icon(
+    Icons.access_time,
+    size: 17,
+  ),);
+
+  /// Text
+  String datestr;
+  if(dateStart.year > 2000){
+    datestr = "Ngày " + dateStart.day.toString() + " tháng " + dateStart.month.toString();
+    if (dateEnd.year > 2000)
+      datestr = datestr + " - " + "Ngày " + dateEnd.day.toString() + " tháng " + dateEnd.month.toString();
+  }
+  else {
+    datestr = "Ngày " + dateEnd.day.toString() + " tháng " + dateEnd.month.toString();
+  }
+  contents.add(Text(datestr));
+
+  /// Design
+  return Padding(
+      padding: const EdgeInsets.fromLTRB(0, 0, 0, 0),
+      child: Container(
+        decoration: BoxDecoration(
+          color: color,
+        ),
+        child: Wrap(
+            children: contents
+        ),
+      )
+  );
+}
+
+Widget CreateChecklistItem(int finish, int total) {
+  var contents = <Widget>[];
+  var color = const Color(0xffFFFFFF);
+  if (finish == total)
+    color = const Color(0xff00AF00);
+
+  /// Icons
+  contents.add(Icon(
+    Icons.check_box_outlined,
+    size: 17,
+  ),);
+
+  /// Text
+  String contentstr = finish.toString() + "/" + total.toString();
+  contents.add(Text(contentstr));
+
+  /// Design
+  return Padding(
+      padding: const EdgeInsets.fromLTRB(0, 0, 0, 0),
+      child: Container(
+        decoration: BoxDecoration(
+          color: color,
+        ),
+        child: Wrap(
+            children: contents
+        ),
+      )
+  );
+}
+
 class BoardScreen extends StatefulWidget {
-  String boardName;
+  final String boardName;
 
   BoardScreen(this.boardName);
 
