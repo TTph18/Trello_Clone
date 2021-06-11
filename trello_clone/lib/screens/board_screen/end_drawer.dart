@@ -1,13 +1,31 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:trello_clone/icons/app_icons.dart';
 import 'package:trello_clone/models/user.dart';
 import 'package:trello_clone/screens/navigation/Navigation.dart';
 import 'package:trello_clone/widgets/reuse_widget/custom_list_tile.dart';
 
-class inforContent extends StatelessWidget{
-  late Users creater;
+class inforContent extends StatefulWidget {
+  late Users creator;
   late String description;
-  inforContent(this.creater, this.description);
+  inforContent(this.creator, this.description);
+  @override
+  inforContentState createState() => inforContentState(creator, description);
+}
+
+class inforContentState extends State<inforContent> {
+  late Users creator;
+  late String description;
+  late bool isTypingDescription;
+
+  inforContentState(this.creator, this.description);
+
+  @override
+  void initState() {
+    super.initState();
+    isTypingDescription = false;
+  }
+
   @override
   Widget build(BuildContext context) {
     var content = <Widget>[];
@@ -20,7 +38,7 @@ class inforContent extends StatelessWidget{
             style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
           ),
         )));
-    content.add(AccountInfo("Subname1",creater, () {}));
+    content.add(AccountInfo("Subname1", creator, () {}));
     content.add(Padding(
         padding: EdgeInsets.fromLTRB(10, 20, 0, 5),
         child: Align(
@@ -30,25 +48,53 @@ class inforContent extends StatelessWidget{
             style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
           ),
         )));
-    if (description == "")
-      content.add(Padding(
-          padding: EdgeInsets.fromLTRB(10, 5, 0, 5),
-          child: Align(
-            alignment: Alignment.centerLeft,
-            child: Text(
-              "Đã đến lúc bảng của bạn tỏa sáng! Hãy để mọi người biết rằng bảng này được sử dụng để làm gì và họ có thể kì vọng được thấy những gì.",
-              style: TextStyle(fontSize: 18, color: Colors.grey),
-            ),
-          )));
+    if (!isTypingDescription) if (description == "")
+      content.add(InkWell(
+          onTap: () {
+            setState(() {
+              isTypingDescription = true;
+            });
+          },
+          child: Padding(
+              padding: EdgeInsets.fromLTRB(10, 5, 0, 5),
+              child: Align(
+                alignment: Alignment.centerLeft,
+                child: Text(
+                  "Đã đến lúc bảng của bạn tỏa sáng! Hãy để mọi người biết rằng bảng này được sử dụng để làm gì và họ có thể kì vọng được thấy những gì.",
+                  style: TextStyle(fontSize: 18, color: Colors.grey),
+                ),
+              ))));
+    else
+      content.add(InkWell(
+          onTap: () {
+            setState(() {
+              isTypingDescription = true;
+            });
+          },
+          child: Padding(
+              padding: EdgeInsets.fromLTRB(10, 5, 0, 5),
+              child: Align(
+                alignment: Alignment.centerLeft,
+                child: Text(
+                  description,
+                  style: TextStyle(fontSize: 18, color: Colors.black),
+                ),
+              ))));
     else
       content.add(Padding(
-          padding: EdgeInsets.fromLTRB(10, 5, 0, 5),
-          child: Align(
-            alignment: Alignment.centerLeft,
-            child: Text(
-              description,
-              style: TextStyle(fontSize: 18, color: Colors.grey),
+          padding: EdgeInsets.fromLTRB(10, 5, 10, 5),
+          child: TextField(
+            autofocus: true,
+            style: TextStyle(fontSize: 18, color: Colors.black),
+            decoration: InputDecoration(
+              border: new UnderlineInputBorder(),
             ),
+            onSubmitted: (String desContent) {
+              setState(() {
+                description = desContent;
+                isTypingDescription = false;
+              });
+            },
           )));
 
     return Column(
