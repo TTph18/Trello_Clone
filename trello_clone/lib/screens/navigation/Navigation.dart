@@ -3,17 +3,17 @@ import 'package:animated_icon_button/animated_icon_button.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:trello_clone/models/user.dart';
 import 'package:trello_clone/route_path.dart';
 import 'package:trello_clone/widgets/reuse_widget/avatar.dart';
 import 'package:trello_clone/widgets/reuse_widget/custom_list_tile.dart';
 
 class AccountInfo extends StatelessWidget {
-  AssetImage image;
-  String text;
   String subtext;
+  Users user;
   VoidCallback onTap;
 
-  AccountInfo(this.image, this.text, this.subtext, this.onTap);
+  AccountInfo(this.subtext, this.user, this.onTap);
 
   @override
   Widget build(BuildContext context) {
@@ -30,7 +30,7 @@ class AccountInfo extends StatelessWidget {
                 shape: BoxShape.circle,
                 image: new DecorationImage(
                   fit: BoxFit.fill,
-                  image: image,
+                  image: AssetImage(user.avatar),
                 ),
               ),
             ),
@@ -42,7 +42,7 @@ class AccountInfo extends StatelessWidget {
               children: <Widget>[
                 Align(
                   alignment: Alignment.centerLeft,
-                  child: Text(text,
+                  child: Text(user.userName,
                       textAlign: TextAlign.left,
                       style:
                           TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
@@ -65,13 +65,10 @@ class AccountInfo extends StatelessWidget {
 }
 
 class NavigationMain extends StatelessWidget {
-  List<String> grNames = [
-    "Nhóm 1",
-    "Nhóm 2"
-  ];
+  List<String> grNames = ["Nhóm 1", "Nhóm 2"];
   List<Function> grOnPress = [
-        () => {},
-        () => {},
+    () => {},
+    () => {},
   ];
   @override
   Widget build(BuildContext context) {
@@ -116,12 +113,20 @@ class NavigationMain extends StatelessWidget {
 }
 
 class NavigationAccount extends StatelessWidget {
-  List<AssetImage> avatar = [
-    AssetImage('assets/images/BlueBG.png'),
-    AssetImage('assets/images/BlueBG.png'),
+  List<String> subname = ["Subname1", "Subname2"];
+
+  List<Users> users = [
+    Users(
+        userID: "12345",
+        userName: "Name 1",
+        email: '123456@gmail.com',
+        avatar: 'assets/images/BlueBG.png'),
+    Users(
+        userID: "12345",
+        userName: "Name 2",
+        email: '123456@gmail.com',
+        avatar: 'assets/images/BlueBG.png'),
   ];
-  List<String> name = ["Name 1", "Name 2"];
-  List<String> subname = ["Subname 1", "Subname 2"];
 
   @override
   Widget build(BuildContext context) {
@@ -134,10 +139,9 @@ class NavigationAccount extends StatelessWidget {
               scrollDirection: Axis.vertical,
               shrinkWrap: true,
               physics: NeverScrollableScrollPhysics(),
-              itemCount: name.length,
+              itemCount: users.length,
               itemBuilder: (BuildContext context, int index) {
-                return AccountInfo(
-                    avatar[index], name[index], subname[index], () => {});
+                return AccountInfo(subname[index], users[index], () => {});
               }),
         ),
         InkWell(
@@ -176,7 +180,7 @@ class Navigation extends StatefulWidget {
   _NavigationState createState() => _NavigationState();
 }
 
-class _NavigationState extends State<Navigation>{
+class _NavigationState extends State<Navigation> {
   late bool isMain;
 
   @override
@@ -199,7 +203,8 @@ class _NavigationState extends State<Navigation>{
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  avatar(70, 70, Colors.grey, AssetImage('assets/images/BlueBG.png')),
+                  avatar(70, 70, Colors.grey,
+                      AssetImage('assets/images/BlueBG.png')),
                   SizedBox(
                     height: 13,
                   ),
@@ -211,25 +216,30 @@ class _NavigationState extends State<Navigation>{
                         children: [
                           Text("Name 1",
                               textAlign: TextAlign.left,
-                              style:
-                              TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.white)),
+                              style: TextStyle(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.white)),
                           SizedBox(
                             height: 6,
                           ),
                           Text(
                             '@' + "Subname1",
                             textAlign: TextAlign.left,
-                            style: TextStyle(fontSize: 16, fontStyle: FontStyle.italic, color: Colors.white),
+                            style: TextStyle(
+                                fontSize: 16,
+                                fontStyle: FontStyle.italic,
+                                color: Colors.white),
                           ),
                         ],
                       ),
                       AnimatedIconButton(
                           size: 25,
                           onPressed: () => {
-                            setState(() {
-                            isMain =  !isMain;
-                            })
-                          },
+                                setState(() {
+                                  isMain = !isMain;
+                                })
+                              },
                           icons: [
                             AnimatedIconItem(
                               icon: Icon(Icons.keyboard_arrow_down),

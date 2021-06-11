@@ -11,6 +11,7 @@ import 'package:trello_clone/drag_and_drop/drag_and_drop_item.dart';
 import 'package:trello_clone/drag_and_drop/drag_and_drop_list.dart';
 import 'package:trello_clone/drag_and_drop/drag_and_drop_lists.dart';
 import 'package:trello_clone/icons/app_icons.dart';
+import 'package:trello_clone/models/user.dart';
 import 'package:trello_clone/screens/board_screen/end_drawer.dart';
 import 'package:trello_clone/widgets/reuse_widget/avatar.dart';
 
@@ -102,8 +103,12 @@ class _cardState extends State<_card> {
   late String name;
   List<tag> tags = [];
   bool iconSeen = false;
-  DateTime dateStart = DateTime.utc(2001, 11, 9); ///Set year 2000 if user didn't chose time
-  DateTime dateEnd = DateTime.utc(2021, 6, 12, 10, 11, 12); ///Set year 2000 if user didn't chose time
+  DateTime dateStart = DateTime.utc(2001, 11, 9);
+
+  ///Set year 2000 if user didn't chose time
+  DateTime dateEnd = DateTime.utc(2021, 6, 12, 10, 11, 12);
+
+  ///Set year 2000 if user didn't chose time
   late bool isFinish = false;
   bool iconDetail = false;
   bool iconChecklist = false;
@@ -138,14 +143,18 @@ class _cardState extends State<_card> {
   @override
   Widget build(BuildContext context) {
     var contents = <Widget>[];
+
     /// Tag line
     var contentItem = <Widget>[];
     if (tags.length != 0)
       for (var i = 0; i < tags.length; i++) contentItem.add(tags[i]);
     contents.add(Align(
       alignment: Alignment.centerLeft,
-      child: Wrap(children: contentItem,),
+      child: Wrap(
+        children: contentItem,
+      ),
     ));
+
     /// Title line
     contents.add(
       Align(
@@ -157,20 +166,25 @@ class _cardState extends State<_card> {
             )),
       ),
     );
+
     /// Icons line
     contentItem = <Widget>[];
     if (iconSeen)
-      contentItem.add(Icon(
+      contentItem.add(
+        Icon(
           Icons.remove_red_eye_outlined,
           size: 20,
-        ),);
-    if(dateStart.year > 2000 || dateEnd.year > 2000)
-        contentItem.add(CreateDateString(dateStart, dateEnd, isFinish));
+        ),
+      );
+    if (dateStart.year > 2000 || dateEnd.year > 2000)
+      contentItem.add(CreateDateString(dateStart, dateEnd, isFinish));
     if (iconDetail)
-      contentItem.add(Icon(
+      contentItem.add(
+        Icon(
           Icons.subject,
           size: 20,
-        ),);
+        ),
+      );
     if (numCom > 0) {
       contentItem.add(Wrap(
         spacing: 2,
@@ -179,30 +193,27 @@ class _cardState extends State<_card> {
             MyFlutterApp.comment_empty,
             size: 17,
           ),
-          Text(numCom.toString(),),
+          Text(
+            numCom.toString(),
+          ),
         ],
       ));
     }
     if (numFile > 0) {
-      contentItem.add(Wrap(
-        spacing: 2,
-        children: [
-          Icon(
-            Icons.attach_file,
-            size: 17,
-          ),
-          Text(numFile.toString(),),
-        ]
-      ));
+      contentItem.add(Wrap(spacing: 2, children: [
+        Icon(
+          Icons.attach_file,
+          size: 17,
+        ),
+        Text(
+          numFile.toString(),
+        ),
+      ]));
     }
-    if(numTotal > 0)
-      contentItem.add(CreateChecklistItem(numFinish, numTotal));
+    if (numTotal > 0) contentItem.add(CreateChecklistItem(numFinish, numTotal));
     contents.add(Padding(
         padding: const EdgeInsets.fromLTRB(0, 8, 0, 0),
-        child: Wrap(
-          spacing: 4,
-          runSpacing: 4,
-            children: contentItem)));
+        child: Wrap(spacing: 4, runSpacing: 4, children: contentItem)));
 
     /// Avatar line
     contentItem = <Widget>[];
@@ -216,8 +227,8 @@ class _cardState extends State<_card> {
         padding: const EdgeInsets.fromLTRB(0, 8, 0, 0),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.end,
-          children: contentItem,)
-    ));
+          children: contentItem,
+        )));
 
     return Card(
       color: Colors.white,
@@ -295,30 +306,38 @@ Widget PopMenu() {
 Widget CreateDateString(DateTime dateStart, DateTime dateEnd, bool isFinish) {
   var contents = <Widget>[];
   var color = const Color(0xffFFFFFF);
-  if (dateEnd.year > 2000)
-    if (isFinish)
-      color = const Color(0xff00AF00);
-    else
-    if (dateEnd.isBefore(DateTime.now()))
-      color = const Color(0xffFF0000);
-    else if (dateEnd.isBefore(DateTime.now().add(Duration(days: 1))))
-      color = const Color(0xffFFFF00);
+  if (dateEnd.year > 2000) if (isFinish)
+    color = const Color(0xff00AF00);
+  else if (dateEnd.isBefore(DateTime.now()))
+    color = const Color(0xffFF0000);
+  else if (dateEnd.isBefore(DateTime.now().add(Duration(days: 1))))
+    color = const Color(0xffFFFF00);
 
   /// Icons
-  contents.add(Icon(
-    Icons.access_time,
-    size: 17,
-  ),);
+  contents.add(
+    Icon(
+      Icons.access_time,
+      size: 17,
+    ),
+  );
 
   /// Text
   String datestr;
-  if(dateStart.year > 2000){
-    datestr = "Ngày " + dateStart.day.toString() + " tháng " + dateStart.month.toString();
+  if (dateStart.year > 2000) {
+    datestr = "Ngày " +
+        dateStart.day.toString() +
+        " tháng " +
+        dateStart.month.toString();
     if (dateEnd.year > 2000)
-      datestr = datestr + " - " + "Ngày " + dateEnd.day.toString() + " tháng " + dateEnd.month.toString();
-  }
-  else {
-    datestr = "Ngày " + dateEnd.day.toString() + " tháng " + dateEnd.month.toString();
+      datestr = datestr +
+          " - " +
+          "Ngày " +
+          dateEnd.day.toString() +
+          " tháng " +
+          dateEnd.month.toString();
+  } else {
+    datestr =
+        "Ngày " + dateEnd.day.toString() + " tháng " + dateEnd.month.toString();
   }
   contents.add(Text(datestr));
 
@@ -329,24 +348,22 @@ Widget CreateDateString(DateTime dateStart, DateTime dateEnd, bool isFinish) {
         decoration: BoxDecoration(
           color: color,
         ),
-        child: Wrap(
-            children: contents
-        ),
-      )
-  );
+        child: Wrap(children: contents),
+      ));
 }
 
 Widget CreateChecklistItem(int finish, int total) {
   var contents = <Widget>[];
   var color = const Color(0xffFFFFFF);
-  if (finish == total)
-    color = const Color(0xff00AF00);
+  if (finish == total) color = const Color(0xff00AF00);
 
   /// Icons
-  contents.add(Icon(
-    Icons.check_box_outlined,
-    size: 17,
-  ),);
+  contents.add(
+    Icon(
+      Icons.check_box_outlined,
+      size: 17,
+    ),
+  );
 
   /// Text
   String contentstr = finish.toString() + "/" + total.toString();
@@ -359,11 +376,8 @@ Widget CreateChecklistItem(int finish, int total) {
         decoration: BoxDecoration(
           color: color,
         ),
-        child: Wrap(
-            children: contents
-        ),
-      )
-  );
+        child: Wrap(children: contents),
+      ));
 }
 
 class BoardScreen extends StatefulWidget {
@@ -414,10 +428,10 @@ class BoardScreenState extends State<BoardScreen> {
         );
     });
   }
+
   final _scaffoldKey = GlobalKey<ScaffoldState>();
   @override
   Widget build(BuildContext context) {
-
     return Scaffold(
       key: _scaffoldKey,
       backgroundColor: const Color.fromRGBO(0, 121, 190, 1.0),
@@ -442,11 +456,16 @@ class BoardScreenState extends State<BoardScreen> {
               onPressed: () {},
             ),
             IconButton(
-              icon: const Icon(Icons.more_horiz),
-              onPressed: () { _scaffoldKey.currentState!.openEndDrawer();}
-            ),
+                icon: const Icon(Icons.more_horiz),
+                onPressed: () {
+                  _scaffoldKey.currentState!.openEndDrawer();
+                }),
           ]),
-      endDrawer: mainMenu(),
+      endDrawer: mainMenu(Users(
+          userID: "12345",
+          userName: "Name 1",
+          email: '123456@gmail.com',
+          avatar: 'assets/images/BlueBG.png')),
       body: DragAndDropLists(
         children: List.generate(_lists.length, (index) => _buildList(index)),
         onItemReorder: _onItemReorder,
