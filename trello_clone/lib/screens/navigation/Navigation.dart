@@ -205,11 +205,6 @@ class _NavigationState extends State<Navigation> {
             future: DatabaseService.getUserData(context),
               builder: (BuildContext context, AsyncSnapshot snapshot) {
                 Users currentUser = Users.fromDocument(snapshot.data) ;
-                if (snapshot.hasData) {
-                  print("true");
-                }else if (snapshot.hasError) {
-                  print("false");
-                }
                 return DrawerHeader(
                   decoration: BoxDecoration(
                     color: Colors.blue,

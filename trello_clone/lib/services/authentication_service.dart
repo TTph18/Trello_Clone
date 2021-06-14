@@ -20,7 +20,7 @@ Future<String?> register(String email, String password) async {
   try {
     await FirebaseAuth.instance
         .createUserWithEmailAndPassword(email: email, password: password);
-    return "Registerd";
+    return "Registered";
   } on FirebaseAuthException catch (e) {
     if (e.code == 'weak-password') {
       return "Mật khẩu yếu";
