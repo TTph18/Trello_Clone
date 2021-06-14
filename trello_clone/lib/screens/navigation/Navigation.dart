@@ -118,12 +118,14 @@ class NavigationAccount extends StatelessWidget {
   List<Users> users = [
     Users(
         userID: "12345",
-        userName: "Name 1",
+        userName: "name1",
+        profileName: "Name 1",
         email: '123456@gmail.com',
         avatar: 'assets/images/BlueBG.png'),
     Users(
         userID: "12345",
-        userName: "Name 2",
+        userName: "name2",
+        profileName: "Name 2",
         email: '123456@gmail.com',
         avatar: 'assets/images/BlueBG.png'),
   ];
