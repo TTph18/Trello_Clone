@@ -68,20 +68,20 @@ class AccountInfo extends StatelessWidget {
 
 class NavigationMain extends StatelessWidget {
   List<String> grNames = ["Nhóm 1", "Nhóm 2"];
+  late bool hasData = false;
   List<Function> grOnPress = [
     () => {},
     () => {},
   ];
   @override
   Widget build(BuildContext context) {
+    if(hasData) {}
     return FutureBuilder(
         future: DatabaseService.getUserWorkspaceList(),
         builder: (BuildContext context, AsyncSnapshot snapshot) {
           if (snapshot.hasData) {
-            print("true");
-          }else if (snapshot.hasError) {
-            print("false");
-          }
+            hasData=true ;
+          }else hasData = false;
           return Column(
             children: <Widget>[
               CustomListTile(Icons.dashboard, "Bảng", () => {}),
@@ -197,6 +197,7 @@ class Navigation extends StatefulWidget {
 class _NavigationState extends State<Navigation> {
   late Users currentUser;
   late bool isMain;
+  late bool hasData = false;
 
   @override
   void initState() {
@@ -206,7 +207,7 @@ class _NavigationState extends State<Navigation> {
 
   @override
   Widget build(BuildContext context) {
-    String uid = FirebaseAuth.instance.currentUser!.uid;
+    if (hasData) {}
     return Drawer(
       child: Column(
         children: <Widget>[
@@ -215,10 +216,8 @@ class _NavigationState extends State<Navigation> {
               builder: (BuildContext context, AsyncSnapshot snapshot) {
                 Users currentUser = Users.fromDocument(snapshot.data) ;
                 if (snapshot.hasData) {
-                  print("true");
-                }else if (snapshot.hasError) {
-                  print("false");
-                }
+                  hasData = true;
+                }else hasData = false;
                 return DrawerHeader(
                   decoration: BoxDecoration(
                     color: Colors.blue,
