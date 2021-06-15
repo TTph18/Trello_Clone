@@ -467,7 +467,7 @@ class BoardScreenState extends State<BoardScreen> {
           userName: "name1",
           profileName: "Name 1",
           email: '123456@gmail.com',
-          avatar: 'assets/images/BlueBG.png')),
+          avatar: 'assets/images/BlueBG.png', workspaceList: [])),
       body: Container(
         decoration: BoxDecoration(
           image: DecorationImage(

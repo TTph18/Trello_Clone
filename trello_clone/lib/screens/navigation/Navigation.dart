@@ -91,19 +91,28 @@ class NavigationMain extends StatelessWidget {
                 style: TextStyle(fontWeight: FontWeight.bold)),
           ),
         ),
-        MediaQuery.removePadding(
-          context: context,
-          removeTop: true,
-          child: ListView.builder(
-              scrollDirection: Axis.vertical,
-              shrinkWrap: true,
-              physics: NeverScrollableScrollPhysics(),
-              itemCount: grNames.length,
-              itemBuilder: (BuildContext context, int index) {
-                return CustomListTile(
-                    Icons.group_outlined, grNames[index], () => {});
-              }),
-        ),
+        FutureBuilder(
+            future: DatabaseService.getUserWorkspaceList(),
+            builder: (BuildContext context, AsyncSnapshot snapshot) {
+              if (snapshot.hasData) {
+                print("true");
+              }else if (snapshot.hasError) {
+                print("false");
+              }
+              return MediaQuery.removePadding(
+                context: context,
+                removeTop: true,
+                child: ListView.builder(
+                    scrollDirection: Axis.vertical,
+                    shrinkWrap: true,
+                    physics: NeverScrollableScrollPhysics(),
+                    itemCount: snapshot.data.length,
+                    itemBuilder: (BuildContext context, int index) {
+                      return CustomListTile(
+                          Icons.group_outlined, snapshot.data[index].toString(), () => {});
+                    }),
+              );
+            }),
         Divider(
           thickness: 2,
         ),
@@ -124,13 +133,13 @@ class NavigationAccount extends StatelessWidget {
         userName: "name1",
         profileName: "Name 1",
         email: '123456@gmail.com',
-        avatar: 'assets/images/BlueBG.png'),
+        avatar: 'assets/images/BlueBG.png', workspaceList: []),
     Users(
         userID: "12345",
         userName: "name2",
         profileName: "Name 2",
         email: '123456@gmail.com',
-        avatar: 'assets/images/BlueBG.png'),
+        avatar: 'assets/images/BlueBG.png', workspaceList: []),
   ];
 
   @override
@@ -205,6 +214,11 @@ class _NavigationState extends State<Navigation> {
             future: DatabaseService.getUserData(context),
               builder: (BuildContext context, AsyncSnapshot snapshot) {
                 Users currentUser = Users.fromDocument(snapshot.data) ;
+                if (snapshot.hasData) {
+                  print("true");
+                }else if (snapshot.hasError) {
+                  print("false");
+                }
                 return DrawerHeader(
                   decoration: BoxDecoration(
                     color: Colors.blue,
@@ -225,7 +239,7 @@ class _NavigationState extends State<Navigation> {
                             Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                Text(currentUser.profileName,
+                                Text(currentUser.profileName.toString(),
                                     textAlign: TextAlign.left,
                                     style: TextStyle(
                                         fontSize: 16,
@@ -235,7 +249,7 @@ class _NavigationState extends State<Navigation> {
                                   height: 6,
                                 ),
                                 Text(
-                                  '@' + currentUser.userName,
+                                  '@' + currentUser.userName.toString(),
                                   textAlign: TextAlign.left,
                                   style: TextStyle(
                                       fontSize: 16,
