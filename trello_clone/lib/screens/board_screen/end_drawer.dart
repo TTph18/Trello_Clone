@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:trello_clone/icons/app_icons.dart';
+import 'package:trello_clone/models/boards.dart';
 import 'package:trello_clone/models/user.dart';
 import 'package:trello_clone/screens/navigation/Navigation.dart';
 import 'package:trello_clone/widgets/reuse_widget/custom_list_tile.dart';
@@ -39,7 +40,8 @@ class inforContentState extends State<inforContent> {
           ),
         )));
     content.add(AccountInfo("Subname1", creator, () {}));
-    content.add(Padding(
+    content.add(
+      Padding(
         padding: EdgeInsets.fromLTRB(10, 20, 0, 5),
         child: Align(
           alignment: Alignment.centerLeft,
@@ -47,7 +49,9 @@ class inforContentState extends State<inforContent> {
             "Mô tả",
             style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
           ),
-        )));
+        ),
+      ),
+    );
     if (!isTypingDescription) if (description == "")
       content.add(InkWell(
           onTap: () {
@@ -56,12 +60,12 @@ class inforContentState extends State<inforContent> {
             });
           },
           child: Padding(
-              padding: EdgeInsets.fromLTRB(10, 5, 0, 5),
+              padding: EdgeInsets.fromLTRB(10, 5, 5, 5),
               child: Align(
                 alignment: Alignment.centerLeft,
                 child: Text(
                   "Đã đến lúc bảng của bạn tỏa sáng! Hãy để mọi người biết rằng bảng này được sử dụng để làm gì và họ có thể kì vọng được thấy những gì.",
-                  style: TextStyle(fontSize: 18, color: Colors.grey),
+                  style: TextStyle(fontSize: 15, color: Colors.grey),
                 ),
               ))));
     else
@@ -103,6 +107,223 @@ class inforContentState extends State<inforContent> {
   }
 }
 
+class settingContent extends StatefulWidget {
+  late Boards board;
+  settingContent();
+  @override
+  settingContentState createState() => settingContentState();
+}
+
+Widget customDivide() {
+  return Padding(
+    padding: EdgeInsets.fromLTRB(70, 0, 0, 0),
+    child: Divider(
+      height: 2,
+      color: Colors.black,
+    ),
+  );
+}
+
+class settingContentState extends State<settingContent> {
+  late Boards board;
+  late String boardName = "Đặc tả hình thức";
+  late String grName = "Shop ngáo và những người bạn";
+  settingContentState();
+
+  @override
+  void initState() {
+    super.initState();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    var content = <Widget>[];
+
+    /// Board name inkwell
+    content.add(
+      InkWell(
+        enableFeedback: false,
+        child: Padding(
+            padding: EdgeInsets.fromLTRB(70, 18, 0, 15),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Align(
+                  alignment: Alignment.centerLeft,
+                  child: Text(
+                    boardName,
+                    textAlign: TextAlign.left,
+                    style: TextStyle(
+                      fontSize: 15,
+                      color: Colors.grey,
+                    ),
+                  ),
+                ),
+                SizedBox(
+                  height: 2,
+                ),
+                Align(
+                  alignment: Alignment.centerLeft,
+                  child: Text(
+                    "Tên",
+                    textAlign: TextAlign.left,
+                    style: TextStyle(
+                      fontSize: 12,
+                      color: Colors.grey,
+                    ),
+                  ),
+                ),
+              ],
+            )),
+      ),
+    );
+    content.add(customDivide());
+
+    /// Group name inkwell
+    content.add(
+      InkWell(
+        enableFeedback: false,
+        child: Padding(
+          padding: EdgeInsets.fromLTRB(70, 18, 0, 15),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Align(
+                alignment: Alignment.centerLeft,
+                child: Text(
+                  grName,
+                  textAlign: TextAlign.left,
+                  style: TextStyle(
+                    fontSize: 15,
+                    color: Colors.grey,
+                  ),
+                  maxLines: 2,
+                  overflow: TextOverflow.visible,
+                ),
+              ),
+              SizedBox(
+                height: 2,
+              ),
+              Align(
+                alignment: Alignment.centerLeft,
+                child: Text(
+                  "Không gian làm việc",
+                  textAlign: TextAlign.left,
+                  style: TextStyle(
+                    fontSize: 12,
+                    color: Colors.grey,
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+    content.add(customDivide());
+
+    /// Label inkwell
+    content.add(
+      InkWell(
+        onTap: () {},
+        child: Padding(
+          padding: EdgeInsets.fromLTRB(70, 18, 0, 15),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Container(
+                child: Align(
+                  alignment: Alignment.centerLeft,
+                  child: Text(
+                    "Chỉnh sửa nhãn",
+                    textAlign: TextAlign.left,
+                    style: TextStyle(
+                      fontSize: 15,
+                      color: Colors.black,
+                    ),
+                    maxLines: 2,
+                    overflow: TextOverflow.visible,
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+    content.add(customDivide());
+
+    /// Background inkwell
+    content.add(
+      InkWell(
+        onTap: () {},
+        child: Padding(
+          padding: EdgeInsets.fromLTRB(0, 18, 0, 15),
+          child: Row(
+            children: [
+              Container(
+                width: 70,
+                decoration: BoxDecoration(
+                  image: DecorationImage(image: AssetImage('assets/images/BlueBG.png'),) ,
+                  shape: BoxShape.rectangle,
+                ),
+              ),
+              Align(
+                alignment: Alignment.centerLeft,
+                child: Text(
+                  "Phông nền",
+                  textAlign: TextAlign.left,
+                  style: TextStyle(
+                    fontSize: 15,
+                    color: Colors.black,
+                  ),
+                  maxLines: 2,
+                  overflow: TextOverflow.visible,
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+    content.add(customDivide());
+
+    /// Background inkwell
+    content.add(
+      InkWell(
+        onTap: () {},
+        child: Padding(
+          padding: EdgeInsets.fromLTRB(70, 18, 0, 15),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Container(
+                child: Align(
+                  alignment: Alignment.centerLeft,
+                  child: Text(
+                    "Rời khỏi bảng",
+                    textAlign: TextAlign.left,
+                    style: TextStyle(
+                      fontSize: 15,
+                      color: Colors.black,
+                    ),
+                    maxLines: 2,
+                    overflow: TextOverflow.visible,
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+
+    return Column(
+      children: content,
+    );
+  }
+}
+
 class mainMenu extends StatefulWidget {
   Users creator;
   mainMenu(this.creator);
@@ -131,6 +352,9 @@ class mainMenuState extends State<mainMenu> {
         break;
       case 2:
         title = "Thành viên";
+        break;
+      case 4:
+        title = "Thiết lập bảng";
         break;
     }
     return Drawer(
@@ -171,7 +395,10 @@ class mainMenuState extends State<mainMenu> {
                   ),
 
                   /// Body
-                  if (state == 1) inforContent(creator, "")
+                  if (state == 1)
+                    inforContent(creator, "")
+                  else if (state == 4)
+                    settingContent()
                 ],
               )
             : Column(
@@ -191,7 +418,11 @@ class mainMenuState extends State<mainMenu> {
                   }),
                   Divider(),
                   CustomListTile(Icons.delete, "Xóa bảng", () {}),
-                  CustomListTile(Icons.settings, "Cài đặt bảng", () {}),
+                  CustomListTile(Icons.settings, "Thiết lập bảng", () {
+                    setState(() {
+                      state = 4;
+                    });
+                  }),
                 ],
               ));
   }

@@ -395,6 +395,7 @@ class BoardScreenState extends State<BoardScreen> {
   late List<String> listName;
   late List<_card> cards;
   var controller = AnimateIconController();
+  AssetImage bg = AssetImage("assets/images/BlueBG.png");
 
   BoardScreenState(this.boardName);
 
@@ -466,26 +467,34 @@ class BoardScreenState extends State<BoardScreen> {
           userName: "Name 1",
           email: '123456@gmail.com',
           avatar: 'assets/images/BlueBG.png')),
-      body: DragAndDropLists(
-        children: List.generate(_lists.length, (index) => _buildList(index)),
-        onItemReorder: _onItemReorder,
-        onListReorder: _onListReorder,
-        axis: Axis.horizontal,
-        listWidth: 320,
-        listDraggingWidth: 288,
-        listDecoration: BoxDecoration(
-          color: Color.fromRGBO(244, 245, 247, 1.0),
-          borderRadius: BorderRadius.all(Radius.circular(7.0)),
-          boxShadow: <BoxShadow>[
-            BoxShadow(
-              color: Colors.black45,
-              spreadRadius: 3.0,
-              blurRadius: 6.0,
-              offset: Offset(2, 3),
-            ),
-          ],
+      body: Container(
+        decoration: BoxDecoration(
+          image: DecorationImage(
+            image: bg,
+            fit: BoxFit.cover,
+          ),
         ),
-        listPadding: EdgeInsets.fromLTRB(16, 8, 16, 8),
+        child: DragAndDropLists(
+          children: List.generate(_lists.length, (index) => _buildList(index)),
+          onItemReorder: _onItemReorder,
+          onListReorder: _onListReorder,
+          axis: Axis.horizontal,
+          listWidth: 320,
+          listDraggingWidth: 288,
+          listDecoration: BoxDecoration(
+            color: Color.fromRGBO(244, 245, 247, 1.0),
+            borderRadius: BorderRadius.all(Radius.circular(7.0)),
+            boxShadow: <BoxShadow>[
+              BoxShadow(
+                color: Colors.black45,
+                spreadRadius: 3.0,
+                blurRadius: 6.0,
+                offset: Offset(2, 3),
+              ),
+            ],
+          ),
+          listPadding: EdgeInsets.fromLTRB(16, 8, 16, 8),
+        ),
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {},
