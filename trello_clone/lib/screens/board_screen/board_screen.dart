@@ -464,7 +464,8 @@ class BoardScreenState extends State<BoardScreen> {
           ]),
       endDrawer: mainMenu(Users(
           userID: "12345",
-          userName: "Name 1",
+          userName: "name1",
+          profileName: "Name 1",
           email: '123456@gmail.com',
           avatar: 'assets/images/BlueBG.png')),
       body: Container(

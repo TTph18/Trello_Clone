@@ -1,18 +1,21 @@
 import 'dart:ui';
 import 'package:animated_icon_button/animated_icon_button.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:trello_clone/models/user.dart';
 import 'package:trello_clone/route_path.dart';
+import 'package:trello_clone/services/database.dart';
 import 'package:trello_clone/widgets/reuse_widget/avatar.dart';
 import 'package:trello_clone/widgets/reuse_widget/custom_list_tile.dart';
 
 class AccountInfo extends StatelessWidget {
+
   String subtext;
   Users user;
   VoidCallback onTap;
-
   AccountInfo(this.subtext, this.user, this.onTap);
 
   @override
@@ -118,12 +121,14 @@ class NavigationAccount extends StatelessWidget {
   List<Users> users = [
     Users(
         userID: "12345",
-        userName: "Name 1",
+        userName: "name1",
+        profileName: "Name 1",
         email: '123456@gmail.com',
         avatar: 'assets/images/BlueBG.png'),
     Users(
         userID: "12345",
-        userName: "Name 2",
+        userName: "name2",
+        profileName: "Name 2",
         email: '123456@gmail.com',
         avatar: 'assets/images/BlueBG.png'),
   ];
@@ -181,6 +186,7 @@ class Navigation extends StatefulWidget {
 }
 
 class _NavigationState extends State<Navigation> {
+  late Users currentUser;
   late bool isMain;
 
   @override
@@ -191,72 +197,80 @@ class _NavigationState extends State<Navigation> {
 
   @override
   Widget build(BuildContext context) {
+    String uid = FirebaseAuth.instance.currentUser!.uid;
     return Drawer(
       child: Column(
         children: <Widget>[
-          DrawerHeader(
-            decoration: BoxDecoration(
-              color: Colors.blue,
-            ),
-            child: Padding(
-              padding: const EdgeInsets.fromLTRB(0, 4.0, 0, 0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  avatar(70, 70, Colors.grey,
-                      AssetImage('assets/images/BlueBG.png')),
-                  SizedBox(
-                    height: 13,
+          FutureBuilder(
+            future: DatabaseService.getUserData(context),
+              builder: (BuildContext context, AsyncSnapshot snapshot) {
+                Users currentUser = Users.fromDocument(snapshot.data) ;
+                return DrawerHeader(
+                  decoration: BoxDecoration(
+                    color: Colors.blue,
                   ),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text("Name 1",
-                              textAlign: TextAlign.left,
-                              style: TextStyle(
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.bold,
-                                  color: Colors.white)),
-                          SizedBox(
-                            height: 6,
-                          ),
-                          Text(
-                            '@' + "Subname1",
-                            textAlign: TextAlign.left,
-                            style: TextStyle(
-                                fontSize: 16,
-                                fontStyle: FontStyle.italic,
-                                color: Colors.white),
-                          ),
-                        ],
-                      ),
-                      AnimatedIconButton(
-                          size: 25,
-                          onPressed: () => {
-                                setState(() {
-                                  isMain = !isMain;
-                                })
-                              },
-                          icons: [
-                            AnimatedIconItem(
-                              icon: Icon(Icons.keyboard_arrow_down),
+                  child: Padding(
+                    padding: const EdgeInsets.fromLTRB(0, 4.0, 0, 0),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        avatar(70, 70, Colors.grey,
+                            AssetImage('assets/images/BlueBG.png')),
+                        SizedBox(
+                          height: 13,
+                        ),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(currentUser.profileName,
+                                    textAlign: TextAlign.left,
+                                    style: TextStyle(
+                                        fontSize: 16,
+                                        fontWeight: FontWeight.bold,
+                                        color: Colors.white)),
+                                SizedBox(
+                                  height: 6,
+                                ),
+                                Text(
+                                  '@' + currentUser.userName,
+                                  textAlign: TextAlign.left,
+                                  style: TextStyle(
+                                      fontSize: 16,
+                                      fontStyle: FontStyle.italic,
+                                      color: Colors.white),
+                                ),
+                              ],
                             ),
-                            AnimatedIconItem(
-                              icon: Icon(Icons.keyboard_arrow_up),
-                            ),
-                          ])
-                    ],
+                            AnimatedIconButton(
+                                size: 25,
+                                onPressed: () => {
+                                  setState(() {
+                                    isMain = !isMain;
+                                  })
+                                },
+                                icons: [
+                                  AnimatedIconItem(
+                                    icon: Icon(Icons.keyboard_arrow_down),
+                                  ),
+                                  AnimatedIconItem(
+                                    icon: Icon(Icons.keyboard_arrow_up),
+                                  ),
+                                ])
+                          ],
+                        ),
+                      ],
+                    ),
                   ),
-                ],
-              ),
-            ),
-          ),
+                );
+              }),
           isMain ? NavigationMain() : NavigationAccount(),
         ],
       ),
     );
   }
 }
+
+
