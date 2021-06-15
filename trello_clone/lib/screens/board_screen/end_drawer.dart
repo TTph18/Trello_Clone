@@ -1,8 +1,11 @@
+import 'dart:ui';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:trello_clone/icons/app_icons.dart';
 import 'package:trello_clone/models/boards.dart';
 import 'package:trello_clone/models/user.dart';
+import 'package:trello_clone/screens/main_screen/main_screen.dart';
 import 'package:trello_clone/screens/navigation/Navigation.dart';
 import 'package:trello_clone/widgets/reuse_widget/custom_list_tile.dart';
 
@@ -124,6 +127,22 @@ Widget customDivide() {
   );
 }
 
+Widget customColorInkWell(Color color)
+{
+  return InkWell(
+    onTap: () {
+      /// TODO: Change label info
+    },
+    child: Container(
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(5),
+        color: color,
+      ),
+      height: 30,
+    ),
+  );
+}
+
 class settingContentState extends State<settingContent> {
   late Boards board;
   late String boardName = "Đặc tả hình thức";
@@ -225,7 +244,58 @@ class settingContentState extends State<settingContent> {
     /// Label inkwell
     content.add(
       InkWell(
-        onTap: () {},
+        onTap: () => showDialog<String>(
+          context: context,
+          builder: (BuildContext context) => AlertDialog(
+            title: const Text('Chỉnh sửa nhãn', style: TextStyle(fontWeight: FontWeight.bold),),
+            content: Container(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.fromLTRB(0, 0, 0, 4),
+                    child: customColorInkWell(Colors.green),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.fromLTRB(0, 0, 0, 4),
+                    child: customColorInkWell(Colors.yellow),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.fromLTRB(0, 0, 0, 4),
+                    child: customColorInkWell(Colors.orange),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.fromLTRB(0, 0, 0, 4),
+                    child: customColorInkWell(Colors.red),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.fromLTRB(0, 0, 0, 4),
+                    child: customColorInkWell(Colors.deepPurpleAccent),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.fromLTRB(0, 0, 0, 4),
+                    child: customColorInkWell(Colors.blueAccent),
+                  ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      TextButton(
+                        child: Text('HOÀN TẤT', style: TextStyle(fontWeight: FontWeight.bold),),
+                        onPressed: () {
+                          Navigator.of(context).pop();
+                        },
+                      ),
+                      TextButton(
+                        child: Text('TẠO NHÃN MỚI', style: TextStyle(fontWeight: FontWeight.bold),),
+                        onPressed: () {},
+                      )
+                    ],
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ),
         child: Padding(
           padding: EdgeInsets.fromLTRB(70, 18, 0, 15),
           child: Column(
@@ -263,9 +333,13 @@ class settingContentState extends State<settingContent> {
             children: [
               Container(
                 width: 70,
+                height: 20,
                 decoration: BoxDecoration(
-                  image: DecorationImage(image: AssetImage('assets/images/BlueBG.png'),) ,
+                  image: DecorationImage(
+                    image: AssetImage('assets/images/BlueBG.png'),
+                  ),
                   shape: BoxShape.rectangle,
+                  borderRadius: BorderRadius.circular(30),
                 ),
               ),
               Align(
@@ -291,7 +365,29 @@ class settingContentState extends State<settingContent> {
     /// Background inkwell
     content.add(
       InkWell(
-        onTap: () {},
+        onTap: () => showDialog<String>(
+          context: context,
+          builder: (BuildContext context) => AlertDialog(
+            title: const Text('Rời khỏi bảng', style: TextStyle(fontWeight: FontWeight.bold),),
+            content: Text("Bạn có chắc muốn rời khỏi bảng này không? Bạn có thể sẽ không được tham gia bảng sau này."),
+            actions: [
+              TextButton(
+                child: Text('HỦY', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+              ),
+              TextButton(
+                child: Text('RỜI BỎ', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),),
+                onPressed: () {
+                  /// TODO: delete user from board
+                  Route route = MaterialPageRoute(builder: (context)=>MainScreen());
+                  Navigator.push(context, route);
+                },
+              )
+            ],
+          ),
+        ),
         child: Padding(
           padding: EdgeInsets.fromLTRB(70, 18, 0, 15),
           child: Column(
