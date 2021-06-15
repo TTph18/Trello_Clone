@@ -12,7 +12,6 @@ import 'package:trello_clone/widgets/reuse_widget/avatar.dart';
 import 'package:trello_clone/widgets/reuse_widget/custom_list_tile.dart';
 
 class AccountInfo extends StatelessWidget {
-
   String subtext;
   Users user;
   VoidCallback onTap;
@@ -75,31 +74,31 @@ class NavigationMain extends StatelessWidget {
   ];
   @override
   Widget build(BuildContext context) {
-    return Column(
-      children: <Widget>[
-        CustomListTile(Icons.dashboard, "Bảng", () => {}),
-        CustomListTile(Icons.home, "Trang chủ", () => {}),
-        Divider(
-          thickness: 2,
-        ),
-        Align(
-          alignment: Alignment.centerLeft,
-          child: Container(
-            padding: EdgeInsets.fromLTRB(15, 0, 0, 0),
-            child: Text("Nhóm",
-                textAlign: TextAlign.left,
-                style: TextStyle(fontWeight: FontWeight.bold)),
-          ),
-        ),
-        FutureBuilder(
-            future: DatabaseService.getUserWorkspaceList(),
-            builder: (BuildContext context, AsyncSnapshot snapshot) {
-              if (snapshot.hasData) {
-                print("true");
-              }else if (snapshot.hasError) {
-                print("false");
-              }
-              return MediaQuery.removePadding(
+    return FutureBuilder(
+        future: DatabaseService.getUserWorkspaceList(),
+        builder: (BuildContext context, AsyncSnapshot snapshot) {
+          if (snapshot.hasData) {
+            print("true");
+          }else if (snapshot.hasError) {
+            print("false");
+          }
+          return Column(
+            children: <Widget>[
+              CustomListTile(Icons.dashboard, "Bảng", () => {}),
+              CustomListTile(Icons.home, "Trang chủ", () => {}),
+              Divider(
+                thickness: 2,
+              ),
+              Align(
+                alignment: Alignment.centerLeft,
+                child: Container(
+                  padding: EdgeInsets.fromLTRB(15, 0, 0, 0),
+                  child: Text("Nhóm",
+                      textAlign: TextAlign.left,
+                      style: TextStyle(fontWeight: FontWeight.bold)),
+                ),
+              ),
+              MediaQuery.removePadding(
                 context: context,
                 removeTop: true,
                 child: ListView.builder(
@@ -111,16 +110,17 @@ class NavigationMain extends StatelessWidget {
                       return CustomListTile(
                           Icons.group_outlined, snapshot.data[index].toString(), () => {});
                     }),
-              );
-            }),
-        Divider(
-          thickness: 2,
-        ),
-        CustomListTile(Icons.credit_card, "Thẻ của tôi", () => {}),
-        CustomListTile(Icons.shield, "Đổi mật khẩu", () => {}),
-        CustomListTile(Icons.logout, "Đăng xuất", () => {}),
-      ],
-    );
+              ),
+              Divider(
+                thickness: 2,
+              ),
+              CustomListTile(Icons.credit_card, "Thẻ của tôi", () => {}),
+              CustomListTile(Icons.shield, "Đổi mật khẩu", () => {}),
+              CustomListTile(Icons.logout, "Đăng xuất", () => {}),
+            ],
+          );
+          }
+        );
   }
 }
 
