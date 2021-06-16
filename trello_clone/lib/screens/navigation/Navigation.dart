@@ -7,6 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:trello_clone/models/user.dart';
 import 'package:trello_clone/route_path.dart';
+import 'package:trello_clone/screens/board_screen/board_screen.dart';
 import 'package:trello_clone/services/database.dart';
 import 'package:trello_clone/widgets/reuse_widget/avatar.dart';
 import 'package:trello_clone/widgets/reuse_widget/custom_list_tile.dart';
@@ -73,15 +74,17 @@ class NavigationMain extends StatelessWidget {
     () => {},
     () => {},
   ];
+
   @override
   Widget build(BuildContext context) {
-    if(hasData) {}
+    if (hasData) {}
     return FutureBuilder(
         future: DatabaseService.getUserWorkspaceList(),
         builder: (BuildContext context, AsyncSnapshot snapshot) {
           if (snapshot.hasData) {
-            hasData=true ;
-          }else hasData = false;
+            hasData = true;
+          } else
+            hasData = false;
           return Column(
             children: <Widget>[
               CustomListTile(Icons.dashboard, "Bảng", () => {}),
@@ -102,14 +105,18 @@ class NavigationMain extends StatelessWidget {
                 context: context,
                 removeTop: true,
                 child: ListView.builder(
-                    scrollDirection: Axis.vertical,
-                    shrinkWrap: true,
-                    physics: NeverScrollableScrollPhysics(),
-                    itemCount: snapshot.data.length,
-                    itemBuilder: (BuildContext context, int index) {
-                      return CustomListTile(
-                          Icons.group_outlined, snapshot.data[index].toString(), () => {});
-                    }),
+                  scrollDirection: Axis.vertical,
+                  shrinkWrap: true,
+                  physics: NeverScrollableScrollPhysics(),
+                  itemCount: snapshot.data.length,
+                  itemBuilder: (BuildContext context, int index) {
+                    return CustomListTile(
+                      Icons.group_outlined,
+                      snapshot.data[index].toString(),
+                      () => {},
+                    );
+                  },
+                ),
               ),
               Divider(
                 thickness: 2,
@@ -119,8 +126,7 @@ class NavigationMain extends StatelessWidget {
               CustomListTile(Icons.logout, "Đăng xuất", () => {}),
             ],
           );
-          }
-        );
+        });
   }
 }
 
@@ -133,13 +139,15 @@ class NavigationAccount extends StatelessWidget {
         userName: "name1",
         profileName: "Name 1",
         email: '123456@gmail.com',
-        avatar: 'assets/images/BlueBG.png', workspaceList: []),
+        avatar: 'assets/images/BlueBG.png',
+        workspaceList: []),
     Users(
         userID: "12345",
         userName: "name2",
         profileName: "Name 2",
         email: '123456@gmail.com',
-        avatar: 'assets/images/BlueBG.png', workspaceList: []),
+        avatar: 'assets/images/BlueBG.png',
+        workspaceList: []),
   ];
 
   @override
@@ -212,12 +220,13 @@ class _NavigationState extends State<Navigation> {
       child: Column(
         children: <Widget>[
           FutureBuilder(
-            future: DatabaseService.getUserData(context),
+              future: DatabaseService.getUserData(context),
               builder: (BuildContext context, AsyncSnapshot snapshot) {
-                Users currentUser = Users.fromDocument(snapshot.data) ;
+                Users currentUser = Users.fromDocument(snapshot.data);
                 if (snapshot.hasData) {
                   hasData = true;
-                }else hasData = false;
+                } else
+                  hasData = false;
                 return DrawerHeader(
                   decoration: BoxDecoration(
                     color: Colors.blue,
@@ -260,10 +269,10 @@ class _NavigationState extends State<Navigation> {
                             AnimatedIconButton(
                                 size: 25,
                                 onPressed: () => {
-                                  setState(() {
-                                    isMain = !isMain;
-                                  })
-                                },
+                                      setState(() {
+                                        isMain = !isMain;
+                                      })
+                                    },
                                 icons: [
                                   AnimatedIconItem(
                                     icon: Icon(Icons.keyboard_arrow_down),
@@ -285,5 +294,3 @@ class _NavigationState extends State<Navigation> {
     );
   }
 }
-
-

@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:trello_clone/icons/app_icons.dart';
 import 'package:trello_clone/models/boards.dart';
 import 'package:trello_clone/models/user.dart';
+import 'package:trello_clone/screens/board_screen/change_background_screen.dart';
 import 'package:trello_clone/screens/main_screen/main_screen.dart';
 import 'package:trello_clone/screens/navigation/Navigation.dart';
 import 'package:trello_clone/widgets/reuse_widget/custom_list_tile.dart';
@@ -110,12 +111,6 @@ class inforContentState extends State<inforContent> {
   }
 }
 
-class settingContent extends StatefulWidget {
-  late Boards board;
-  settingContent();
-  @override
-  settingContentState createState() => settingContentState();
-}
 
 Widget customDivide() {
   return Padding(
@@ -141,6 +136,13 @@ Widget customColorInkWell(Color color)
       height: 30,
     ),
   );
+}
+
+class settingContent extends StatefulWidget {
+  late Boards board;
+  settingContent();
+  @override
+  settingContentState createState() => settingContentState();
 }
 
 class settingContentState extends State<settingContent> {
@@ -326,7 +328,10 @@ class settingContentState extends State<settingContent> {
     /// Background inkwell
     content.add(
       InkWell(
-        onTap: () {},
+        onTap: () {
+          Route route = MaterialPageRoute(builder: (context)=>ChangeBackgroundScreen(boardName));
+          Navigator.push(context, route);
+        },
         child: Padding(
           padding: EdgeInsets.fromLTRB(0, 18, 0, 15),
           child: Row(

@@ -26,7 +26,7 @@ class BoardInfo extends StatelessWidget {
   Widget build(BuildContext context) {
     return InkWell(
       onTap: () {
-        Route route = MaterialPageRoute(builder: (context)=>BoardScreen(text));
+        Route route = MaterialPageRoute(builder: (context)=>BoardScreen(text, false));
         Navigator.push(context, route);
       },
       child: Container(

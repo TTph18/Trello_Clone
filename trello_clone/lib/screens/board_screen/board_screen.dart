@@ -382,22 +382,23 @@ Widget CreateChecklistItem(int finish, int total) {
 
 class BoardScreen extends StatefulWidget {
   final String boardName;
-
-  BoardScreen(this.boardName);
+  final bool isShowDrawer;
+  BoardScreen(this.boardName, this.isShowDrawer);
 
   @override
-  BoardScreenState createState() => BoardScreenState(boardName);
+  BoardScreenState createState() => BoardScreenState(boardName, isShowDrawer);
 }
 
 class BoardScreenState extends State<BoardScreen> {
+  final GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey<ScaffoldState>();
   late String boardName;
-
+  late bool isShowDrawer;
   late List<String> listName;
   late List<_card> cards;
   var controller = AnimateIconController();
   AssetImage bg = AssetImage("assets/images/BlueBG.png");
 
-  BoardScreenState(this.boardName);
+  BoardScreenState(this.boardName, this.isShowDrawer);
 
   late List<ListCard> _lists;
 
@@ -430,7 +431,6 @@ class BoardScreenState extends State<BoardScreen> {
     });
   }
 
-  final _scaffoldKey = GlobalKey<ScaffoldState>();
   @override
   Widget build(BuildContext context) {
     return Scaffold(
