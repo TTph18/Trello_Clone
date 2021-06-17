@@ -21,8 +21,8 @@ class DatabaseService {
     return snapshot.docs.first;
   }
 
-  static Future<List<String>> getUserWorkspaceList() async {
-    List<String> wpList = [];
+  static Future getUserWorkspaceList() async {
+    List wpList = [];
     String uid = FirebaseAuth.instance.currentUser!.uid;
     var snapshot = await FirebaseFirestore.instance
         .collection('users')
@@ -34,8 +34,25 @@ class DatabaseService {
           .collection('workspaces')
           .where('workspaceID', isEqualTo: temp)
           .get();
-      wpList.add(_snapshot.docs.first["workspaceName"].toString());
+        wpList.add(_snapshot.docs.first);
     }
     return wpList;
+  }
+
+  static Future getBoardList(String workspaceID) async {
+    List brList = [];
+    var snapshot = await FirebaseFirestore.instance
+        .collection('workspaces')
+        .where('workspaceID', isEqualTo: workspaceID)
+        .get();
+    List brID = snapshot.docs.first["boardList"];
+    for(var temp in brID) {
+      var _snapshot = await FirebaseFirestore.instance
+          .collection('boards')
+          .where('boardID', isEqualTo: temp)
+          .get();
+      brList.add(_snapshot.docs.first);
     }
+    return brList;
+  }
 }

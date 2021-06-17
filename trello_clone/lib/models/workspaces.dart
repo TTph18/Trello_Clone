@@ -10,7 +10,7 @@ class Workspaces {
 
   factory Workspaces.fromDocument(DocumentSnapshot document) {
     return Workspaces(
-      boardList: document['boardList'],
+      boardList: document['boardList'].cast<String>(),
       workspaceName: document['workspaceName'],
       workspaceID: document.id
     );

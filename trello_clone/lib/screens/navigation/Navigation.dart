@@ -6,6 +6,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:trello_clone/models/user.dart';
+import 'package:trello_clone/models/workspaces.dart';
 import 'package:trello_clone/route_path.dart';
 import 'package:trello_clone/screens/board_screen/board_screen.dart';
 import 'package:trello_clone/services/database.dart';
@@ -114,9 +115,10 @@ class NavigationMain extends StatelessWidget {
                   physics: NeverScrollableScrollPhysics(),
                   itemCount: snapshot.data.length,
                   itemBuilder: (BuildContext context, int index) {
+                    Workspaces _wp = Workspaces.fromDocument(snapshot.data[index]);
                     return CustomListTile(
                       Icons.group_outlined,
-                      snapshot.data[index].toString(),
+                      _wp.workspaceName.toString(),
                       () => {},
                     );
                   },

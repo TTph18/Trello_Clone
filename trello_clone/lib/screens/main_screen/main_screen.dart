@@ -4,9 +4,12 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_speed_dial/flutter_speed_dial.dart';
 import 'package:trello_clone/icons/app_icons.dart';
+import 'package:trello_clone/models/boards.dart';
+import 'package:trello_clone/models/workspaces.dart';
 import 'package:trello_clone/route_path.dart';
 import 'package:trello_clone/screens/board_screen/board_screen.dart';
 import 'package:trello_clone/screens/navigation/Navigation.dart';
+import 'package:trello_clone/services/database.dart';
 
 import '../../route_path.dart';
 
@@ -97,7 +100,8 @@ class GroupName extends StatelessWidget {
 
 class GroupInfo extends StatelessWidget {
   late String grName;
-  GroupInfo(this.grName);
+  late String grID;
+  GroupInfo(this.grName, this.grID);
 
   List<AssetImage> boardImage = [
     AssetImage('assets/images/BlueBG.png'),
@@ -115,16 +119,25 @@ class GroupInfo extends StatelessWidget {
   Widget build(BuildContext context) {
     return Column(
       children: [
-        GroupName("grName"),
-        ListView.builder(
-          physics: ClampingScrollPhysics(),
-          shrinkWrap: true,
-          itemCount: boardName.length,
-          itemBuilder: (BuildContext context, int index) {
-            return BoardInfo(boardImage[index], boardName[index],
-                boardOnPress[index]);
-          },
-        ),
+        GroupName(this.grName),
+        FutureBuilder(
+        future: DatabaseService.getBoardList(grID),
+        builder: (BuildContext context, AsyncSnapshot snapshot){
+          if (!snapshot.hasData)
+            return Container(
+                alignment: FractionalOffset.center,
+                child: CircularProgressIndicator());
+          return ListView.builder(
+            physics: ClampingScrollPhysics(),
+            shrinkWrap: true,
+            itemCount: snapshot.data.length,
+            itemBuilder: (BuildContext context, int index) {
+              Boards _br = Boards.fromDocument(snapshot.data[index]);
+              return BoardInfo(boardImage[index], _br.boardName.toString(),
+                  boardOnPress[index]);
+            },
+          );
+        }),
       ],
     );
   }
@@ -135,6 +148,7 @@ class _MainScreenState extends State<MainScreen> {
   List<String> groupName = [
     "Tên bảng 1",
     "Tên bảng 2",
+    "Tên bảng 3"
   ];
   @override
   Widget build(BuildContext context) {
@@ -159,16 +173,25 @@ class _MainScreenState extends State<MainScreen> {
       body: Scaffold(
           body: Column(
             children: [
-              Expanded(
-                child: ListView.builder(
-                  physics: ClampingScrollPhysics(),
-                  shrinkWrap: true,
-                  itemCount: groupName.length,
-                  itemBuilder: (BuildContext context, int index) {
-                    return GroupInfo("Bảng cá nhân");
-                  },
-                ),
-              ),
+              FutureBuilder(
+                  future: DatabaseService.getUserWorkspaceList(),
+                  builder: (BuildContext context, AsyncSnapshot snapshot){
+                    if (!snapshot.hasData)
+                      return Container(
+                          alignment: FractionalOffset.center,
+                          child: CircularProgressIndicator());
+                    return Expanded(
+                      child: ListView.builder(
+                        physics: ClampingScrollPhysics(),
+                        shrinkWrap: true,
+                        itemCount: snapshot.data.length,
+                        itemBuilder: (BuildContext context, int index) {
+                          Workspaces _wp = Workspaces.fromDocument(snapshot.data[index]);
+                          return GroupInfo(_wp.workspaceName.toString(), _wp.workspaceID.toString());
+                        },
+                      ),
+                    ) ;
+                  })
             ],
           ),
           floatingActionButton: SpeedDial(

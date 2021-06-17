@@ -8,20 +8,20 @@ class Boards {
   final String createdBy;
   final String background;
   final List<String> listList;
-  final List<Labels> label;
-  final List<Users> userList;
+  final List<String> labelList;
+  final List<String> userList;
 
-  Boards({required this.boardID, required this.userList, required this.boardName, required this.createdBy, required this.background, required this.listList, required this.label});
+  Boards({required this.boardID, required this.userList, required this.boardName, required this.createdBy, required this.background, required this.listList, required this.labelList});
 
   factory Boards.fromDocument(DocumentSnapshot document) {
     return Boards(
         boardID: document.id,
-        userList: document['userList'],
+        userList: document['userList'].cast<String>(),
         boardName: document['boardName'],
         createdBy: document['createdBy'],
         background: document['background'],
-        listList: document['listList'],
-        label: document['label']
+        listList: document['listList'].cast<String>(),
+        labelList: document['labelList'].cast<String>()
     );
   }
 }
