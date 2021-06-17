@@ -83,8 +83,12 @@ class NavigationMain extends StatelessWidget {
         builder: (BuildContext context, AsyncSnapshot snapshot) {
           if (snapshot.hasData) {
             hasData = true;
-          } else
-            hasData = false;
+          } else {
+              hasData = false;
+              return Container(
+                  alignment: FractionalOffset.center,
+                  child: CircularProgressIndicator());
+            }
           return Column(
             children: <Widget>[
               CustomListTile(Icons.dashboard, "Bảng", () => {}),
