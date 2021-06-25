@@ -111,7 +111,6 @@ class inforContentState extends State<inforContent> {
   }
 }
 
-
 Widget customDivide() {
   return Padding(
     padding: EdgeInsets.fromLTRB(70, 0, 0, 0),
