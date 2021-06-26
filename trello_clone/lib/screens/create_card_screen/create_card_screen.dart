@@ -206,16 +206,19 @@ class CreateCardScreenState extends State<CreateCardScreen> {
                                         alignment: Alignment.centerLeft,
                                         onPressed: () {},
                                       ),
-                                      CircleAvatar(
-                                        radius: 25,
-                                        backgroundColor: Colors.green,
-                                        child: IconButton(
-                                          icon: Icon(
-                                            Icons.add,
-                                            color: Colors.white,
-                                            size: 18,
+                                      Container(
+                                        alignment: Alignment.centerLeft,
+                                        child: CircleAvatar(
+                                          radius: 25,
+                                          backgroundColor: Colors.green,
+                                          child: IconButton(
+                                            icon: Icon(
+                                              Icons.add,
+                                              color: Colors.white,
+                                              size: 18,
+                                            ),
+                                            onPressed: () {},
                                           ),
-                                          onPressed: () {},
                                         ),
                                       ),
                                     ],
