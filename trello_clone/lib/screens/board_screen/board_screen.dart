@@ -125,9 +125,9 @@ class _cardState extends State<_card> {
     super.initState();
 
     tags = [
-      tag(Colors.red),
-      tag(Colors.green),
-      tag(Colors.blue),
+      tag(Color(int.parse("0xff61bd4f"))),
+      tag(Color(int.parse("0xfff2d600"))),
+      tag(Color(int.parse("0xffffab4a"))),
     ];
     iconSeen = true;
 
@@ -248,6 +248,18 @@ class _cardState extends State<_card> {
             ),
           ),
         ),
+      ),
+    );
+  }
+}
+
+class NewCard extends StatelessWidget{
+  @override
+  Widget build(BuildContext context) {
+    return Card(
+      color: Colors.white,
+      child: TextField(
+
       ),
     );
   }
@@ -554,7 +566,9 @@ class BoardScreenState extends State<BoardScreen> {
           style: TextButton.styleFrom(
             backgroundColor: Color.fromRGBO(244, 245, 247, 1.0),
           ),
-          onPressed: () {},
+          onPressed: () {
+
+          },
           child: Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: <Widget>[

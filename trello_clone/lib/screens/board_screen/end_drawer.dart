@@ -2,13 +2,17 @@ import 'dart:ui';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:trello_clone/icons/app_icons.dart';
 import 'package:trello_clone/models/boards.dart';
 import 'package:trello_clone/models/user.dart';
 import 'package:trello_clone/screens/board_screen/change_background_screen.dart';
+import 'package:trello_clone/screens/board_screen/change_workspace.dart';
 import 'package:trello_clone/screens/main_screen/main_screen.dart';
 import 'package:trello_clone/screens/navigation/Navigation.dart';
 import 'package:trello_clone/widgets/reuse_widget/custom_list_tile.dart';
+
+import '../../route_path.dart';
 
 class inforContent extends StatefulWidget {
   late Users creator;
@@ -89,7 +93,8 @@ class inforContentState extends State<inforContent> {
                 ),
               ))));
     else
-      content.add(Padding(
+      content.add(
+        Padding(
           padding: EdgeInsets.fromLTRB(10, 5, 10, 5),
           child: TextField(
             autofocus: true,
@@ -103,7 +108,9 @@ class inforContentState extends State<inforContent> {
                 isTypingDescription = false;
               });
             },
-          )));
+          ),
+        ),
+      );
 
     return Column(
       children: content,
@@ -121,19 +128,241 @@ Widget customDivide() {
   );
 }
 
-Widget customColorInkWell(Color color)
-{
+Widget customColorInkWell(Labels labels, BuildContext context) {
   return InkWell(
     onTap: () {
-      /// TODO: Change label info
+      showModalBottomSheet(
+        context: context,
+        builder: (BuildContext bc) {
+          return LabelDetailModalBottom(false, labels);
+        },
+        isScrollControlled: true,
+      );
     },
-    child: Container(
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(5),
-        color: color,
+    child: Ink(
+      child: Container(
+        height: 40,
+        width: double.infinity,
+        child: Ink(
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(5),
+            color: Color(int.parse(labels.color)),
+          ),
+          child: Align(
+              alignment: Alignment.centerLeft,
+              child: Padding(
+                padding: const EdgeInsets.fromLTRB(10, 0, 0, 0),
+                child: Text(
+                  labels.labelName,
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 18,
+                  ),
+                  textAlign: TextAlign.left,
+                ),
+              )),
+        ),
       ),
-      height: 30,
     ),
+  );
+}
+
+Widget LabelDetailModalBottom(bool isCreate, Labels label) {
+  TextEditingController mycontroller = TextEditingController();
+  mycontroller.value = new TextEditingValue(text: label.labelName);
+  String title = "Nhãn mới";
+  if (!isCreate) title = "Sửa nhãn";
+  List<Labels> labelColors = [
+    Labels(color: "0xff61bd4f", labelName: ""),
+    Labels(color: "0xfff2d600", labelName: ""),
+    Labels(color: "0xffffab4a", labelName: ""),
+    Labels(color: "0xffeb5a46", labelName: ""),
+    Labels(color: "0xffc377e0", labelName: ""),
+    Labels(color: "0xff0079bf", labelName: ""),
+    Labels(color: "0xff00c2e0", labelName: ""),
+    Labels(color: "0xff51e898", labelName: ""),
+    Labels(color: "0xffff80ce", labelName: ""),
+    Labels(color: "0xff355263", labelName: ""),
+    Labels(color: "0xffb3bec4", labelName: ""),
+  ];
+
+  String labelSelectedColor = label.color;
+  return StatefulBuilder(
+    builder: (BuildContext context, StateSetter mystate) {
+      return Padding(
+        padding: EdgeInsets.all(20),
+        child: Container(
+          padding:
+              EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Align(
+                alignment: Alignment.centerLeft,
+                child: Text(
+                  title,
+                  textAlign: TextAlign.left,
+                  style: TextStyle(
+                    fontSize: 16,
+                  ),
+                ),
+              ),
+              SizedBox(
+                height: 10,
+              ),
+              TextField(
+                controller: mycontroller,
+                decoration: InputDecoration(
+                  hintText: "Tên nhãn…",
+                  hintStyle: TextStyle(
+                    fontSize: 18,
+                  ),
+                ),
+              ),
+              SizedBox(
+                height: 20,
+              ),
+              Container(
+                child: GridView.count(
+                  shrinkWrap: true,
+                  primary: false,
+                  padding: const EdgeInsets.all(4),
+                  childAspectRatio: 2,
+                  crossAxisSpacing: 10,
+                  mainAxisSpacing: 10,
+                  crossAxisCount: 4,
+                  children: List.generate(
+                    labelColors.length,
+                    (index) {
+                      return Ink(
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.all(Radius.circular(5)),
+                          color: Color(int.parse(labelColors[index].color)),
+                        ),
+                        child: labelColors[index].color == labelSelectedColor
+                            ? Container(
+                                alignment: Alignment.center,
+                                child: Icon(
+                                  Icons.check,
+                                  size: 30,
+                                  color: Colors.white,
+                                ),
+                              )
+                            : InkWell(
+                                onTap: () {
+                                  mystate(
+                                    () {
+                                      labelSelectedColor = labelColors[index].color;
+                                    },
+                                  );
+                                },
+                              ),
+                      );
+                    },
+                  ),
+                ),
+              ),
+              SizedBox(
+                height: 10,
+              ),
+              isCreate
+                  ? Row(
+                      mainAxisAlignment: MainAxisAlignment.end,
+                      children: [
+                        TextButton(
+                          onPressed: () {
+                            Navigator.pop(context);
+                          },
+                          child: Text(
+                            "HỦY",
+                            textAlign: TextAlign.right,
+                            style: TextStyle(
+                              fontSize: 18,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ),
+                        TextButton(
+                          onPressed: () {
+                            if (isCreate) {
+                              ///TODO: Create new label if text field contain text
+                            } else {
+                              ///TODO: Edit label
+                            }
+                            Navigator.pop(context);
+                          },
+                          child: Text(
+                            "HOÀN THÀNH",
+                            textAlign: TextAlign.right,
+                            style: TextStyle(
+                              fontSize: 18,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ),
+                      ],
+                    )
+                  : Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        TextButton(
+                          onPressed: () {
+                            ///TODO: Delete label info
+                            Navigator.pop(context);
+                          },
+                          child: Text(
+                            "XÓA",
+                            textAlign: TextAlign.right,
+                            style: TextStyle(
+                              fontSize: 18,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.red,
+                            ),
+                          ),
+                        ),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.end,
+                          children: [
+                            TextButton(
+                              onPressed: () {
+                                Navigator.pop(context);
+                              },
+                              child: Text(
+                                "HỦY",
+                                textAlign: TextAlign.right,
+                                style: TextStyle(
+                                  fontSize: 18,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                            ),
+                            TextButton(
+                              onPressed: () {
+                                if (isCreate) {
+                                  ///TODO: Create new label if text field contain text
+                                } else {
+                                  ///TODO: Edit label
+                                }
+                                Navigator.pop(context);
+                              },
+                              child: Text(
+                                "HOÀN THÀNH",
+                                textAlign: TextAlign.right,
+                                style: TextStyle(
+                                  fontSize: 18,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
+            ],
+          ),
+        ),
+      );
+    },
   );
 }
 
@@ -145,9 +374,18 @@ class settingContent extends StatefulWidget {
 }
 
 class settingContentState extends State<settingContent> {
+  TextEditingController mycontroller = TextEditingController();
   late Boards board;
   late String boardName = "Đặc tả hình thức";
   late String grName = "Shop ngáo và những người bạn";
+  List<Labels> currentLabels = [
+    new Labels(color: "0xff61bd4f", labelName: ""),
+    new Labels(color: "0xfff2d600", labelName: ""),
+    new Labels(color: "0xffffab4a", labelName: ""),
+    new Labels(color: "0xffeb5a46", labelName: ""),
+    new Labels(color: "0xffc377e0", labelName: ""),
+    new Labels(color: "0xff0079bf", labelName: ""),
+  ];
   settingContentState();
 
   @override
@@ -162,6 +400,64 @@ class settingContentState extends State<settingContent> {
     /// Board name inkwell
     content.add(
       InkWell(
+        onTap: () {
+          mycontroller.value = new TextEditingValue(text: boardName);
+          showDialog<String>(
+            context: context,
+            builder: (BuildContext context) => AlertDialog(
+              title: const Text(
+                'Tên',
+                style: TextStyle(fontWeight: FontWeight.bold),
+              ),
+              content: Container(
+                width: MediaQuery. of(context). size. width * 0.8,
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    TextField(
+                      controller: mycontroller,
+                      decoration: InputDecoration(
+                        hintStyle: TextStyle(
+                          fontSize: 18,
+                        ),
+                      ),
+                    ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.end,
+                      children: [
+                        TextButton(
+                          child: Text(
+                            'HỦY',
+                            style: TextStyle(fontWeight: FontWeight.bold),
+                          ),
+                          onPressed: () {
+                            Navigator.of(context).pop();
+                          },
+                        ),
+                        TextButton(
+                          child: Text(
+                            'HOÀN THÀNH',
+                            style: TextStyle(fontWeight: FontWeight.bold),
+                          ),
+                          onPressed: () {
+                            showModalBottomSheet(
+                              context: context,
+                              builder: (BuildContext bc) {
+                                return LabelDetailModalBottom(
+                                    true, Labels(color: "0xffb3bec4", labelName: ""));
+                              },
+                              isScrollControlled: true,
+                            );
+                          },
+                        )
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          );
+        },
         enableFeedback: false,
         child: Padding(
             padding: EdgeInsets.fromLTRB(70, 18, 0, 15),
@@ -175,7 +471,6 @@ class settingContentState extends State<settingContent> {
                     textAlign: TextAlign.left,
                     style: TextStyle(
                       fontSize: 15,
-                      color: Colors.grey,
                     ),
                   ),
                 ),
@@ -189,7 +484,6 @@ class settingContentState extends State<settingContent> {
                     textAlign: TextAlign.left,
                     style: TextStyle(
                       fontSize: 12,
-                      color: Colors.grey,
                     ),
                   ),
                 ),
@@ -202,6 +496,11 @@ class settingContentState extends State<settingContent> {
     /// Group name inkwell
     content.add(
       InkWell(
+        onTap: () {
+          Route route = MaterialPageRoute(
+              builder: (context) => ChangeWorkspace(grName, boardName));
+          Navigator.push(context, route);
+        },
         enableFeedback: false,
         child: Padding(
           padding: EdgeInsets.fromLTRB(70, 18, 0, 15),
@@ -215,7 +514,6 @@ class settingContentState extends State<settingContent> {
                   textAlign: TextAlign.left,
                   style: TextStyle(
                     fontSize: 15,
-                    color: Colors.grey,
                   ),
                   maxLines: 2,
                   overflow: TextOverflow.visible,
@@ -231,7 +529,6 @@ class settingContentState extends State<settingContent> {
                   textAlign: TextAlign.left,
                   style: TextStyle(
                     fontSize: 12,
-                    color: Colors.grey,
                   ),
                 ),
               ),
@@ -248,51 +545,15 @@ class settingContentState extends State<settingContent> {
         onTap: () => showDialog<String>(
           context: context,
           builder: (BuildContext context) => AlertDialog(
-            title: const Text('Chỉnh sửa nhãn', style: TextStyle(fontWeight: FontWeight.bold),),
+            title: const Text(
+              'Chỉnh sửa nhãn',
+              style: TextStyle(fontWeight: FontWeight.bold),
+            ),
             content: Container(
+              width: MediaQuery. of(context). size. width * 0.8,
               child: Column(
                 mainAxisSize: MainAxisSize.min,
-                children: [
-                  Padding(
-                    padding: const EdgeInsets.fromLTRB(0, 0, 0, 4),
-                    child: customColorInkWell(Colors.green),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.fromLTRB(0, 0, 0, 4),
-                    child: customColorInkWell(Colors.yellow),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.fromLTRB(0, 0, 0, 4),
-                    child: customColorInkWell(Colors.orange),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.fromLTRB(0, 0, 0, 4),
-                    child: customColorInkWell(Colors.red),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.fromLTRB(0, 0, 0, 4),
-                    child: customColorInkWell(Colors.deepPurpleAccent),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.fromLTRB(0, 0, 0, 4),
-                    child: customColorInkWell(Colors.blueAccent),
-                  ),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      TextButton(
-                        child: Text('HOÀN TẤT', style: TextStyle(fontWeight: FontWeight.bold),),
-                        onPressed: () {
-                          Navigator.of(context).pop();
-                        },
-                      ),
-                      TextButton(
-                        child: Text('TẠO NHÃN MỚI', style: TextStyle(fontWeight: FontWeight.bold),),
-                        onPressed: () {},
-                      )
-                    ],
-                  ),
-                ],
+                children: CreateBody(),
               ),
             ),
           ),
@@ -328,7 +589,8 @@ class settingContentState extends State<settingContent> {
     content.add(
       InkWell(
         onTap: () {
-          Route route = MaterialPageRoute(builder: (context)=>ChangeBackgroundScreen(boardName));
+          Route route = MaterialPageRoute(
+              builder: (context) => ChangeBackgroundScreen(boardName));
           Navigator.push(context, route);
         },
         child: Padding(
@@ -372,20 +634,30 @@ class settingContentState extends State<settingContent> {
         onTap: () => showDialog<String>(
           context: context,
           builder: (BuildContext context) => AlertDialog(
-            title: const Text('Rời khỏi bảng', style: TextStyle(fontWeight: FontWeight.bold),),
-            content: Text("Bạn có chắc muốn rời khỏi bảng này không? Bạn có thể sẽ không được tham gia bảng sau này."),
+            title: const Text(
+              'Rời khỏi bảng',
+              style: TextStyle(fontWeight: FontWeight.bold),
+            ),
+            content: Text(
+                "Bạn có chắc muốn rời khỏi bảng này không? Bạn có thể sẽ không được tham gia bảng sau này."),
             actions: [
               TextButton(
-                child: Text('HỦY', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+                child: Text('HỦY',
+                    style:
+                        TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
                 onPressed: () {
                   Navigator.of(context).pop();
                 },
               ),
               TextButton(
-                child: Text('RỜI BỎ', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),),
+                child: Text(
+                  'RỜI BỎ',
+                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+                ),
                 onPressed: () {
                   /// TODO: delete user from board
-                  Route route = MaterialPageRoute(builder: (context)=>MainScreen());
+                  Route route =
+                      MaterialPageRoute(builder: (context) => MainScreen());
                   Navigator.push(context, route);
                 },
               )
@@ -421,6 +693,55 @@ class settingContentState extends State<settingContent> {
     return Column(
       children: content,
     );
+  }
+
+  List<Widget> CreateBody() {
+    var content = <Widget>[];
+    for (int i = 0; i < currentLabels.length; i++) {
+      content.add(
+        Padding(
+          padding: const EdgeInsets.fromLTRB(0, 0, 0, 4),
+          child: customColorInkWell(
+            currentLabels[i],
+            context,
+          ),
+        ),
+      );
+    }
+
+    content.add(
+      Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          TextButton(
+            child: Text(
+              'HOÀN TẤT',
+              style: TextStyle(fontWeight: FontWeight.bold),
+            ),
+            onPressed: () {
+              Navigator.of(context).pop();
+            },
+          ),
+          TextButton(
+            child: Text(
+              'TẠO NHÃN MỚI',
+              style: TextStyle(fontWeight: FontWeight.bold),
+            ),
+            onPressed: () {
+              showModalBottomSheet(
+                context: context,
+                builder: (BuildContext bc) {
+                  return LabelDetailModalBottom(
+                      true, Labels(color: "0xffb3bec4", labelName: ""));
+                },
+                isScrollControlled: true,
+              );
+            },
+          )
+        ],
+      ),
+    );
+    return content;
   }
 }
 
@@ -517,7 +838,10 @@ class mainMenuState extends State<mainMenu> {
                     });
                   }),
                   Divider(),
-                  CustomListTile(Icons.delete, "Xóa bảng", () {}),
+                  CustomListTile(Icons.delete, "Xóa bảng", () {
+                    ///TODO: process to delete board
+                    Navigator.of(context).pushNamed(MAIN_SCREEN);
+                  }),
                   CustomListTile(Icons.settings, "Thiết lập bảng", () {
                     setState(() {
                       state = 4;

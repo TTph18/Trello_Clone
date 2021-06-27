@@ -8,7 +8,6 @@ import 'package:flutter/widgets.dart';
 import 'package:trello_clone/models/user.dart';
 import 'package:trello_clone/models/workspaces.dart';
 import 'package:trello_clone/route_path.dart';
-import 'package:trello_clone/screens/board_screen/board_screen.dart';
 import 'package:trello_clone/services/database.dart';
 import 'package:trello_clone/widgets/reuse_widget/avatar.dart';
 import 'package:trello_clone/widgets/reuse_widget/custom_list_tile.dart';
@@ -129,7 +128,10 @@ class NavigationMain extends StatelessWidget {
               ),
               CustomListTile(Icons.credit_card, "Thẻ của tôi", () => {}),
               CustomListTile(Icons.shield, "Đổi mật khẩu", () => {}),
-              CustomListTile(Icons.logout, "Đăng xuất", () => {}),
+              CustomListTile(Icons.logout, "Đăng xuất", () => {
+                ///TODO: process on logout
+              Navigator.of(context).pushNamed(LOGIN)
+              }),
             ],
           );
         });

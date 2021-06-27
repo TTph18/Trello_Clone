@@ -19,9 +19,9 @@ class ChangeBackgroundScreenState extends State<ChangeBackgroundScreen> {
   int bgSelectedIndex = 0;
   List<AssetImage> colors = [
     AssetImage("assets/images/bgImage/DarkBlueBG.png"),
-    AssetImage("assets/images/bgImage/YellowBG.png"),
+    AssetImage("assets/images/bgImage/OrangeBG.png"),
     AssetImage("assets/images/bgImage/DarkGreenBG.png"),
-    AssetImage("assets/images/bgImage/BrownBG.png"),
+    AssetImage("assets/images/bgImage/RedBG.png"),
     AssetImage("assets/images/bgImage/PurpleBG.png"),
     AssetImage("assets/images/bgImage/PinkBG.png"),
     AssetImage("assets/images/bgImage/LightGreenBG.png"),
