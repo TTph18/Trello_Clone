@@ -234,7 +234,9 @@ class _NavigationState extends State<Navigation> {
                 if (snapshot.hasData) {
                   hasData = true;
                 } else
-                  hasData = false;
+                  return Container(
+                      alignment: FractionalOffset.center,
+                      child: CircularProgressIndicator());
                 return DrawerHeader(
                   decoration: BoxDecoration(
                     color: Colors.blue,
