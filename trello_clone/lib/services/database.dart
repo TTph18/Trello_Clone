@@ -46,6 +46,7 @@ class DatabaseService {
         .where('workspaceID', isEqualTo: workspaceID)
         .get();
     List brID = snapshot.docs.first["boardList"];
+    if (brID == []) { return brList; }
     for(var temp in brID) {
       var _snapshot = await FirebaseFirestore.instance
           .collection('boards')
@@ -54,6 +55,15 @@ class DatabaseService {
       brList.add(_snapshot.docs.first);
     }
     return brList;
+  }
+
+  static Future getlistList(String boardID) async {
+    var snapshot = await FirebaseFirestore.instance
+        .collection('boards')
+        .doc(boardID)
+        .collection('lists')
+        .get();
+    return snapshot.docs;
   }
 
   static Future<void> addBoard(String boardName, String workspaceID) async {
@@ -77,15 +87,23 @@ class DatabaseService {
         .update({"boardList": FieldValue.arrayUnion([docRef.id]),});
   }
 
+  static Future<void> createThreeList(String boardID) async {
+
+  }
+
   static Future<void> addCard(String boardID, String listID, String cardName, String userID, DateTime startDate, DateTime dueDate) async {
     String uid = FirebaseAuth.instance.currentUser!.uid;
     final docRef = await FirebaseFirestore.instance.collection('card').add({
       'cardName': cardName,
-      'assignedUser': [userID],
+      'createdBy': uid,
+      'description' : "",
+      'assignedUser': FieldValue.arrayUnion([uid]),
+      'labelList' : FieldValue.arrayUnion([]),
+      'status' : true,
       'startDate': Timestamp.fromDate(startDate),
       'dueDate': Timestamp.fromDate(dueDate)
     });
-    //add board uid to wp
+    //add card uid to list
     var snapshot = await FirebaseFirestore.instance
         .collection('boards')
         .doc(boardID)

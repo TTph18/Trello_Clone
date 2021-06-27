@@ -1,6 +1,7 @@
 import 'dart:ui';
 
 import 'package:animate_icons/animate_icons.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/painting.dart';
@@ -11,8 +12,11 @@ import 'package:trello_clone/drag_and_drop/drag_and_drop_item.dart';
 import 'package:trello_clone/drag_and_drop/drag_and_drop_list.dart';
 import 'package:trello_clone/drag_and_drop/drag_and_drop_lists.dart';
 import 'package:trello_clone/icons/app_icons.dart';
+import 'package:trello_clone/models/boards.dart';
+import 'package:trello_clone/models/lists.dart';
 import 'package:trello_clone/models/user.dart';
 import 'package:trello_clone/screens/board_screen/end_drawer.dart';
+import 'package:trello_clone/services/database.dart';
 import 'package:trello_clone/widgets/reuse_widget/avatar.dart';
 
 import '../../route_path.dart';
@@ -393,32 +397,30 @@ Widget CreateChecklistItem(int finish, int total) {
 }
 
 class BoardScreen extends StatefulWidget {
-  final String boardName;
+  final Boards boards;
   final bool isShowDrawer;
-  BoardScreen(this.boardName, this.isShowDrawer);
+  BoardScreen(this.boards, this.isShowDrawer);
 
   @override
-  BoardScreenState createState() => BoardScreenState(boardName, isShowDrawer);
+  BoardScreenState createState() => BoardScreenState(boards, isShowDrawer);
 }
 
 class BoardScreenState extends State<BoardScreen> {
   final GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey<ScaffoldState>();
-  late String boardName;
+  late Boards boards;
   late bool isShowDrawer;
-  late List<String> listName;
+  late List<String> listName = [];
   late List<_card> cards;
   var controller = AnimateIconController();
   AssetImage bg = AssetImage("assets/images/BlueBG.png");
 
-  BoardScreenState(this.boardName, this.isShowDrawer);
+  BoardScreenState(this.boards, this.isShowDrawer);
 
   late List<ListCard> _lists;
 
   @override
   void initState() {
     super.initState();
-
-    listName = ["To Do", "Completed"];
     cards = [
       _card("Thẻ 1"),
       _card("Thẻ 2"),
@@ -449,7 +451,7 @@ class BoardScreenState extends State<BoardScreen> {
       key: _scaffoldKey,
       backgroundColor: const Color.fromRGBO(0, 121, 190, 1.0),
       appBar: AppBar(
-          title: Text(boardName),
+          title: Text(boards.boardName),
           backgroundColor: const Color.fromRGBO(0, 64, 126, 1.0),
           leading: Builder(builder: (BuildContext context) {
             return IconButton(
@@ -487,27 +489,54 @@ class BoardScreenState extends State<BoardScreen> {
             fit: BoxFit.cover,
           ),
         ),
-        child: DragAndDropLists(
-          children: List.generate(_lists.length, (index) => _buildList(index)),
-          onItemReorder: _onItemReorder,
-          onListReorder: _onListReorder,
-          axis: Axis.horizontal,
-          listWidth: 320,
-          listDraggingWidth: 288,
-          listDecoration: BoxDecoration(
-            color: Color.fromRGBO(244, 245, 247, 1.0),
-            borderRadius: BorderRadius.all(Radius.circular(7.0)),
-            boxShadow: <BoxShadow>[
-              BoxShadow(
-                color: Colors.black45,
-                spreadRadius: 3.0,
-                blurRadius: 6.0,
-                offset: Offset(2, 3),
-              ),
-            ],
-          ),
-          listPadding: EdgeInsets.fromLTRB(16, 8, 16, 8),
-        ),
+        child: FutureBuilder(
+            future: DatabaseService.getlistList(boards.boardID),
+            builder: (BuildContext context, AsyncSnapshot snapshot){
+              if (!snapshot.hasData)
+                return SizedBox();
+              for(var item in snapshot.data)
+              {
+                Lists _list = Lists.fromDocument(item);
+                listName.add(_list.listName);
+              }
+              _lists = List.generate(listName.length + 1, (outerIndex) {
+                if (outerIndex < listName.length)
+                  return ListCard(
+                    name: listName[outerIndex],
+                    children:
+                    List.generate(cards.length, (innerIndex) => cards[innerIndex]),
+                    isLast: false,
+                  );
+                else
+                  return ListCard(
+                    name: "Add List",
+                    children: [],
+                    isLast: true,
+                  );
+              });
+              return  DragAndDropLists(
+                children: List.generate(_lists.length, (index) => _buildList(index)),
+                onItemReorder: _onItemReorder,
+                onListReorder: _onListReorder,
+                axis: Axis.horizontal,
+                listWidth: 320,
+                listDraggingWidth: 288,
+                listDecoration: BoxDecoration(
+                  color: Color.fromRGBO(244, 245, 247, 1.0),
+                  borderRadius: BorderRadius.all(Radius.circular(7.0)),
+                  boxShadow: <BoxShadow>[
+                    BoxShadow(
+                      color: Colors.black45,
+                      spreadRadius: 3.0,
+                      blurRadius: 6.0,
+                      offset: Offset(2, 3),
+                    ),
+                  ],
+                ),
+                listPadding: EdgeInsets.fromLTRB(16, 8, 16, 8),
+              );
+            })
+
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {},

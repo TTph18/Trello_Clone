@@ -498,7 +498,7 @@ class settingContentState extends State<settingContent> {
       InkWell(
         onTap: () {
           Route route = MaterialPageRoute(
-              builder: (context) => ChangeWorkspace(grName, boardName));
+              builder: (context) => ChangeWorkspace(grName, board));
           Navigator.push(context, route);
         },
         enableFeedback: false,
@@ -590,7 +590,7 @@ class settingContentState extends State<settingContent> {
       InkWell(
         onTap: () {
           Route route = MaterialPageRoute(
-              builder: (context) => ChangeBackgroundScreen(boardName));
+              builder: (context) => ChangeBackgroundScreen(board));
           Navigator.push(context, route);
         },
         child: Padding(

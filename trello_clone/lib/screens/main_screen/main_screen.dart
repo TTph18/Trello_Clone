@@ -20,16 +20,16 @@ class MainScreen extends StatefulWidget {
 
 class BoardInfo extends StatelessWidget {
   AssetImage image;
-  String text;
+  Boards boards;
   Function onTap;
 
-  BoardInfo(this.image, this.text, this.onTap);
+  BoardInfo(this.image, this.boards, this.onTap);
 
   @override
   Widget build(BuildContext context) {
     return InkWell(
       onTap: () {
-        Route route = MaterialPageRoute(builder: (context)=>BoardScreen(text, false));
+        Route route = MaterialPageRoute(builder: (context)=>BoardScreen(boards, false));
         Navigator.push(context, route);
       },
       child: Container(
@@ -48,7 +48,7 @@ class BoardInfo extends StatelessWidget {
               ),
             ),
             Text(
-              text,
+              boards.boardName,
               style: TextStyle(fontSize: 20),
             ),
           ],
@@ -101,6 +101,7 @@ class GroupName extends StatelessWidget {
 class GroupInfo extends StatelessWidget {
   late String grName;
   late String grID;
+  bool hasData = false;
   GroupInfo(this.grName, this.grID);
 
   List<AssetImage> boardImage = [
@@ -123,17 +124,20 @@ class GroupInfo extends StatelessWidget {
         FutureBuilder(
         future: DatabaseService.getBoardList(grID),
         builder: (BuildContext context, AsyncSnapshot snapshot){
-          if (!snapshot.hasData)
-            return Container(
-                alignment: FractionalOffset.center,
-                child: CircularProgressIndicator());
+          if (!snapshot.hasData) {
+            hasData = false;
+            return SizedBox();
+          } else hasData = true;
+            if(!hasData) {
+              return SizedBox();
+            } else
           return ListView.builder(
             physics: ClampingScrollPhysics(),
             shrinkWrap: true,
             itemCount: snapshot.data.length,
             itemBuilder: (BuildContext context, int index) {
               Boards _br = Boards.fromDocument(snapshot.data[index]);
-              return BoardInfo(boardImage[index], _br.boardName.toString(),
+              return BoardInfo(boardImage[index], _br,
                   boardOnPress[index]);
             },
           );

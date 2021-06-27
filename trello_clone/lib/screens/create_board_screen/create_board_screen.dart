@@ -15,7 +15,7 @@ class CreateBoardScreenState extends State<CreateBoardScreen> {
   Workspaces? selectedGroup;
   List<Workspaces> groupList = [];
   String? selectedPermission = "Không gian làm việc";
-  List<String> permissionList = ["Riêng tư", "Không gian làm việc", "Công khai"];
+  List<String> permissionList = ["Riêng tư", "Không gian làm việc"];
 
   @override
   Widget build(BuildContext context) {
@@ -78,7 +78,6 @@ class CreateBoardScreenState extends State<CreateBoardScreen> {
                           alignment: FractionalOffset.center,
                           child: CircularProgressIndicator());
                     }
-                    List<DropdownMenuItem> grItems = [];
                     for(var item in snapshot.data)
                     {
                       Workspaces _wp = Workspaces.fromDocument(item);
@@ -159,7 +158,6 @@ class CreateBoardScreenState extends State<CreateBoardScreen> {
                       ],
                     ),
                   ),
-
                   DropdownMenuItem(
                     value: "Không gian làm việc",
                     child: Column(
@@ -174,23 +172,6 @@ class CreateBoardScreenState extends State<CreateBoardScreen> {
                         SizedBox(height: 5,),
                         Text("Bảng hiển thị với các thành viên của Không gian làm việc $selectedGroup. Chỉ những người được thêm vào bảng mới có quyền chỉnh sửa.", style: TextStyle(fontSize: 18.0)),
                         SizedBox(height: 15,),
-                      ],
-                    ),
-                  ),
-
-                  DropdownMenuItem(
-                    value: "Công khai",
-                    child: Column(
-                      children: [
-                        Row(
-                          children: [
-                            Icon(Icons.public),
-                            SizedBox(width: 15,),
-                            Text("Công khai", style: TextStyle(fontSize: 20.0)),
-                          ],
-                        ),
-                        SizedBox(height: 5,),
-                        Text("Đây là bảng công khai. Bất kỳ ai có liên kết tới bảng này đều có thể xem bảng. Bảng có thể được tìm thấy trên các công cụ tìm kiếm như Google. Chỉ những người được thêm vào bảng mới có quyền chỉnh sửa.", style: TextStyle(fontSize: 18.0)),
                       ],
                     ),
                   ),
