@@ -17,6 +17,8 @@ class CreateCardScreenState extends State<CreateCardScreen> {
     "Tên danh sách 2",
     "Tên danh sách 3"
   ];
+  List<String> nameList = ["Châu", "Cúc", "Phương"];
+
   var cardNameTxtCtrl = TextEditingController();
   var descriptionTxtCtrl = TextEditingController();
 
@@ -107,10 +109,10 @@ class CreateCardScreenState extends State<CreateCardScreen> {
                 onChanged: selectedBoard == ""
                     ? null
                     : (value) {
-                        setState(() {
-                          selectedList = value;
-                        });
-                      },
+                  setState(() {
+                    selectedList = value;
+                  });
+                },
                 selectedItemBuilder: (BuildContext context) {
                   return listList.map<Widget>((String item) {
                     return Text(
@@ -194,35 +196,50 @@ class CreateCardScreenState extends State<CreateCardScreen> {
                           children: [
                             selectedBoard == ""
                                 ? TableRow(
-                                    children: [
-                                      SizedBox(),
-                                      SizedBox(),
-                                    ],
-                                  )
+                              children: [
+                                SizedBox(),
+                                SizedBox(),
+                              ],
+                            )
                                 : TableRow(
-                                    children: [
-                                      IconButton(
-                                        icon: Icon(MyFlutterApp.person_outline),
-                                        alignment: Alignment.centerLeft,
-                                        onPressed: () {},
-                                      ),
-                                      Container(
-                                        alignment: Alignment.centerLeft,
-                                        child: CircleAvatar(
-                                          radius: 25,
-                                          backgroundColor: Colors.green,
-                                          child: IconButton(
-                                            icon: Icon(
-                                              Icons.add,
-                                              color: Colors.white,
-                                              size: 18,
+                              children: [
+                                IconButton(
+                                  icon: Icon(MyFlutterApp.person_outline),
+                                  alignment: Alignment.centerLeft,
+                                  onPressed: () {},
+                                ),
+                                Container(
+                                  alignment: Alignment.centerLeft,
+                                  child: CircleAvatar(
+                                      radius: 25,
+                                      backgroundColor: Colors.green,
+                                      child: PopupMenuButton(
+                                        itemBuilder: (context) =>
+                                            List.generate(
+                                              nameList.length,
+                                                  (index) =>
+                                                  PopupMenuItem(
+                                                    value: nameList[index],
+                                                    child: ListTile(
+                                                      leading: CircleAvatar(
+                                                        child: Text(
+                                                            '${nameList[index][0]}'),
+                                                      ),
+                                                      title: Text(
+                                                          '${nameList[index]}'),
+                                                    ),
+                                                  ),
                                             ),
-                                            onPressed: () {},
-                                          ),
+                                        icon: Icon(
+                                          Icons.add,
+                                          color: Colors.white,
+                                          size: 18,
                                         ),
-                                      ),
-                                    ],
+                                      )
                                   ),
+                                ),
+                              ],
+                            ),
                             TableRow(
                               children: [
                                 IconButton(
@@ -239,8 +256,8 @@ class CreateCardScreenState extends State<CreateCardScreen> {
                                   style: ButtonStyle(
                                     alignment: Alignment.bottomLeft,
                                     overlayColor:
-                                        MaterialStateProperty.all<Color>(
-                                            Colors.white),
+                                    MaterialStateProperty.all<Color>(
+                                        Colors.white),
                                   ),
                                 ),
                               ],
@@ -257,8 +274,8 @@ class CreateCardScreenState extends State<CreateCardScreen> {
                                   style: ButtonStyle(
                                     alignment: Alignment.centerLeft,
                                     overlayColor:
-                                        MaterialStateProperty.all<Color>(
-                                            Colors.white),
+                                    MaterialStateProperty.all<Color>(
+                                        Colors.white),
                                   ),
                                 ),
                               ],
