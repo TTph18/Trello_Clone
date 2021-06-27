@@ -130,7 +130,7 @@ class CreateBoardScreenState extends State<CreateBoardScreen> {
 
                 onChanged: (value) {
                   setState(() {
-                    selectedPermission = value;
+                    selectedPermission = permissionList.where((element) => element == value ) as String?;
                   });
                 },
 

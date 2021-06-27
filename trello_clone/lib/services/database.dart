@@ -40,6 +40,7 @@ class DatabaseService {
   }
 
   static Future getBoardList(String workspaceID) async {
+    String uid = FirebaseAuth.instance.currentUser!.uid;
     List brList = [];
     var snapshot = await FirebaseFirestore.instance
         .collection('workspaces')
@@ -51,6 +52,7 @@ class DatabaseService {
       var _snapshot = await FirebaseFirestore.instance
           .collection('boards')
           .where('boardID', isEqualTo: temp)
+          .where('userList', arrayContains: uid)
           .get();
       brList.add(_snapshot.docs.first);
     }
@@ -110,5 +112,19 @@ class DatabaseService {
         .collection('lists')
         .doc(listID)
         .update({"cardList": FieldValue.arrayUnion([docRef.id])});
+  }
+
+  //get list user data
+  static Future getListUserData(List<String> userIDList) async {
+    List listUser = [];
+    for(var item in userIDList)
+      {
+        var snapshot = await FirebaseFirestore.instance
+            .collection('users')
+            .where('userID', isEqualTo: item)
+            .get();
+        listUser.add(snapshot.docs.first);
+      }
+    return listUser;
   }
 }
