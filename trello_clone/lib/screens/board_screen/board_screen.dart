@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:ui';
 
 import 'package:animate_icons/animate_icons.dart';
@@ -17,7 +18,12 @@ import 'package:trello_clone/widgets/reuse_widget/avatar.dart';
 
 import '../../route_path.dart';
 
-class AddListCard extends StatelessWidget {
+class AddListCard extends StatefulWidget {
+  @override
+  AddListCardState createState() => AddListCardState();
+}
+
+class AddListCardState extends State<AddListCard> {
   @override
   Widget build(BuildContext context) {
     return Padding(
@@ -253,14 +259,12 @@ class _cardState extends State<_card> {
   }
 }
 
-class NewCard extends StatelessWidget{
+class NewCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Card(
       color: Colors.white,
-      child: TextField(
-
-      ),
+      child: TextField(),
     );
   }
 }
@@ -273,47 +277,6 @@ class ListCard {
   ListCard({required this.name, required this.children, required this.isLast});
 }
 
-Widget PopMenu() {
-  return Container(
-    height: 18,
-    width: 20,
-    child: PopupMenuButton(
-        iconSize: 25,
-        padding: EdgeInsets.zero,
-        icon: Icon(Icons.more_vert),
-        onSelected: (value) {},
-        itemBuilder: (context) => [
-              PopupMenuItem(
-                value: 1,
-                child: Text('Di chuyển danh sách'),
-              ),
-              PopupMenuItem(
-                value: 2,
-                child: Text('Sao chép danh sách'),
-              ),
-              PopupMenuItem(
-                value: 3,
-                child: Text('Lưu trữ danh sách'),
-              ),
-              PopupMenuItem(
-                value: 4,
-                child: Text('Di chuyển tất cả các thẻ trong danh sách'),
-              ),
-              PopupMenuItem(
-                value: 5,
-                child: Text('Lưu trữ tất cả các thẻ'),
-              ),
-              PopupMenuItem(
-                value: 6,
-                child: Text('Xem'),
-              ),
-              PopupMenuItem(
-                value: 7,
-                child: Text('Sắp xếp danh sách'),
-              ),
-            ]),
-  );
-}
 
 Widget CreateDateString(DateTime dateStart, DateTime dateEnd, bool isFinish) {
   var contents = <Widget>[];
@@ -413,12 +376,21 @@ class BoardScreenState extends State<BoardScreen> {
   BoardScreenState(this.boardName, this.isShowDrawer);
 
   late List<ListCard> _lists;
+  late List<bool> isTapNewCard = List.filled(listName.length, false);
+  TextEditingController newCardController = TextEditingController();
+  late bool isTapNewList = false;
+  TextEditingController newListController = TextEditingController();
 
+  late List<ScrollController> controllers;
   @override
   void initState() {
     super.initState();
 
     listName = ["To Do", "Completed"];
+    controllers = List.filled(listName.length + 1, new ScrollController());
+    print(listName.length + 1);
+    isTapNewCard = List.filled(listName.length, false);
+    isTapNewList = false;
     cards = [
       _card("Thẻ 1"),
       _card("Thẻ 2"),
@@ -449,37 +421,70 @@ class BoardScreenState extends State<BoardScreen> {
       key: _scaffoldKey,
       backgroundColor: const Color.fromRGBO(0, 121, 190, 1.0),
       appBar: AppBar(
-          title: Text(boardName),
+          title: isTapNewList ? Text("Thêm danh sách") : Text(boardName),
           backgroundColor: const Color.fromRGBO(0, 64, 126, 1.0),
-          leading: Builder(builder: (BuildContext context) {
-            return IconButton(
-              icon: const Icon(Icons.arrow_back),
-              onPressed: () {
-                Navigator.of(context).pushNamed(MAIN_SCREEN);
-              },
-            );
-          }),
-          actions: [
-            IconButton(
-              icon: const Icon(Icons.filter_list),
-              onPressed: () {},
-            ),
-            IconButton(
-              icon: const Icon(MyFlutterApp.bell),
-              onPressed: () {},
-            ),
-            IconButton(
-                icon: const Icon(Icons.more_horiz),
-                onPressed: () {
-                  _scaffoldKey.currentState!.openEndDrawer();
-                }),
-          ]),
+          leading: isTapNewList
+              ? IconButton(
+                  onPressed: () {
+                    setState(
+                      () {
+                        isTapNewList = false;
+                        newListController.text = "";
+                      },
+                    );
+                  },
+                  icon: Icon(Icons.close))
+              : Builder(
+                  builder: (BuildContext context) {
+                    return IconButton(
+                      icon: const Icon(Icons.arrow_back),
+                      onPressed: () {
+                        Navigator.of(context).pushNamed(MAIN_SCREEN);
+                      },
+                    );
+                  },
+                ),
+          actions: isTapNewList
+              ? [
+                  IconButton(
+                    icon: const Icon(Icons.check),
+                    onPressed: () {
+                      if (newListController.text != "") {
+                        ///TODO: Add new list to board
+                        setState(
+                          () {
+                            ///TODO: Reload list of lists in board
+                            isTapNewList = false;
+                            newListController.text = "";
+                          },
+                        );
+                      }
+                      ;
+                    },
+                  ),
+                ]
+              : [
+                  IconButton(
+                    icon: const Icon(Icons.filter_list),
+                    onPressed: () {},
+                  ),
+                  IconButton(
+                    icon: const Icon(MyFlutterApp.bell),
+                    onPressed: () {},
+                  ),
+                  IconButton(
+                      icon: const Icon(Icons.more_horiz),
+                      onPressed: () {
+                        _scaffoldKey.currentState!.openEndDrawer();
+                      }),
+                ]),
       endDrawer: mainMenu(Users(
           userID: "12345",
           userName: "name1",
           profileName: "Name 1",
           email: '123456@gmail.com',
-          avatar: 'assets/images/BlueBG.png', workspaceList: [])),
+          avatar: 'assets/images/BlueBG.png',
+          workspaceList: [])),
       body: Container(
         decoration: BoxDecoration(
           image: DecorationImage(
@@ -535,6 +540,7 @@ class BoardScreenState extends State<BoardScreen> {
     var innerList = _lists[outerIndex];
     if (!innerList.isLast)
       return DragAndDropList(
+        controller: controllers[outerIndex],
         header: Row(
           children: <Widget>[
             Expanded(
@@ -555,34 +561,99 @@ class BoardScreenState extends State<BoardScreen> {
                           fontSize: 18,
                           fontWeight: FontWeight.bold),
                     ),
-                    PopMenu(),
+                    Container(
+                      height: 18,
+                      width: 20,
+                      child: PopupMenuButton(
+                        iconSize: 25,
+                        padding: EdgeInsets.zero,
+                        icon: Icon(Icons.more_vert),
+                        onSelected: (value) {},
+                        itemBuilder: (context) => [
+                          PopupMenuItem(
+                            value: 1,
+                            child: Text('Thêm thẻ'),
+                          ),
+                          PopupMenuItem(
+                            value: 2,
+                            child: Text('Di chuyển danh sách'),
+                          ),
+                          PopupMenuItem(
+                            value: 3,
+                            child: Text('Xóa danh sách'),
+                          ),
+                        ],
+                          ),
+                        ),
+                ],
+                      ),
+                    ),),
+                  ],
+                ),
+        footer: isTapNewCard[outerIndex]
+            ? Card(
+                color: Colors.white,
+                child: InkWell(
+                  customBorder: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(6),
+                  ),
+                  child: Ink(
+                    width: 308,
+                    child: Container(
+                      child: Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Focus(
+                          onFocusChange: (hasFocus) {
+                            if (!hasFocus) {
+                              setState(() {
+                                isTapNewCard[outerIndex] = false;
+                                newCardController.text = "";
+                              });
+                            }
+                          },
+                          child: TextField(
+                            autofocus: true,
+                            controller: newCardController,
+                            decoration: InputDecoration(
+                              hintText: "Tên thẻ",
+                              hintStyle: TextStyle(
+                                fontSize: 18,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              )
+            : TextButton(
+                style: TextButton.styleFrom(
+                  backgroundColor: Color.fromRGBO(244, 245, 247, 1.0),
+                ),
+                onPressed: () {
+                  setState(() {
+                    //print("INFORMATION: begin");
+                    isTapNewCard[outerIndex] = true;
+                    //controllers[outerIndex].jumpTo(controllers[outerIndex].position.maxScrollExtent);
+                    //print("INFORMATION: end");
+                  });
+                },
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: <Widget>[
+                    Icon(
+                      Icons.add,
+                      color: Color.fromRGBO(139, 196, 134, 1.0),
+                    ),
+                    Text(
+                      "Thêm thẻ",
+                      style:
+                          TextStyle(color: Color.fromRGBO(129, 184, 120, 1.0)),
+                    ),
                   ],
                 ),
               ),
-            ),
-          ],
-        ),
-        footer: TextButton(
-          style: TextButton.styleFrom(
-            backgroundColor: Color.fromRGBO(244, 245, 247, 1.0),
-          ),
-          onPressed: () {
-
-          },
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: <Widget>[
-              Icon(
-                Icons.add,
-                color: Color.fromRGBO(139, 196, 134, 1.0),
-              ),
-              Text(
-                "Thêm thẻ",
-                style: TextStyle(color: Color.fromRGBO(129, 184, 120, 1.0)),
-              ),
-            ],
-          ),
-        ),
         leftSide: VerticalDivider(
           color: Color.fromRGBO(244, 245, 247, 1.0),
           width: 6,
@@ -600,27 +671,88 @@ class BoardScreenState extends State<BoardScreen> {
         ),
       );
     else {
-      return DragAndDropList(
-        header: TextButton(
-          style: TextButton.styleFrom(
-            backgroundColor: Color.fromRGBO(244, 245, 247, 1.0),
-          ),
-          onPressed: () {},
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: <Widget>[
-              Text(
-                "Thêm danh sách",
-                style: TextStyle(color: Color.fromRGBO(129, 184, 120, 1.0)),
+      if (isTapNewList) {
+        return DragAndDropList(
+          controller: controllers[outerIndex],
+          maxheight: MediaQuery.of(context).size.height * 0.7,
+          header: Card(
+            color: Colors.white,
+            child: InkWell(
+              customBorder: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(6),
               ),
-            ],
+              child: Ink(
+                width: 308,
+                child: Container(
+                  child: Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Focus(
+                      onFocusChange: (hasFocus) {
+                        if (!hasFocus) {
+                          setState(() {
+                            isTapNewList = false;
+                            newListController.text = "";
+                          });
+                        }
+                      },
+                      child: TextField(
+                        autofocus: true,
+                        controller: newListController,
+                        decoration: InputDecoration(
+                          hintText: "Tên danh sách",
+                          hintStyle: TextStyle(
+                            fontSize: 18,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ),
           ),
-        ),
-        backgroundColor: Color.fromRGBO(244, 245, 247, 0),
-        canDrag: false,
-        children: [],
-      );
+          backgroundColor: Color.fromRGBO(244, 245, 247, 0),
+          canDrag: false,
+          children: [],
+        );
+      } else {
+        return DragAndDropList(
+          controller: controllers[outerIndex],
+          maxheight: MediaQuery.of(context).size.height * 0.7,
+          header: TextButton(
+            style: TextButton.styleFrom(
+              backgroundColor: Color.fromRGBO(244, 245, 247, 1.0),
+            ),
+            onPressed: () {
+              setState(() {
+                isTapNewList = true;
+              });
+            },
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: <Widget>[
+                Text(
+                  "Thêm danh sách",
+                  style: TextStyle(color: Color.fromRGBO(129, 184, 120, 1.0)),
+                ),
+              ],
+            ),
+          ),
+          backgroundColor: Color.fromRGBO(244, 245, 247, 0),
+          canDrag: false,
+          children: [],
+        );
+      }
     }
+  }
+
+  @override
+  void dispose() {
+    for (int i = 0; i < controllers.length; i++)
+      {
+        controllers[i].dispose();
+      }
+    super.dispose();
   }
 
   _buildItem(_card item) {

@@ -54,8 +54,11 @@ class DragAndDropList implements DragAndDropListInterface {
   /// Set to false if it must remain fixed.
   final bool canDrag;
 
+  final ScrollController controller;
+
   DragAndDropList({
     required this.children,
+    required this.controller,
     this.header,
     this.footer,
     this.leftSide,
@@ -66,7 +69,7 @@ class DragAndDropList implements DragAndDropListInterface {
     this.horizontalAlignment = MainAxisAlignment.start,
     this.verticalAlignment = CrossAxisAlignment.start,
     this.canDrag = true,
-    this.maxheight = double.infinity,
+    required this.maxheight,
     this.backgroundColor = const Color.fromRGBO(244, 245, 247, 1.0),
   });
 
@@ -81,6 +84,7 @@ class DragAndDropList implements DragAndDropListInterface {
       constraints: BoxConstraints(
           minHeight: 0, minWidth: double.infinity, maxHeight: maxheight*0.7),
       child: ListView(
+        controller: controller,
         shrinkWrap: true,
         children: _generateDragAndDropListInnerContents(params),
       ),
