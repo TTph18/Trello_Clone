@@ -2,18 +2,19 @@ import 'dart:ui';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:trello_clone/models/boards.dart';
 import 'package:trello_clone/screens/board_screen/board_screen.dart';
 
 class ChangeBackgroundScreen extends StatefulWidget {
-  String boardName;
-  ChangeBackgroundScreen(this.boardName);
+  Boards boards;
+  ChangeBackgroundScreen(this.boards);
   @override
   ChangeBackgroundScreenState createState() =>
-      ChangeBackgroundScreenState(boardName);
+      ChangeBackgroundScreenState(boards);
 }
 
 class ChangeBackgroundScreenState extends State<ChangeBackgroundScreen> {
-  String boardName;
+  Boards boards;
   int state = 1;
   bool IsBackgroungColor = true;
   int bgSelectedIndex = 0;
@@ -39,7 +40,7 @@ class ChangeBackgroundScreenState extends State<ChangeBackgroundScreen> {
     AssetImage("assets/images/bgImage/Landscape8BG.jpg"),
     AssetImage("assets/images/bgImage/Landscape9BG.jpg"),
   ];
-  ChangeBackgroundScreenState(this.boardName);
+  ChangeBackgroundScreenState(this.boards);
   @override
   void initState() {
     state = 1;
@@ -54,7 +55,7 @@ class ChangeBackgroundScreenState extends State<ChangeBackgroundScreen> {
           onPressed: () {
             if (state == 1) {
               Route route = MaterialPageRoute(
-                  builder: (context) => BoardScreen(boardName, true));
+                  builder: (context) => BoardScreen(boards, true));
               Navigator.push(context, route);
             } else
               setState(() {

@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:trello_clone/models/boards.dart';
 import 'package:trello_clone/screens/board_screen/board_screen.dart';
 
 class ChangeWorkspace extends StatefulWidget {
   String currentWorkspace;
-  String currentBoard;
+  Boards currentBoard;
   ChangeWorkspace(this.currentWorkspace, this.currentBoard);
   @override
   ChangeWorkspaceState createState() =>
@@ -13,7 +14,7 @@ class ChangeWorkspace extends StatefulWidget {
 
 class ChangeWorkspaceState extends State<ChangeWorkspace> {
   String currentWorkspace;
-  String currentBoard;
+  Boards currentBoard;
   List<String> userWorkspaces = [
     "Workspace 1",
     "Workspace 2",

@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:trello_clone/models/workspaces.dart';
+import 'package:trello_clone/services/database.dart';
 import '../../route_path.dart';
 
 class CreateBoardScreen extends StatefulWidget {
@@ -10,10 +12,10 @@ class CreateBoardScreenState extends State<CreateBoardScreen> {
 
   final formKey = GlobalKey<FormState>();
   var nameTxtCtrl = TextEditingController();
-  String? selectedGroup = "Ngáo";
-  List<String> groupList = ["Ngáo", "Shop Ngáo", "Ngáo Ngơ"];
+  Workspaces? selectedGroup;
+  List<Workspaces> groupList = [];
   String? selectedPermission = "Không gian làm việc";
-  List<String> permissionList = ["Riêng tư", "Không gian làm việc", "Công khai"];
+  List<String> permissionList = ["Riêng tư", "Không gian làm việc"];
 
   @override
   Widget build(BuildContext context) {
@@ -36,6 +38,7 @@ class CreateBoardScreenState extends State<CreateBoardScreen> {
               onPressed: () {
                 if (formKey.currentState!.validate())
                 {
+                  DatabaseService.addBoard(nameTxtCtrl.text, selectedGroup!.workspaceID);
                   Navigator.of(context).pushNamed(MAIN_SCREEN);
                 }
               },
@@ -67,38 +70,54 @@ class CreateBoardScreenState extends State<CreateBoardScreen> {
                   return null;
                 },
               ),
-
-              DropdownButtonFormField<String>(
-                value: selectedGroup,
-                decoration: InputDecoration(
-                  labelStyle: TextStyle(fontSize: 18.0, height: 0.9),
-                  labelText: "Không gian làm việc",
-                  floatingLabelBehavior: FloatingLabelBehavior.always,
-                  contentPadding: EdgeInsets.only(top: 15, bottom: 4),
-                ),
-                onChanged: (value) {
-                  setState(() {
-                    selectedGroup = value;
-                  });
-                },
-                selectedItemBuilder: (BuildContext context) {
-                  return groupList.map<Widget>((String item) {
-                    return Text(item, style: TextStyle(fontSize: 20.0,),);
-                  }).toList();
-                },
-                items: groupList.map((String item) {
-                  return DropdownMenuItem<String>(
-                      value: item,
-                      child: Row(
-                        children: [
-                          Icon(Icons.group),
-                          SizedBox(width: 15,),
-                          Text(item, style: TextStyle(fontSize: 20.0)),
-                        ],
-                      )
-                  );
-                }).toList(),
-              ),
+              FutureBuilder(
+                  future: DatabaseService.getUserWorkspaceList(),
+                  builder: (BuildContext context, AsyncSnapshot snapshot) {
+                    if (!snapshot.hasData) {
+                      return Container(
+                          alignment: FractionalOffset.center,
+                          child: CircularProgressIndicator());
+                    }
+                    for(var item in snapshot.data)
+                    {
+                      Workspaces _wp = Workspaces.fromDocument(item);
+                      groupList.add(_wp);
+                    }
+                    selectedGroup = groupList.first;
+                    return
+                      DropdownButtonFormField<String>(
+                        value: selectedGroup!.workspaceID,
+                        decoration: InputDecoration(
+                          labelStyle: TextStyle(fontSize: 18.0, height: 0.9),
+                          labelText: "Không gian làm việc",
+                          floatingLabelBehavior: FloatingLabelBehavior.always,
+                          contentPadding: EdgeInsets.only(top: 15, bottom: 4),
+                        ),
+                        onChanged: (newValue) {
+                          setState(() {
+                            selectedGroup = groupList.where((element) => element.workspaceID == newValue) as Workspaces?;
+                          });
+                        },
+                        selectedItemBuilder: (BuildContext context) {
+                          return groupList.map<Widget>((Workspaces item) {
+                            return Text(item.workspaceName, style: TextStyle(fontSize: 20.0,),);
+                          }).toList();
+                        },
+                        items:
+                        groupList == null? []: groupList.map((Workspaces item) {
+                          return DropdownMenuItem<String>(
+                              value: item.workspaceID,
+                              child: Row(
+                                children: [
+                                  Icon(Icons.group),
+                                  SizedBox(width: 15,),
+                                  Text(item.workspaceName, style: TextStyle(fontSize: 20.0)),
+                                ],
+                              )
+                          );
+                        }).toList(),
+                      );
+                  }),
 
               DropdownButtonFormField<String>(
                 value: selectedPermission,
@@ -111,7 +130,7 @@ class CreateBoardScreenState extends State<CreateBoardScreen> {
 
                 onChanged: (value) {
                   setState(() {
-                    selectedPermission = value;
+                    selectedPermission = permissionList.where((element) => element == value ) as String?;
                   });
                 },
 
@@ -139,7 +158,6 @@ class CreateBoardScreenState extends State<CreateBoardScreen> {
                       ],
                     ),
                   ),
-
                   DropdownMenuItem(
                     value: "Không gian làm việc",
                     child: Column(
@@ -154,23 +172,6 @@ class CreateBoardScreenState extends State<CreateBoardScreen> {
                         SizedBox(height: 5,),
                         Text("Bảng hiển thị với các thành viên của Không gian làm việc $selectedGroup. Chỉ những người được thêm vào bảng mới có quyền chỉnh sửa.", style: TextStyle(fontSize: 18.0)),
                         SizedBox(height: 15,),
-                      ],
-                    ),
-                  ),
-
-                  DropdownMenuItem(
-                    value: "Công khai",
-                    child: Column(
-                      children: [
-                        Row(
-                          children: [
-                            Icon(Icons.public),
-                            SizedBox(width: 15,),
-                            Text("Công khai", style: TextStyle(fontSize: 20.0)),
-                          ],
-                        ),
-                        SizedBox(height: 5,),
-                        Text("Đây là bảng công khai. Bất kỳ ai có liên kết tới bảng này đều có thể xem bảng. Bảng có thể được tìm thấy trên các công cụ tìm kiếm như Google. Chỉ những người được thêm vào bảng mới có quyền chỉnh sửa.", style: TextStyle(fontSize: 18.0)),
                       ],
                     ),
                   ),

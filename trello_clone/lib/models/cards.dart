@@ -12,7 +12,7 @@ class Cards {
   final Timestamp dueDate;
   final List<String> assignedUser;
   final List<Labels> labels;
-  final bool status;
+  final bool status; //true: not due | false: is due
 
   Cards({required this.cardID, required this.cardName, required this.createdBy, required this.description, required this.startDate, required this.dueDate, required this.assignedUser, required this.labels, required this.status,});
 
