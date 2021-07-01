@@ -217,9 +217,11 @@ class _MainScreenState extends State<MainScreen> {
                   color: Colors.white,
                 ),
                 backgroundColor: Colors.green,
-                label: 'Nhóm',
+                label: 'Không gian làm việc',
                 labelStyle: TextStyle(fontSize: 18.0),
-                onTap: () {},
+                onTap: () {
+                  Navigator.of(context).pushNamed(CREATE_WORKSPACE_SCREEN);
+                },
               ),
               SpeedDialChild(
                 child: Icon(

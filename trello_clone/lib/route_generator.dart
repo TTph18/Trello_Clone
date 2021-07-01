@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:trello_clone/screens/create_workspace_screen/create_workspace_screen.dart';
 import 'route_path.dart';
 import 'screens/login_screen/login_screen.dart';
 import 'screens/register_screen/register_screen.dart';
@@ -32,6 +33,12 @@ class RouteGenerator{
         return MaterialPageRoute(
             settings: RouteSettings(name: CREATE_BOARD_SCREEN),
             builder: (_) => CreateBoardScreen(),
+            maintainState: false
+        );
+      case CREATE_WORKSPACE_SCREEN:
+        return MaterialPageRoute(
+            settings: RouteSettings(name: CREATE_BOARD_SCREEN),
+            builder: (_) => CreateWorkspaceScreen(),
             maintainState: false
         );
       case CREATE_CARD_SCREEN:
