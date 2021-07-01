@@ -86,9 +86,11 @@ class DragAndDropList implements DragAndDropListInterface {
       child: ListView(
         controller: controller,
         shrinkWrap: true,
+        ///reverse: true,
         children: _generateDragAndDropListInnerContents(params),
       ),
     );
+
     if (params.axis == Axis.horizontal) {
       intrinsicHeight = Container(
         width: params.listWidth,
@@ -106,7 +108,10 @@ class DragAndDropList implements DragAndDropListInterface {
     if (footer != null) {
       contents.add(Flexible(child: footer!));
     }
-
+    //if (controller.hasClients)
+    //{
+    // controller.jumpTo(controller.position.maxScrollExtent);
+    //}
     return Container(
       width: params.axis == Axis.vertical
           ? double.infinity

@@ -113,7 +113,7 @@ class _cardState extends State<_card> {
   late String name;
   List<tag> tags = [];
   bool iconSeen = false;
-  DateTime dateStart = DateTime.utc(2001, 11, 9);
+  DateTime dateStart = DateTime.utc(2001, 11, 1);
 
   ///Set year 2000 if user didn't chose time
   DateTime dateEnd = DateTime.utc(2021, 6, 12, 10, 11, 12);
@@ -281,7 +281,6 @@ class ListCard {
   ListCard({required this.name, required this.children, required this.isLast});
 }
 
-
 Widget CreateDateString(DateTime dateStart, DateTime dateEnd, bool isFinish) {
   var contents = <Widget>[];
   var color = const Color(0xffFFFFFF);
@@ -303,32 +302,34 @@ Widget CreateDateString(DateTime dateStart, DateTime dateEnd, bool isFinish) {
   /// Text
   String datestr;
   if (dateStart.year > 2000) {
-    datestr = "Ngày " +
-        dateStart.day.toString() +
-        " tháng " +
-        dateStart.month.toString();
-    if (dateEnd.year > 2000)
+    datestr = "Ngày " + dateStart.day.toString();
+    if (dateEnd.year > 2000) {
+      if (dateStart.month != dateEnd.month)
+        datestr = datestr + " tháng " + dateStart.month.toString();
       datestr = datestr +
           " - " +
           "Ngày " +
           dateEnd.day.toString() +
           " tháng " +
           dateEnd.month.toString();
-  } else {
+    } else
+      datestr = datestr + " tháng " + dateStart.month.toString();
+  } else
     datestr =
         "Ngày " + dateEnd.day.toString() + " tháng " + dateEnd.month.toString();
-  }
   contents.add(Text(datestr));
 
   /// Design
   return Padding(
-      padding: const EdgeInsets.fromLTRB(0, 0, 0, 0),
-      child: Container(
-        decoration: BoxDecoration(
-          color: color,
-        ),
-        child: Wrap(children: contents),
-      ));
+    padding: const EdgeInsets.fromLTRB(0, 0, 0, 0),
+    child: Container(
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.all(Radius.circular(2)),
+        color: color,
+      ),
+      child: Wrap(children: contents),
+    ),
+  );
 }
 
 Widget CreateChecklistItem(int finish, int total) {
@@ -353,6 +354,7 @@ Widget CreateChecklistItem(int finish, int total) {
       padding: const EdgeInsets.fromLTRB(0, 0, 0, 0),
       child: Container(
         decoration: BoxDecoration(
+          borderRadius: BorderRadius.all(Radius.circular(2)),
           color: color,
         ),
         child: Wrap(children: contents),
@@ -385,13 +387,14 @@ class BoardScreenState extends State<BoardScreen> {
   late bool isTapNewList = false;
   TextEditingController newListController = TextEditingController();
 
-  late List<ScrollController> controllers;
+  late List<ScrollController> controllers = [];
   @override
   void initState() {
     super.initState();
 
     listName = ["To Do", "Completed"];
-    controllers = List.filled(listName.length + 1, new ScrollController());
+    for (int i = 0; i < listName.length + 1; i++)
+      controllers.add(new ScrollController());
     print(listName.length + 1);
     isTapNewCard = List.filled(listName.length, false);
     isTapNewList = false;
@@ -425,126 +428,158 @@ class BoardScreenState extends State<BoardScreen> {
       key: _scaffoldKey,
       backgroundColor: const Color.fromRGBO(0, 121, 190, 1.0),
       appBar: AppBar(
-          title: isTapNewList ? Text("Thêm danh sách") : Text(boards.boardName),
-          backgroundColor: const Color.fromRGBO(0, 64, 126, 1.0),
-          leading: isTapNewList
-              ? IconButton(
-                  onPressed: () {
-                    setState(
-                      () {
-                        isTapNewList = false;
-                        newListController.text = "";
-                      },
-                    );
-                  },
-                  icon: Icon(Icons.close))
-              : Builder(
-                  builder: (BuildContext context) {
-                    return IconButton(
-                      icon: const Icon(Icons.arrow_back),
-                      onPressed: () {
-                        Navigator.of(context).pushNamed(MAIN_SCREEN);
-                      },
-                    );
-                  },
-                ),
-          actions: isTapNewList
-              ? [
-                  IconButton(
-                    icon: const Icon(Icons.check),
+        title: isTapNewList ? Text("Thêm danh sách") : isTapNewCard.contains(true) ? Text("Thêm thẻ") : Text(boards.boardName),
+        backgroundColor: const Color.fromRGBO(0, 64, 126, 1.0),
+        leading: (isTapNewList || isTapNewCard.contains(true))
+            ? IconButton(
+                onPressed: () {
+                  setState(
+                    () {
+                      if (isTapNewList)
+                        {
+                          isTapNewList = false;
+                          newListController.text = "";
+                        }
+                      int index = isTapNewCard.indexWhere((element) => element == true);
+                      if (index != -1)
+                        {
+                          print("INNER " + index.toString());
+                          isTapNewCard[index] = false;
+                          newCardController.text = "";
+                        }
+                    },
+                  );
+                },
+                icon: Icon(Icons.close))
+            : Builder(
+                builder: (BuildContext context) {
+                  return IconButton(
+                    icon: const Icon(Icons.arrow_back),
                     onPressed: () {
+                      Navigator.of(context).pushNamed(MAIN_SCREEN);
+                    },
+                  );
+                },
+              ),
+        actions: (isTapNewList || isTapNewCard.contains(true))
+            ? [
+                IconButton(
+                  icon: const Icon(Icons.check),
+                  onPressed: () {
+                    if (isTapNewList) {
                       if (newListController.text != "") {
                         ///TODO: Add new list to board
                         setState(
-                          () {
+                              () {
                             ///TODO: Reload list of lists in board
                             isTapNewList = false;
                             newListController.text = "";
                           },
                         );
                       }
-                      ;
-                    },
-                  ),
-                ]
-              : [
-                  IconButton(
-                    icon: const Icon(Icons.filter_list),
-                    onPressed: () {},
-                  ),
-                  IconButton(
-                    icon: const Icon(MyFlutterApp.bell),
-                    onPressed: () {},
-                  ),
-                  IconButton(
-                      icon: const Icon(Icons.more_horiz),
-                      onPressed: () {
-                        _scaffoldKey.currentState!.openEndDrawer();
-                      }),
-                ]),
-      endDrawer: mainMenu(Users(
+                    }
+                    int index = isTapNewCard.indexWhere((element) => element == true);
+                    if (index != -1)
+                      {
+                        print("INNER CHECK: " + index.toString());
+                        if (newCardController.text != "") {
+                          ///TODO: Add new card to list [index]
+                          setState(
+                                () {
+                              ///TODO: Reload card in list [index]
+                                  print("INNER");
+                              isTapNewCard[index] = false;
+                              newListController.text = "";
+                            },
+                          );
+                        }
+                      }
+                  }
+                    ),
+              ]
+            : [
+                IconButton(
+                  icon: const Icon(Icons.filter_list),
+                  onPressed: () {},
+                ),
+                IconButton(
+                  icon: const Icon(MyFlutterApp.bell),
+                  onPressed: () {},
+                ),
+                IconButton(
+                  icon: const Icon(Icons.more_horiz),
+                  onPressed: () {
+                    _scaffoldKey.currentState!.openEndDrawer();
+                  },
+                ),
+              ],
+      ),
+      endDrawer: mainMenu(
+        Users(
           userID: "12345",
           userName: "name1",
           profileName: "Name 1",
           email: '123456@gmail.com',
           avatar: 'assets/images/BlueBG.png',
-          workspaceList: [])),
-      body: Container(
-        decoration: BoxDecoration(
-          image: DecorationImage(
-            image: bg,
-            fit: BoxFit.cover,
-          ),
+          workspaceList: [],
         ),
-        child: FutureBuilder(
-            future: DatabaseService.getlistList(boards.boardID),
-            builder: (BuildContext context, AsyncSnapshot snapshot){
-              if (!snapshot.hasData)
-                return SizedBox();
-              for(var item in snapshot.data)
-              {
-                Lists _list = Lists.fromDocument(item);
-                listName.add(_list.listName);
-              }
-              _lists = List.generate(listName.length + 1, (outerIndex) {
-                if (outerIndex < listName.length)
-                  return ListCard(
-                    name: listName[outerIndex],
-                    children:
-                    List.generate(cards.length, (innerIndex) => cards[innerIndex]),
-                    isLast: false,
-                  );
-                else
-                  return ListCard(
-                    name: "Add List",
-                    children: [],
-                    isLast: true,
-                  );
-              });
-              return  DragAndDropLists(
-                children: List.generate(_lists.length, (index) => _buildList(index)),
-                onItemReorder: _onItemReorder,
-                onListReorder: _onListReorder,
-                axis: Axis.horizontal,
-                listWidth: 320,
-                listDraggingWidth: 288,
-                listDecoration: BoxDecoration(
-                  color: Color.fromRGBO(244, 245, 247, 1.0),
-                  borderRadius: BorderRadius.all(Radius.circular(7.0)),
-                  boxShadow: <BoxShadow>[
-                    BoxShadow(
-                      color: Colors.black45,
-                      spreadRadius: 3.0,
-                      blurRadius: 6.0,
-                      offset: Offset(2, 3),
-                    ),
-                  ],
-                ),
-                listPadding: EdgeInsets.fromLTRB(16, 8, 16, 8),
-              );
-            })
-
       ),
+      body: Container(
+          decoration: BoxDecoration(
+            image: DecorationImage(
+              image: bg,
+              fit: BoxFit.cover,
+            ),
+          ),
+          child: FutureBuilder(
+              future: DatabaseService.getlistList(boards.boardID),
+              builder: (BuildContext context, AsyncSnapshot snapshot) {
+                if (!snapshot.hasData) return SizedBox();
+                for (var item in snapshot.data) {
+                  Lists _list = Lists.fromDocument(item);
+                  listName.add(_list.listName);
+                }
+                _lists = List.generate(
+                  listName.length + 1,
+                  (outerIndex) {
+                    if (outerIndex < listName.length)
+                      return ListCard(
+                        name: listName[outerIndex],
+                        children: List.generate(
+                            cards.length, (innerIndex) => cards[innerIndex]),
+                        isLast: false,
+                      );
+                    else
+                      return ListCard(
+                        name: "Add List",
+                        children: [],
+                        isLast: true,
+                      );
+                  },
+                );
+                return DragAndDropLists(
+                  children: List.generate(
+                      _lists.length, (index) => _buildList(index)),
+                  onItemReorder: _onItemReorder,
+                  onListReorder: _onListReorder,
+                  axis: Axis.horizontal,
+                  listWidth: 320,
+                  listDraggingWidth: 288,
+                  listDecoration: BoxDecoration(
+                    color: Color.fromRGBO(244, 245, 247, 1.0),
+                    borderRadius: BorderRadius.all(Radius.circular(7.0)),
+                    boxShadow: <BoxShadow>[
+                      BoxShadow(
+                        color: Colors.black45,
+                        spreadRadius: 3.0,
+                        blurRadius: 6.0,
+                        offset: Offset(2, 3),
+                      ),
+                    ],
+                  ),
+                  listPadding: EdgeInsets.fromLTRB(16, 8, 16, 8),
+                );
+              })),
       floatingActionButton: FloatingActionButton(
         onPressed: () {},
         child: AnimateIcons(
@@ -614,13 +649,14 @@ class BoardScreenState extends State<BoardScreen> {
                             child: Text('Xóa danh sách'),
                           ),
                         ],
-                          ),
-                        ),
-                ],
                       ),
-                    ),),
+                    ),
                   ],
                 ),
+              ),
+            ),
+          ],
+        ),
         footer: isTapNewCard[outerIndex]
             ? Card(
                 color: Colors.white,
@@ -664,11 +700,13 @@ class BoardScreenState extends State<BoardScreen> {
                 ),
                 onPressed: () {
                   setState(() {
-                    //print("INFORMATION: begin");
                     isTapNewCard[outerIndex] = true;
-                    //controllers[outerIndex].jumpTo(controllers[outerIndex].position.maxScrollExtent);
-                    //print("INFORMATION: end");
                   });
+                  controllers[outerIndex].animateTo(
+                    controllers[outerIndex].position.maxScrollExtent - 5,
+                    curve: Curves.easeOut,
+                    duration: const Duration(milliseconds: 300),
+                  );
                 },
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.center,
@@ -720,10 +758,12 @@ class BoardScreenState extends State<BoardScreen> {
                     child: Focus(
                       onFocusChange: (hasFocus) {
                         if (!hasFocus) {
-                          setState(() {
-                            isTapNewList = false;
-                            newListController.text = "";
-                          });
+                          setState(
+                            () {
+                              isTapNewList = false;
+                              newListController.text = "";
+                            },
+                          );
                         }
                       },
                       child: TextField(
@@ -779,10 +819,9 @@ class BoardScreenState extends State<BoardScreen> {
 
   @override
   void dispose() {
-    for (int i = 0; i < controllers.length; i++)
-      {
-        controllers[i].dispose();
-      }
+    for (int i = 0; i < controllers.length; i++) {
+      controllers[i].dispose();
+    }
     super.dispose();
   }
 
