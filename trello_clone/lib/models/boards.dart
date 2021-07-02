@@ -8,11 +8,10 @@ class Boards {
   final String createdBy;
   final String background;
   final bool isPersonal;
-  final List<String> listList;
-  final List<String> labelList;
+  final String workspaceID;
   final List<String> userList;
 
-  Boards({required this.boardID, required this.userList, required this.boardName, required this.createdBy, required this.background, required this.isPersonal, required this.listList, required this.labelList});
+  Boards({required this.boardID, required this.userList, required this.boardName, required this.createdBy, required this.background, required this.isPersonal, required this.workspaceID});
 
   factory Boards.fromDocument(DocumentSnapshot document) {
     return Boards(
@@ -22,8 +21,7 @@ class Boards {
         createdBy: document['createdBy'],
         isPersonal: document['isPersonal'],
         background: document['background'],
-        listList: document['listList'].cast<String>(),
-        labelList: document['labelList'].cast<String>()
+        workspaceID: document['workspaceID']
     );
   }
 }

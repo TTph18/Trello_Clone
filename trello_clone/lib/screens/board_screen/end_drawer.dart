@@ -6,10 +6,12 @@ import 'package:flutter/widgets.dart';
 import 'package:trello_clone/icons/app_icons.dart';
 import 'package:trello_clone/models/boards.dart';
 import 'package:trello_clone/models/user.dart';
+import 'package:trello_clone/models/workspaces.dart';
 import 'package:trello_clone/screens/board_screen/change_background_screen.dart';
 import 'package:trello_clone/screens/board_screen/change_workspace.dart';
 import 'package:trello_clone/screens/main_screen/main_screen.dart';
 import 'package:trello_clone/screens/navigation/Navigation.dart';
+import 'package:trello_clone/services/database.dart';
 import 'package:trello_clone/widgets/reuse_widget/custom_list_tile.dart';
 
 import '../../route_path.dart';
@@ -496,47 +498,59 @@ class settingContentState extends State<settingContent> {
 
     /// Group name inkwell
     content.add(
-      InkWell(
-        onTap: () {
-          Route route = MaterialPageRoute(
-              builder: (context) => ChangeWorkspace(grName, board));
-          Navigator.push(context, route);
-        },
-        enableFeedback: false,
-        child: Padding(
-          padding: EdgeInsets.fromLTRB(70, 18, 0, 15),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Align(
-                alignment: Alignment.centerLeft,
-                child: Text(
-                  grName,
-                  textAlign: TextAlign.left,
-                  style: TextStyle(
-                    fontSize: 15,
-                  ),
-                  maxLines: 2,
-                  overflow: TextOverflow.visible,
+      FutureBuilder(
+          future: DatabaseService.getWorkspaceData(board.workspaceID),
+          builder: (BuildContext context, AsyncSnapshot snapshot) {
+            if (snapshot.hasData) {
+              Workspaces wp = Workspaces.fromDocument(snapshot.data);
+              grName = wp.workspaceName;
+            } else {
+              return Container(
+                  alignment: FractionalOffset.center,
+                  child: CircularProgressIndicator());
+            }
+            return InkWell(
+              onTap: () {
+                Route route = MaterialPageRoute(
+                    builder: (context) => ChangeWorkspace(grName, board));
+                Navigator.push(context, route);
+              },
+              enableFeedback: false,
+              child: Padding(
+                padding: EdgeInsets.fromLTRB(70, 18, 0, 15),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Align(
+                      alignment: Alignment.centerLeft,
+                      child: Text(
+                        grName,
+                        textAlign: TextAlign.left,
+                        style: TextStyle(
+                          fontSize: 15,
+                        ),
+                        maxLines: 2,
+                        overflow: TextOverflow.visible,
+                      ),
+                    ),
+                    SizedBox(
+                      height: 2,
+                    ),
+                    Align(
+                      alignment: Alignment.centerLeft,
+                      child: Text(
+                        "Không gian làm việc",
+                        textAlign: TextAlign.left,
+                        style: TextStyle(
+                          fontSize: 12,
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
               ),
-              SizedBox(
-                height: 2,
-              ),
-              Align(
-                alignment: Alignment.centerLeft,
-                child: Text(
-                  "Không gian làm việc",
-                  textAlign: TextAlign.left,
-                  style: TextStyle(
-                    fontSize: 12,
-                  ),
-                ),
-              ),
-            ],
-          ),
-        ),
-      ),
+            );
+          }),
     );
     content.add(customDivide());
 
@@ -820,30 +834,33 @@ class mainMenuState extends State<mainMenu> {
                   ),
                 ),
 
-                  /// Body
-                  if (state == 1)
-                    inforContent(creator, "")
-                  else if (state == 4)
-                    settingContent(board)
-                ],
-              )
-            : Column(
-                children: [
-                  SizedBox(
-                    height: 24,
-                  ),
-                  CustomListTile(Icons.info_outline, "Về bảng này", () {
-                    setState(() {
-                      state = 1;
-                    });
-                  }),
-                  CustomListTile(MyFlutterApp.person_outline, "Thành viên", () {
-                    setState(() {
-                      state = 2;
-                    });
-                  }),
-                  Divider(),
-                  CustomListTile(Icons.delete, "Xóa bảng", () {
+                /// Body
+                if (state == 1)
+                  inforContent(creator, "")
+                else if (state == 4)
+                  settingContent(board)
+              ],
+            )
+          : Column(
+              children: [
+                SizedBox(
+                  height: 24,
+                ),
+                CustomListTile(Icons.info_outline, "Về bảng này", () {
+                  setState(() {
+                    state = 1;
+                  });
+                }),
+                CustomListTile(MyFlutterApp.person_outline, "Thành viên", () {
+                  setState(() {
+                    state = 2;
+                  });
+                }),
+                Divider(),
+                CustomListTile(
+                  Icons.delete,
+                  "Xóa bảng",
+                  () {
                     ///TODO: process to delete board
                     Navigator.of(context).pushNamed(MAIN_SCREEN);
                   },

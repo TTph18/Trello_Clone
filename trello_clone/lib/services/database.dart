@@ -75,9 +75,11 @@ class DatabaseService {
       'createdBy': uid,
       "userList": FieldValue.arrayUnion([uid]),
       "background": "",
+      'workspaceID': workspaceID,
       'listList' : FieldValue.arrayUnion([]),
       'labelList' : FieldValue.arrayUnion([]),
     });
+    //update boardID = document ID
     var snap = await FirebaseFirestore.instance
         .collection('boards')
         .doc(docRef.id)
@@ -128,11 +130,21 @@ class DatabaseService {
     return listUser;
   }
 
+  //get a user data
   static Future getUserData(String uid) async {
     var snapshot = await FirebaseFirestore.instance
         .collection('users')
         .where('userID', isEqualTo: uid)
         .get();
     return snapshot.docs.first;
+  }
+
+  //get a wp data
+  static Future getWorkspaceData(String workspaceID) async {
+    var snapshot = await FirebaseFirestore.instance
+        .collection('workspaces')
+        .doc(workspaceID)
+        .get();
+    return snapshot;
   }
 }
