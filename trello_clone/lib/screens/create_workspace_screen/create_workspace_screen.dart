@@ -104,7 +104,7 @@ class CreateWorkspaceScreenState extends State<CreateWorkspaceScreen> {
               ),
 
               Padding(
-                padding: const EdgeInsets.only(top: 10),
+                padding: const EdgeInsets.only(top: 20),
                 child: ChipsInput(
                   key: _chipKey,
                   keyboardAppearance: Brightness.dark,
@@ -112,9 +112,10 @@ class CreateWorkspaceScreenState extends State<CreateWorkspaceScreen> {
                   textStyle: const TextStyle(
                       fontSize: 20.0),
                   decoration: const InputDecoration(
-                    // hintText: formControl.hint,
                     labelText: 'Thêm thành viên',
                     labelStyle: TextStyle(fontSize: 18.0),
+                    floatingLabelBehavior: FloatingLabelBehavior.always,
+                    contentPadding: EdgeInsets.only(bottom: 0.0),
                   ),
                   findSuggestions: (String query) {
                     print("Query: '$query'");
