@@ -1,8 +1,6 @@
-import 'dart:async';
 import 'dart:ui';
 
 import 'package:animate_icons/animate_icons.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/painting.dart';
@@ -17,6 +15,7 @@ import 'package:trello_clone/models/boards.dart';
 import 'package:trello_clone/models/lists.dart';
 import 'package:trello_clone/models/user.dart';
 import 'package:trello_clone/screens/board_screen/end_drawer.dart';
+import 'package:trello_clone/screens/card_screen/card_screen.dart';
 import 'package:trello_clone/services/database.dart';
 import 'package:trello_clone/widgets/reuse_widget/avatar.dart';
 
@@ -248,6 +247,9 @@ class _cardState extends State<_card> {
         ),
         onTap: () {
           ///TODO: Link to card detail screen
+          Route route =
+              MaterialPageRoute(builder: (context) => CardScreen(name));
+          Navigator.push(context, route);
         },
         child: Ink(
           width: 308,
@@ -366,6 +368,7 @@ Widget CreateChecklistItem(int finish, int total) {
 class BoardScreen extends StatefulWidget {
   final Boards boards;
   final bool isShowDrawer;
+
   BoardScreen(this.boards, this.isShowDrawer);
 
   @override
@@ -390,6 +393,7 @@ class BoardScreenState extends State<BoardScreen> {
   TextEditingController newListController = TextEditingController();
 
   late List<ScrollController> controllers = [];
+
   @override
   void initState() {
     super.initState();
@@ -422,8 +426,7 @@ class BoardScreenState extends State<BoardScreen> {
           isLast: true,
         );
     });
-    if (isShowDrawer)
-      _scaffoldKey.currentState?.openEndDrawer();
+    if (isShowDrawer) _scaffoldKey.currentState?.openEndDrawer();
   }
 
   @override
