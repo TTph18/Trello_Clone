@@ -382,7 +382,7 @@ class BoardScreenState extends State<BoardScreen> {
   BoardScreenState(this.boards, this.isShowDrawer);
 
   late List<ListCard> _lists;
-  late List<bool> isTapNewCard = List.filled(listName.length, false);
+  late List<bool> isTapNewCard = List.filled(_lists.length, false);
   TextEditingController newCardController = TextEditingController();
   late bool isTapNewList = false;
   TextEditingController newListController = TextEditingController();
@@ -534,11 +534,22 @@ class BoardScreenState extends State<BoardScreen> {
           child: FutureBuilder(
               future: DatabaseService.getlistList(boards.boardID),
               builder: (BuildContext context, AsyncSnapshot snapshot) {
-                if (!snapshot.hasData) return SizedBox();
-                for (var item in snapshot.data) {
-                  Lists _list = Lists.fromDocument(item);
-                  listName.add(_list.listName);
+                if (!snapshot.hasData) {
+                  return Container(
+                  alignment: FractionalOffset.center,
+                  child: CircularProgressIndicator());
                 }
+                else {
+                  listName.clear();
+                  for (var item in snapshot.data) {
+                    Lists _list = Lists.fromDocument(item);
+                    listName.add(_list.listName);
+                  }
+                }
+                for (int i = 0; i < listName.length + 1; i++)
+                  controllers.add(new ScrollController());
+                isTapNewCard = List.filled(listName.length, false);
+                isTapNewList = false;
                 _lists = List.generate(
                   listName.length + 1,
                   (outerIndex) {
