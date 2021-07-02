@@ -54,6 +54,7 @@ class CreateBoardScreenState extends State<CreateBoardScreen> {
                       fontSize: 18.0,
                       color: Colors.green,
                       decoration: TextDecoration.none),
+                  labelStyle: TextStyle(fontSize: 18.0, decoration: TextDecoration.none),
                   labelText: "Tên bảng",
                   floatingLabelBehavior: FloatingLabelBehavior.always,
                   contentPadding: EdgeInsets.only(bottom: 0.0),
