@@ -252,7 +252,8 @@ Widget LabelDetailModalBottom(bool isCreate, Labels label) {
                                 onTap: () {
                                   mystate(
                                     () {
-                                      labelSelectedColor = labelColors[index].color;
+                                      labelSelectedColor =
+                                          labelColors[index].color;
                                     },
                                   );
                                 },
@@ -410,7 +411,7 @@ class settingContentState extends State<settingContent> {
                 style: TextStyle(fontWeight: FontWeight.bold),
               ),
               content: Container(
-                width: MediaQuery. of(context). size. width * 0.8,
+                width: MediaQuery.of(context).size.width * 0.8,
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   children: [
@@ -443,8 +444,8 @@ class settingContentState extends State<settingContent> {
                             showModalBottomSheet(
                               context: context,
                               builder: (BuildContext bc) {
-                                return LabelDetailModalBottom(
-                                    true, Labels(color: "0xffb3bec4", labelName: ""));
+                                return LabelDetailModalBottom(true,
+                                    Labels(color: "0xffb3bec4", labelName: ""));
                               },
                               isScrollControlled: true,
                             );
@@ -550,7 +551,7 @@ class settingContentState extends State<settingContent> {
               style: TextStyle(fontWeight: FontWeight.bold),
             ),
             content: Container(
-              width: MediaQuery. of(context). size. width * 0.8,
+              width: MediaQuery.of(context).size.width * 0.8,
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: CreateBody(),
@@ -779,75 +780,94 @@ class mainMenuState extends State<mainMenu> {
         break;
     }
     return Drawer(
-        child: state != 0
-            ? Column(
-                children: [
-                  /// Header
-                  SizedBox(
-                    height: 24,
+      child: state != 0
+          ? Column(
+              children: [
+                /// Header
+                SizedBox(
+                  height: 24,
+                ),
+                Container(
+                  decoration: BoxDecoration(
+                    color: Color.fromRGBO(244, 245, 247, 1.0),
+                    boxShadow: <BoxShadow>[
+                      BoxShadow(
+                        color: Colors.black45,
+                        spreadRadius: 1.0,
+                        blurRadius: 2.0,
+                        offset: Offset(2, 3),
+                      ),
+                    ],
                   ),
-                  Container(
-                    decoration: BoxDecoration(
-                      color: Color.fromRGBO(244, 245, 247, 1.0),
-                      boxShadow: <BoxShadow>[
-                        BoxShadow(
-                          color: Colors.black45,
-                          spreadRadius: 1.0,
-                          blurRadius: 2.0,
-                          offset: Offset(2, 3),
-                        ),
-                      ],
-                    ),
-                    child: Row(
-                      children: [
-                        IconButton(
-                            onPressed: () {
-                              setState(() {
+                  child: Row(
+                    children: [
+                      IconButton(
+                          onPressed: () {
+                            setState(
+                              () {
                                 state = 0;
-                              });
-                            },
-                            icon: Icon(Icons.arrow_back_outlined)),
-                        Text(
-                          title,
-                          style: TextStyle(fontSize: 18),
-                        ),
-                      ],
-                    ),
+                              },
+                            );
+                          },
+                          icon: Icon(Icons.arrow_back_outlined)),
+                      Text(
+                        title,
+                        style: TextStyle(fontSize: 18),
+                      ),
+                    ],
                   ),
+                ),
 
-                  /// Body
-                  if (state == 1)
-                    inforContent(creator, "")
-                  else if (state == 4)
-                    settingContent()
-                ],
-              )
-            : Column(
-                children: [
-                  SizedBox(
-                    height: 24,
-                  ),
-                  CustomListTile(Icons.info_outline, "Về bảng này", () {
-                    setState(() {
-                      state = 1;
-                    });
-                  }),
-                  CustomListTile(MyFlutterApp.person_outline, "Thành viên", () {
-                    setState(() {
-                      state = 2;
-                    });
-                  }),
-                  Divider(),
-                  CustomListTile(Icons.delete, "Xóa bảng", () {
+                /// Body
+                if (state == 1)
+                  inforContent(creator, "")
+                else if (state == 4)
+                  settingContent()
+              ],
+            )
+          : Column(
+              children: [
+                SizedBox(
+                  height: 24,
+                ),
+                CustomListTile(Icons.info_outline, "Về bảng này", () {
+                  setState(() {
+                    state = 1;
+                  });
+                }),
+                CustomListTile(
+                  MyFlutterApp.person_outline,
+                  "Thành viên",
+                  () {
+                    setState(
+                      () {
+                        state = 2;
+                      },
+                    );
+                  },
+                ),
+                Divider(),
+                CustomListTile(
+                  Icons.delete,
+                  "Xóa bảng",
+                  () {
                     ///TODO: process to delete board
                     Navigator.of(context).pushNamed(MAIN_SCREEN);
-                  }),
-                  CustomListTile(Icons.settings, "Thiết lập bảng", () {
-                    setState(() {
-                      state = 4;
-                    });
-                  }),
-                ],
-              ));
+                  },
+                ),
+                CustomListTile(
+                  Icons.settings,
+                  "Thiết lập bảng",
+                  () {
+                    setState(
+                      () {
+                        state = 4;
+                      },
+                    );
+                  },
+                ),
+              ],
+            ),
+    );
   }
 }

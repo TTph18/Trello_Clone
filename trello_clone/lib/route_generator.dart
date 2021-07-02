@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:trello_clone/screens/main_screen/member_list.dart';
 import 'route_path.dart';
 import 'screens/login_screen/login_screen.dart';
 import 'screens/register_screen/register_screen.dart';
@@ -21,6 +22,11 @@ class RouteGenerator{
         return MaterialPageRoute(
           settings: RouteSettings(name: MAIN_SCREEN),
           builder: (_) => MainScreen(),
+        );
+      case MEMBER_LIST:
+        return MaterialPageRoute(
+          settings: RouteSettings(name: MEMBER_LIST),
+          builder: (_) => MemberList(),
         );
       case REGISTER_SCREEN:
         return MaterialPageRoute(

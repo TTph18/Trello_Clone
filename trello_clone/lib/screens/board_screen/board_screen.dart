@@ -246,7 +246,9 @@ class _cardState extends State<_card> {
         customBorder: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(6),
         ),
-        onTap: () {},
+        onTap: () {
+          ///TODO: Link to card detail screen
+        },
         child: Ink(
           width: 308,
           child: Container(
@@ -420,6 +422,8 @@ class BoardScreenState extends State<BoardScreen> {
           isLast: true,
         );
     });
+    if (isShowDrawer)
+      _scaffoldKey.currentState!.openEndDrawer();
   }
 
   @override
@@ -604,7 +608,7 @@ class BoardScreenState extends State<BoardScreen> {
 
   _buildList(int outerIndex) {
     var innerList = _lists[outerIndex];
-    if (!innerList.isLast)
+    if (!innerList.isLast) {
       return DragAndDropList(
         controller: controllers[outerIndex],
         header: Row(
@@ -739,7 +743,7 @@ class BoardScreenState extends State<BoardScreen> {
           (index) => _buildItem(innerList.children[index]),
         ),
       );
-    else {
+    } else {
       if (isTapNewList) {
         return DragAndDropList(
           controller: controllers[outerIndex],

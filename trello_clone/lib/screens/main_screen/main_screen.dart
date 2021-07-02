@@ -2,6 +2,7 @@ import 'dart:math' as math;
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:flutter_speed_dial/flutter_speed_dial.dart';
 import 'package:trello_clone/icons/app_icons.dart';
 import 'package:trello_clone/models/boards.dart';
@@ -29,7 +30,8 @@ class BoardInfo extends StatelessWidget {
   Widget build(BuildContext context) {
     return InkWell(
       onTap: () {
-        Route route = MaterialPageRoute(builder: (context)=>BoardScreen(boards, false));
+        Route route =
+            MaterialPageRoute(builder: (context) => BoardScreen(boards, false));
         Navigator.push(context, route);
       },
       child: Container(
@@ -60,13 +62,13 @@ class BoardInfo extends StatelessWidget {
 
 class GroupName extends StatelessWidget {
   late String grName;
-  
+
   GroupName(this.grName);
-  
+
   @override
   Widget build(BuildContext context) {
-    return Row(
-      children: [
+    return Stack(
+      children: <Widget>[
         Container(
           height: 50,
           width: MediaQuery.of(context).size.width,
@@ -77,10 +79,14 @@ class GroupName extends StatelessWidget {
               bottom: BorderSide(width: 1.0, color: Colors.grey),
             ),
           ),
+        ),
+        Material(
+          type: MaterialType.transparency,
           child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Padding(
-                padding: EdgeInsets.fromLTRB(15, 0, 0, 0),
+                padding: EdgeInsets.fromLTRB(15, 0, 15, 0),
                 child: Text(
                   grName,
                   style: TextStyle(
@@ -89,6 +95,31 @@ class GroupName extends StatelessWidget {
                     fontSize: 16,
                   ),
                 ),
+              ),
+              PopupMenuButton(
+                iconSize: 25,
+                padding: EdgeInsets.zero,
+                icon: Icon(Icons.more_vert),
+                onSelected: (value) {
+                  if (value == 1)
+                    {
+                      Navigator.of(context).pushNamed(MEMBER_LIST);
+                    }
+                  if (value == 2)
+                  {
+                    ///TODO: Delete workspace
+                  }
+                },
+                itemBuilder: (context) => [
+                  PopupMenuItem(
+                    value: 1,
+                    child: Text('Thành viên nhóm'),
+                  ),
+                  PopupMenuItem(
+                    value: 2,
+                    child: Text('Xóa nhóm'),
+                  ),
+                ],
               ),
             ],
           ),
@@ -113,8 +144,8 @@ class GroupInfo extends StatelessWidget {
     "Tên bảng 2",
   ];
   List<Function> boardOnPress = [
-        () => {},
-        () => {},
+    () => {},
+    () => {},
   ];
   @override
   Widget build(BuildContext context) {
@@ -122,26 +153,27 @@ class GroupInfo extends StatelessWidget {
       children: [
         GroupName(this.grName),
         FutureBuilder(
-        future: DatabaseService.getBoardList(grID),
-        builder: (BuildContext context, AsyncSnapshot snapshot){
-          if (!snapshot.hasData) {
-            hasData = false;
-            return SizedBox();
-          } else hasData = true;
-            if(!hasData) {
-              return SizedBox();
-            } else
-          return ListView.builder(
-            physics: ClampingScrollPhysics(),
-            shrinkWrap: true,
-            itemCount: snapshot.data.length,
-            itemBuilder: (BuildContext context, int index) {
-              Boards _br = Boards.fromDocument(snapshot.data[index]);
-              return BoardInfo(boardImage[index], _br,
-                  boardOnPress[index]);
-            },
-          );
-        }),
+            future: DatabaseService.getBoardList(grID),
+            builder: (BuildContext context, AsyncSnapshot snapshot) {
+              if (!snapshot.hasData) {
+                hasData = false;
+                return SizedBox();
+              } else
+                hasData = true;
+              if (!hasData) {
+                return SizedBox();
+              } else
+                return ListView.builder(
+                  physics: ClampingScrollPhysics(),
+                  shrinkWrap: true,
+                  itemCount: snapshot.data.length,
+                  itemBuilder: (BuildContext context, int index) {
+                    Boards _br = Boards.fromDocument(snapshot.data[index]);
+                    return BoardInfo(
+                        boardImage[index], _br, boardOnPress[index]);
+                  },
+                );
+            }),
       ],
     );
   }
@@ -149,53 +181,54 @@ class GroupInfo extends StatelessWidget {
 
 class _MainScreenState extends State<MainScreen> {
   int selectedIndex = 0;
-  List<String> groupName = [
-    "Tên bảng 1",
-    "Tên bảng 2",
-    "Tên bảng 3"
-  ];
+  List<String> groupName = ["Tên bảng 1", "Tên bảng 2", "Tên bảng 3"];
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       drawer: Navigation(),
       appBar: AppBar(
         backgroundColor: const Color.fromRGBO(0, 121, 191, 1.0),
-          title: Text('Bảng'), actions: [
-        IconButton(
-          icon: Transform(
-            alignment: Alignment.center,
-            transform: Matrix4.rotationY(math.pi),
-            child: Icon(MyFlutterApp.search),
+        title: Text('Bảng'),
+        actions: [
+          IconButton(
+            icon: Transform(
+              alignment: Alignment.center,
+              transform: Matrix4.rotationY(math.pi),
+              child: Icon(MyFlutterApp.search),
+            ),
+            onPressed: () {},
           ),
-          onPressed: () {},
-        ),
-        IconButton(
-          icon: const Icon(MyFlutterApp.bell),
-          onPressed: () {},
-        )
-      ]),
+          IconButton(
+            icon: const Icon(MyFlutterApp.bell),
+            onPressed: () {},
+          ),
+        ],
+      ),
       body: Scaffold(
           body: Column(
             children: [
               FutureBuilder(
-                  future: DatabaseService.getUserWorkspaceList(),
-                  builder: (BuildContext context, AsyncSnapshot snapshot){
-                    if (!snapshot.hasData)
-                      return Container(
-                          alignment: FractionalOffset.center,
-                          child: CircularProgressIndicator());
-                    return Expanded(
-                      child: ListView.builder(
-                        physics: ClampingScrollPhysics(),
-                        shrinkWrap: true,
-                        itemCount: snapshot.data.length,
-                        itemBuilder: (BuildContext context, int index) {
-                          Workspaces _wp = Workspaces.fromDocument(snapshot.data[index]);
-                          return GroupInfo(_wp.workspaceName.toString(), _wp.workspaceID.toString());
-                        },
-                      ),
-                    ) ;
-                  })
+                future: DatabaseService.getUserWorkspaceList(),
+                builder: (BuildContext context, AsyncSnapshot snapshot) {
+                  if (!snapshot.hasData)
+                    return Container(
+                        alignment: FractionalOffset.center,
+                        child: CircularProgressIndicator());
+                  return Expanded(
+                    child: ListView.builder(
+                      physics: ClampingScrollPhysics(),
+                      shrinkWrap: true,
+                      itemCount: snapshot.data.length,
+                      itemBuilder: (BuildContext context, int index) {
+                        Workspaces _wp =
+                            Workspaces.fromDocument(snapshot.data[index]);
+                        return GroupInfo(_wp.workspaceName.toString(),
+                            _wp.workspaceID.toString());
+                      },
+                    ),
+                  );
+                },
+              ),
             ],
           ),
           floatingActionButton: SpeedDial(
