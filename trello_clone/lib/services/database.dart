@@ -12,7 +12,7 @@ class DatabaseService {
   );
 
   //Current User DB Service
-  static Future<DocumentSnapshot> getUserData(context) async {
+  static Future<DocumentSnapshot> getCurrentUserData() async {
     String uid = FirebaseAuth.instance.currentUser!.uid;
     var snapshot = await FirebaseFirestore.instance
         .collection('users')
@@ -126,5 +126,13 @@ class DatabaseService {
         listUser.add(snapshot.docs.first);
       }
     return listUser;
+  }
+
+  static Future getUserData(String uid) async {
+    var snapshot = await FirebaseFirestore.instance
+        .collection('users')
+        .where('userID', isEqualTo: uid)
+        .get();
+    return snapshot.docs.first;
   }
 }

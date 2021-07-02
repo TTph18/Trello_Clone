@@ -47,7 +47,7 @@ class inforContentState extends State<inforContent> {
             style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
           ),
         )));
-    content.add(AccountInfo("Subname1", creator, () {}));
+    content.add(AccountInfo(creator.profileName, creator, () {}));
     content.add(
       Padding(
         padding: EdgeInsets.fromLTRB(10, 20, 0, 5),
@@ -369,9 +369,9 @@ Widget LabelDetailModalBottom(bool isCreate, Labels label) {
 
 class settingContent extends StatefulWidget {
   late Boards board;
-  settingContent();
+  settingContent(this.board);
   @override
-  settingContentState createState() => settingContentState();
+  settingContentState createState() => settingContentState(board);
 }
 
 class settingContentState extends State<settingContent> {
@@ -387,7 +387,7 @@ class settingContentState extends State<settingContent> {
     new Labels(color: "0xffc377e0", labelName: ""),
     new Labels(color: "0xff0079bf", labelName: ""),
   ];
-  settingContentState();
+  settingContentState(this.board);
 
   @override
   void initState() {
@@ -402,7 +402,7 @@ class settingContentState extends State<settingContent> {
     content.add(
       InkWell(
         onTap: () {
-          mycontroller.value = new TextEditingValue(text: boardName);
+          mycontroller.value = new TextEditingValue(text: board.boardName);
           showDialog<String>(
             context: context,
             builder: (BuildContext context) => AlertDialog(
@@ -468,7 +468,7 @@ class settingContentState extends State<settingContent> {
                 Align(
                   alignment: Alignment.centerLeft,
                   child: Text(
-                    boardName,
+                    board.boardName,
                     textAlign: TextAlign.left,
                     style: TextStyle(
                       fontSize: 15,
@@ -748,17 +748,19 @@ class settingContentState extends State<settingContent> {
 
 class mainMenu extends StatefulWidget {
   Users creator;
-  mainMenu(this.creator);
+  Boards board;
+  mainMenu(this.creator, this.board);
   @override
-  mainMenuState createState() => mainMenuState(creator);
+  mainMenuState createState() => mainMenuState(creator, board);
 }
 
 class mainMenuState extends State<mainMenu> {
   late int state;
   late String title = "";
   Users creator;
+  Boards board;
 
-  mainMenuState(this.creator);
+  mainMenuState(this.creator, this.board);
 
   @override
   void initState() {
@@ -818,39 +820,30 @@ class mainMenuState extends State<mainMenu> {
                   ),
                 ),
 
-                /// Body
-                if (state == 1)
-                  inforContent(creator, "")
-                else if (state == 4)
-                  settingContent()
-              ],
-            )
-          : Column(
-              children: [
-                SizedBox(
-                  height: 24,
-                ),
-                CustomListTile(Icons.info_outline, "Về bảng này", () {
-                  setState(() {
-                    state = 1;
-                  });
-                }),
-                CustomListTile(
-                  MyFlutterApp.person_outline,
-                  "Thành viên",
-                  () {
-                    setState(
-                      () {
-                        state = 2;
-                      },
-                    );
-                  },
-                ),
-                Divider(),
-                CustomListTile(
-                  Icons.delete,
-                  "Xóa bảng",
-                  () {
+                  /// Body
+                  if (state == 1)
+                    inforContent(creator, "")
+                  else if (state == 4)
+                    settingContent(board)
+                ],
+              )
+            : Column(
+                children: [
+                  SizedBox(
+                    height: 24,
+                  ),
+                  CustomListTile(Icons.info_outline, "Về bảng này", () {
+                    setState(() {
+                      state = 1;
+                    });
+                  }),
+                  CustomListTile(MyFlutterApp.person_outline, "Thành viên", () {
+                    setState(() {
+                      state = 2;
+                    });
+                  }),
+                  Divider(),
+                  CustomListTile(Icons.delete, "Xóa bảng", () {
                     ///TODO: process to delete board
                     Navigator.of(context).pushNamed(MAIN_SCREEN);
                   },

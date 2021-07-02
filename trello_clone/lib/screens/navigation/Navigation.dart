@@ -228,9 +228,8 @@ class _NavigationState extends State<Navigation> {
       child: Column(
         children: <Widget>[
           FutureBuilder(
-              future: DatabaseService.getUserData(context),
+              future: DatabaseService.getCurrentUserData(),
               builder: (BuildContext context, AsyncSnapshot snapshot) {
-
                 if (snapshot.hasData) {
                   hasData = true;
                 } else
