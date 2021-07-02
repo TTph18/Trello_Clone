@@ -1,5 +1,6 @@
 import 'dart:ui';
 
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
@@ -379,6 +380,7 @@ class settingContent extends StatefulWidget {
 class settingContentState extends State<settingContent> {
   TextEditingController mycontroller = TextEditingController();
   late Boards board;
+  late Workspaces workspace;
   late String boardName = "Đặc tả hình thức";
   late String grName = "Shop ngáo và những người bạn";
   List<Labels> currentLabels = [
@@ -503,7 +505,7 @@ class settingContentState extends State<settingContent> {
           builder: (BuildContext context, AsyncSnapshot snapshot) {
             if (snapshot.hasData) {
               Workspaces wp = Workspaces.fromDocument(snapshot.data);
-              grName = wp.workspaceName;
+              workspace = wp;
             } else {
               return Container(
                   alignment: FractionalOffset.center,
@@ -512,7 +514,7 @@ class settingContentState extends State<settingContent> {
             return InkWell(
               onTap: () {
                 Route route = MaterialPageRoute(
-                    builder: (context) => ChangeWorkspace(grName, board));
+                    builder: (context) => ChangeWorkspace(workspace, board));
                 Navigator.push(context, route);
               },
               enableFeedback: false,
@@ -524,7 +526,7 @@ class settingContentState extends State<settingContent> {
                     Align(
                       alignment: Alignment.centerLeft,
                       child: Text(
-                        grName,
+                        workspace.workspaceName,
                         textAlign: TextAlign.left,
                         style: TextStyle(
                           fontSize: 15,
@@ -757,6 +759,42 @@ class settingContentState extends State<settingContent> {
       ),
     );
     return content;
+  }
+}
+
+class memberContent extends StatefulWidget {
+  late Boards board;
+  memberContent(this.board);
+  @override
+  memberContentState createState() => memberContentState(board);
+}
+
+class memberContentState extends State<memberContent> {
+  late Boards board;
+  late List<Users> userList;
+  memberContentState(this.board);
+
+  @override
+  void initState() {
+    super.initState();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return FutureBuilder(
+        future: DatabaseService.getListUserData(board.userList),
+        builder: (BuildContext context, AsyncSnapshot snapshot) {
+          if (!snapshot.hasData) {
+            return Container(
+                alignment: FractionalOffset.center,
+                child: CircularProgressIndicator());
+          }
+          for (DocumentSnapshot item in snapshot.data) {
+            Users _user = Users.fromDocument(item);
+            userList.add(_user);
+          }
+          return SizedBox(); //ListView.Builder here
+        });
   }
 }
 

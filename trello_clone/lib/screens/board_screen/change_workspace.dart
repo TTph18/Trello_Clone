@@ -1,10 +1,13 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:trello_clone/models/boards.dart';
+import 'package:trello_clone/models/workspaces.dart';
 import 'package:trello_clone/screens/board_screen/board_screen.dart';
+import 'package:trello_clone/services/database.dart';
 
 class ChangeWorkspace extends StatefulWidget {
-  String currentWorkspace;
+  Workspaces currentWorkspace;
   Boards currentBoard;
   ChangeWorkspace(this.currentWorkspace, this.currentBoard);
   @override
@@ -13,15 +16,10 @@ class ChangeWorkspace extends StatefulWidget {
 }
 
 class ChangeWorkspaceState extends State<ChangeWorkspace> {
-  String currentWorkspace;
+  Workspaces currentWorkspace;
   Boards currentBoard;
-  List<String> userWorkspaces = [
-    "Workspace 1",
-    "Workspace 2",
-    "Workspace 3",
-    "Shop ngáo và những người bạn"
-  ];
-  String? selectedWorkspace;
+  List<Workspaces> userWorkspaces = [];
+  Workspaces? selectedWorkspace;
   ChangeWorkspaceState(this.currentWorkspace, this.currentBoard);
   @override
   void initState() {
@@ -30,49 +28,74 @@ class ChangeWorkspaceState extends State<ChangeWorkspace> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        leading: IconButton(
-            onPressed: () {
-              Route route = MaterialPageRoute(
-                  builder: (context) => BoardScreen(currentBoard, true));
-              Navigator.push(context, route);
-            },
-            icon: Icon(Icons.close)),
-        title: Text("Đổi không gian làm việc"),
-        actions: [
-          IconButton(
-              onPressed: () {
-                ///TODO: Change workspace of board
-                Route route = MaterialPageRoute(
-                    builder: (context) => BoardScreen(currentBoard, true));
-                Navigator.push(context, route);
-              },
-              icon: Icon(Icons.check)),
-        ],
-      ),
-      body: Column(
-        children: List.generate(
-          userWorkspaces.length,
-          (index) => ListTile(
-            onTap: () {
-              setState(() {
-                selectedWorkspace = userWorkspaces[index];
-              });
-            },
-            title: Text(userWorkspaces[index]),
-            leading: Radio<String>(
-              value: userWorkspaces[index],
-              groupValue: selectedWorkspace,
-              onChanged: (String? value) {
-                setState(() {
-                  selectedWorkspace = value;
-                });
-              },
+    return FutureBuilder(
+        future: DatabaseService.getUserWorkspaceList(),
+        builder: (BuildContext context, AsyncSnapshot snapshot) {
+          if (!snapshot.hasData)
+            return Scaffold(
+              appBar: AppBar(
+                  leading: IconButton(
+                      onPressed: () {
+                        Route route = MaterialPageRoute(
+                            builder: (context) => BoardScreen(currentBoard, true));
+                        Navigator.push(context, route);
+                      },
+                      icon: Icon(Icons.close)),
+                  title: Text("Đổi không gian làm việc"),));
+          else {
+            userWorkspaces.clear();
+            for (DocumentSnapshot item in snapshot.data) {
+              Workspaces _wp = Workspaces.fromDocument(item);
+              userWorkspaces.add(_wp);
+            }
+          }
+          return Scaffold(
+            appBar: AppBar(
+              leading: IconButton(
+                  onPressed: () {
+                    Route route = MaterialPageRoute(
+                        builder: (context) => BoardScreen(currentBoard, true));
+                    Navigator.push(context, route);
+                  },
+                  icon: Icon(Icons.close)),
+              title: Text("Đổi không gian làm việc"),
+              actions: [
+                IconButton(
+                    onPressed: () {
+                      ///TODO: Change workspace of board
+                      Route route = MaterialPageRoute(
+                          builder: (context) =>
+                              BoardScreen(currentBoard, true));
+                      Navigator.push(context, route);
+                    },
+                    icon: Icon(Icons.check)),
+              ],
             ),
-          ),
-        ),
-      ),
-    );
+            body: Column(
+              children: List.generate(
+                userWorkspaces.length,
+                (index) => ListTile(
+                  onTap: () {
+                    setState(() {
+                      selectedWorkspace = userWorkspaces[index];
+                    });
+                  },
+                  title: Text(userWorkspaces[index].workspaceName),
+                  leading: Radio<String>(
+                    value: userWorkspaces[index].workspaceID,
+                    groupValue: selectedWorkspace!.workspaceID,
+                    onChanged: (String? value) {
+                      setState(() {
+                        selectedWorkspace = userWorkspaces.where(
+                                (element) => element.workspaceID == value)
+                            as Workspaces?;
+                      });
+                    },
+                  ),
+                ),
+              ),
+            ),
+          );
+        });
   }
 }

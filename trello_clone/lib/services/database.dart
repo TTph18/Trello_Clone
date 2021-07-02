@@ -91,6 +91,7 @@ class DatabaseService {
         .update({"boardList": FieldValue.arrayUnion([docRef.id]),});
   }
 
+  //initialize a default board: 3 lists, 7 labels
   static Future<void> createThreeList(String boardID) async {
 
   }
