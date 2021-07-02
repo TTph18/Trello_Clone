@@ -146,11 +146,9 @@ class MemberListState extends State<MemberList> {
                             keyboardAppearance: Brightness.dark,
                             textCapitalization: TextCapitalization.words,
                             // maxChips: 5,
-                            textStyle: const TextStyle(
-                                height: 1.5,
-                                fontSize: 20),
+                            textStyle:
+                                const TextStyle(height: 1.5, fontSize: 20),
                             decoration: const InputDecoration(
-                              prefixIcon: Icon(Icons.search),
                               // hintText: formControl.hint,
                               labelText: 'Tài khoản hoặc email',
                             ),
@@ -183,8 +181,7 @@ class MemberListState extends State<MemberList> {
                                 key: ObjectKey(profile),
                                 label: Text(profile.userName),
                                 avatar: CircleAvatar(
-                                  backgroundImage:
-                                      AssetImage(profile.avatar),
+                                  backgroundImage: AssetImage(profile.avatar),
                                 ),
                                 onDeleted: () => state.deleteChip(profile),
                                 materialTapTargetSize:
@@ -196,8 +193,7 @@ class MemberListState extends State<MemberList> {
                               return ListTile(
                                 key: ObjectKey(profile),
                                 leading: CircleAvatar(
-                                  backgroundImage:
-                                      AssetImage(profile.avatar),
+                                  backgroundImage: AssetImage(profile.avatar),
                                 ),
                                 title: Text(profile.userName),
                                 onTap: () => state.selectSuggestion(profile),
@@ -239,11 +235,11 @@ class MemberListState extends State<MemberList> {
       ),
       body: Padding(
         padding: const EdgeInsets.all(10.0),
-        child: Column(
-          children: List.generate(
-            WorkspaceUsers.length,
-            (index) => MemberInfo(WorkspaceUsers[index]),
-          ),
+        child: ListView.builder(
+          itemCount: WorkspaceUsers.length,
+          itemBuilder: (context, index) {
+            return MemberInfo(WorkspaceUsers[index]);
+          },
         ),
       ),
     );

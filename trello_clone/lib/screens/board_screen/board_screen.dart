@@ -426,7 +426,7 @@ class BoardScreenState extends State<BoardScreen> {
           isLast: true,
         );
     });
-    if (isShowDrawer) _scaffoldKey.currentState?.openEndDrawer();
+    if (isShowDrawer) _scaffoldKey.currentState!.openEndDrawer();
   }
 
   @override
