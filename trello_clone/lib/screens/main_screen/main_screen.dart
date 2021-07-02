@@ -200,7 +200,9 @@ class _MainScreenState extends State<MainScreen> {
           ),
           IconButton(
             icon: const Icon(MyFlutterApp.bell),
-            onPressed: () {},
+            onPressed: () {
+              Navigator.of(context).pushNamed(NOTIFICATION_SCREEN);
+            },
           ),
         ],
       ),

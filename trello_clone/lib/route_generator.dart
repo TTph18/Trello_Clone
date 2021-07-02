@@ -2,6 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:trello_clone/screens/main_screen/member_list.dart';
 import 'package:trello_clone/screens/create_workspace_screen/create_workspace_screen.dart';
+import 'package:trello_clone/screens/notification_screen/notification_screen.dart';
 import 'route_path.dart';
 import 'screens/login_screen/login_screen.dart';
 import 'screens/register_screen/register_screen.dart';
@@ -28,6 +29,11 @@ class RouteGenerator{
         return MaterialPageRoute(
           settings: RouteSettings(name: MEMBER_LIST),
           builder: (_) => MemberList(),
+        );
+      case NOTIFICATION_SCREEN:
+        return MaterialPageRoute(
+          settings: RouteSettings(name: NOTIFICATION_SCREEN),
+          builder: (_) => NotificationScreen(),
         );
       case REGISTER_SCREEN:
         return MaterialPageRoute(

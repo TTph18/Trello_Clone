@@ -422,8 +422,7 @@ class BoardScreenState extends State<BoardScreen> {
           isLast: true,
         );
     });
-    if (isShowDrawer)
-      _scaffoldKey.currentState!.openEndDrawer();
+    if (isShowDrawer) _scaffoldKey.currentState!.openEndDrawer();
   }
 
   @override
@@ -432,25 +431,27 @@ class BoardScreenState extends State<BoardScreen> {
       key: _scaffoldKey,
       backgroundColor: const Color.fromRGBO(0, 121, 190, 1.0),
       appBar: AppBar(
-        title: isTapNewList ? Text("Thêm danh sách") : isTapNewCard.contains(true) ? Text("Thêm thẻ") : Text(boards.boardName),
+        title: isTapNewList
+            ? Text("Thêm danh sách")
+            : isTapNewCard.contains(true)
+                ? Text("Thêm thẻ")
+                : Text(boards.boardName),
         backgroundColor: const Color.fromRGBO(0, 64, 126, 1.0),
         leading: (isTapNewList || isTapNewCard.contains(true))
             ? IconButton(
                 onPressed: () {
                   setState(
                     () {
-                      if (isTapNewList)
-                        {
-                          isTapNewList = false;
-                          newListController.text = "";
-                        }
-                      int index = isTapNewCard.indexWhere((element) => element == true);
-                      if (index != -1)
-                        {
-                          print("INNER " + index.toString());
-                          isTapNewCard[index] = false;
-                          newCardController.text = "";
-                        }
+                      if (isTapNewList) {
+                        isTapNewList = false;
+                        newListController.text = "";
+                      }
+                      int index =
+                          isTapNewCard.indexWhere((element) => element == true);
+                      if (index != -1) {
+                        isTapNewCard[index] = false;
+                        newCardController.text = "";
+                      }
                     },
                   );
                 },
@@ -468,38 +469,37 @@ class BoardScreenState extends State<BoardScreen> {
         actions: (isTapNewList || isTapNewCard.contains(true))
             ? [
                 IconButton(
-                  icon: const Icon(Icons.check),
-                  onPressed: () {
-                    if (isTapNewList) {
-                      if (newListController.text != "") {
-                        ///TODO: Add new list to board
-                        setState(
-                              () {
-                            ///TODO: Reload list of lists in board
-                            isTapNewList = false;
-                            newListController.text = "";
-                          },
-                        );
+                    icon: const Icon(Icons.check),
+                    onPressed: () {
+                      if (isTapNewList) {
+                        if (newListController.text != "") {
+                          ///TODO: Add new list to board
+                          setState(
+                            () {
+                              ///TODO: Reload list of lists in board
+                              isTapNewList = false;
+                              newListController.text = "";
+                            },
+                          );
+                        }
                       }
-                    }
-                    int index = isTapNewCard.indexWhere((element) => element == true);
-                    if (index != -1)
-                      {
+                      int index =
+                          isTapNewCard.indexWhere((element) => element == true);
+                      if (index != -1) {
                         print("INNER CHECK: " + index.toString());
                         if (newCardController.text != "") {
                           ///TODO: Add new card to list [index]
                           setState(
-                                () {
+                            () {
                               ///TODO: Reload card in list [index]
-                                  print("INNER");
+                              print("INNER");
                               isTapNewCard[index] = false;
                               newListController.text = "";
                             },
                           );
                         }
                       }
-                  }
-                    ),
+                    }),
               ]
             : [
                 IconButton(
@@ -540,10 +540,10 @@ class BoardScreenState extends State<BoardScreen> {
               builder: (BuildContext context, AsyncSnapshot snapshot) {
                 if (!snapshot.hasData) {
                   return Container(
-                  alignment: FractionalOffset.center,
-                  child: CircularProgressIndicator());
-                }
-                else {
+                    alignment: FractionalOffset.center,
+                    child: CircularProgressIndicator(),
+                  );
+                } else {
                   listName.clear();
                   for (var item in snapshot.data) {
                     Lists _list = Lists.fromDocument(item);
