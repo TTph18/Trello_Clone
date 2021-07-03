@@ -61,12 +61,15 @@ class BoardInfo extends StatelessWidget {
 }
 
 class GroupName extends StatelessWidget {
+  TextEditingController changeNameController = TextEditingController();
+
   late String grName;
 
   GroupName(this.grName);
 
   @override
   Widget build(BuildContext context) {
+    changeNameController.value = new TextEditingValue(text: grName,);
     return Stack(
       children: <Widget>[
         Container(
@@ -101,6 +104,58 @@ class GroupName extends StatelessWidget {
                 padding: EdgeInsets.zero,
                 icon: Icon(Icons.more_vert),
                 onSelected: (value) {
+                  if (value == 0)
+                  {
+                    showDialog<String>(
+                      context: context,
+                      builder: (BuildContext context) => AlertDialog(
+                        title: const Text(
+                          'Sửa tên nhóm',
+                          style: TextStyle(fontWeight: FontWeight.bold),
+                        ),
+                        content: Container(
+                          width: MediaQuery.of(context).size.width * 0.8,
+                          child: Column(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              TextField(
+                          controller: changeNameController,
+                          decoration: InputDecoration(
+                                  alignLabelWithHint: true,
+                                  labelStyle: TextStyle(
+                                    fontSize: 22.0,
+                                    height: 0.9,
+                                  ),
+                                  labelText: "Tên nhóm",
+                                ),
+                              ),
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.end,
+                                children: [
+                                  TextButton(
+                                    onPressed: () {
+                                      Navigator.of(context).pop();
+                                    },
+                                    child: Text(
+                                      "HỦY",
+                                      style: TextStyle(fontWeight: FontWeight.bold),
+                                    ),
+                                  ),
+                                  TextButton(
+                                    onPressed: () {
+                                      ///TODO: Change workspace's name
+                                      Navigator.of(context).pop();
+                                    },
+                                    child: Text("SỬA"),
+                                  ),
+                                ],
+                              )
+                            ],
+                          ),
+                        ),
+                      ),
+                    );
+                  }
                   if (value == 1)
                     {
                       Navigator.of(context).pushNamed(MEMBER_LIST);
@@ -111,6 +166,10 @@ class GroupName extends StatelessWidget {
                   }
                 },
                 itemBuilder: (context) => [
+                  PopupMenuItem(
+                    value: 0,
+                    child: Text('Sửa tên nhóm'),
+                  ),
                   PopupMenuItem(
                     value: 1,
                     child: Text('Thành viên nhóm'),

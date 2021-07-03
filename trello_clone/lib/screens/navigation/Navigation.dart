@@ -67,6 +67,11 @@ class AccountInfo extends StatelessWidget {
 }
 
 class NavigationMain extends StatelessWidget {
+  TextEditingController changeNameController = TextEditingController();
+
+  TextEditingController oldPasswordController = TextEditingController();
+  TextEditingController newPasswordcontroller = TextEditingController();
+  TextEditingController confirmPasswordController = TextEditingController();
   List<String> grNames = ["Nhóm 1", "Nhóm 2"];
   late bool hasData = false;
   List<Function> grOnPress = [
@@ -76,6 +81,7 @@ class NavigationMain extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    changeNameController.value = TextEditingValue(text: 'Old name'); ///TODO: get username
     if (hasData) {}
     return FutureBuilder(
         future: DatabaseService.getUserWorkspaceList(),
@@ -96,12 +102,12 @@ class NavigationMain extends StatelessWidget {
               ),
               CustomListTile(
                 Icons.title,
-                "Đổi tên hiển thị",
+                "Sửa tên hiển thị",
                 () => showDialog<String>(
                   context: context,
                   builder: (BuildContext context) => AlertDialog(
                     title: const Text(
-                      'Đổi tên hiển thị',
+                      'Sửa tên hiển thị',
                       style: TextStyle(fontWeight: FontWeight.bold),
                     ),
                     content: Container(
@@ -110,6 +116,7 @@ class NavigationMain extends StatelessWidget {
                         mainAxisSize: MainAxisSize.min,
                         children: [
                           TextField(
+                            controller: changeNameController,
                             decoration: InputDecoration(
                               alignLabelWithHint: true,
                               labelStyle: TextStyle(
@@ -136,7 +143,7 @@ class NavigationMain extends StatelessWidget {
                                   ///TODO: Change username
                                   Navigator.of(context).pop();
                                 },
-                                child: Text("ĐỔI"),
+                                child: Text("SỬA"),
                               ),
                             ],
                           )
@@ -163,6 +170,7 @@ class NavigationMain extends StatelessWidget {
                         mainAxisSize: MainAxisSize.min,
                         children: [
                           TextField(
+                            controller: oldPasswordController,
                             obscureText: true,
                             decoration: InputDecoration(
                               alignLabelWithHint: true,
@@ -174,6 +182,7 @@ class NavigationMain extends StatelessWidget {
                             ),
                           ),
                           TextField(
+                            controller: newPasswordcontroller,
                             obscureText: true,
                             decoration: InputDecoration(
                               alignLabelWithHint: true,
@@ -185,6 +194,7 @@ class NavigationMain extends StatelessWidget {
                             ),
                           ),
                           TextField(
+                            controller: confirmPasswordController,
                             obscureText: true,
                             decoration: InputDecoration(
                               alignLabelWithHint: true,
