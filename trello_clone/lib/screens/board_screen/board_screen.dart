@@ -389,6 +389,8 @@ class BoardScreenState extends State<BoardScreen> {
   late List<ListCard> _lists;
   late List<bool> isTapNewCard = List.filled(_lists.length, false);
   TextEditingController newCardController = TextEditingController();
+  late List<bool> isTapChangeListName = List.filled(_lists.length, false);
+  TextEditingController changeListNameController = TextEditingController();
   late bool isTapNewList = false;
   TextEditingController newListController = TextEditingController();
 
@@ -448,9 +450,13 @@ class BoardScreenState extends State<BoardScreen> {
                   ? Text("Thêm danh sách")
                   : isTapNewCard.contains(true)
                       ? Text("Thêm thẻ")
-                      : Text(boards.boardName),
+                      : isTapChangeListName.contains(true)
+                          ? Text("Chỉnh sửa tên danh sách")
+                          : Text(boards.boardName),
               backgroundColor: const Color.fromRGBO(0, 64, 126, 1.0),
-              leading: (isTapNewList || isTapNewCard.contains(true))
+              leading: (isTapNewList ||
+                      isTapNewCard.contains(true) ||
+                      isTapChangeListName.contains(true))
                   ? IconButton(
                       onPressed: () {
                         setState(
@@ -459,12 +465,21 @@ class BoardScreenState extends State<BoardScreen> {
                               isTapNewList = false;
                               newListController.text = "";
                             }
+
                             int index = isTapNewCard
                                 .indexWhere((element) => element == true);
                             if (index != -1) {
                               print("INNER " + index.toString());
                               isTapNewCard[index] = false;
                               newCardController.text = "";
+                            }
+
+                            index = isTapChangeListName
+                                .indexWhere((element) => element == true);
+                            if (index != -1) {
+                              print("INNER " + index.toString());
+                              isTapChangeListName[index] = false;
+                              changeListNameController.text = "";
                             }
                           },
                         );
@@ -480,7 +495,9 @@ class BoardScreenState extends State<BoardScreen> {
                         );
                       },
                     ),
-              actions: (isTapNewList || isTapNewCard.contains(true))
+              actions: (isTapNewList ||
+                      isTapNewCard.contains(true) ||
+                      isTapChangeListName.contains(true))
                   ? [
                       IconButton(
                         icon: const Icon(Icons.check),
@@ -497,6 +514,7 @@ class BoardScreenState extends State<BoardScreen> {
                               );
                             }
                           }
+
                           int index = isTapNewCard
                               .indexWhere((element) => element == true);
                           if (index != -1) {
@@ -507,6 +525,20 @@ class BoardScreenState extends State<BoardScreen> {
                                   ///TODO: Reload card in list [index]
                                   isTapNewCard[index] = false;
                                   newListController.text = "";
+                                },
+                              );
+                            }
+                          }
+
+                          index = isTapChangeListName
+                              .indexWhere((element) => element == true);
+                          if (index != -1) {
+                            if (newCardController.text != "") {
+                              ///TODO: Change list name [index]
+                              setState(
+                                () {
+                                  ///TODO: Reload list name [index]
+                                  isTapChangeListName[index] = false;
                                 },
                               );
                             }
@@ -564,8 +596,6 @@ class BoardScreenState extends State<BoardScreen> {
                       }
                       for (int i = 0; i < listName.length + 1; i++)
                         controllers.add(new ScrollController());
-                      isTapNewCard = List.filled(listName.length, false);
-                      isTapNewList = false;
                       _lists = List.generate(
                         listName.length + 1,
                         (outerIndex) {
@@ -648,13 +678,29 @@ class BoardScreenState extends State<BoardScreen> {
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Text(
-                      '${innerList.name}',
-                      style: TextStyle(
-                          color: Colors.black,
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold),
-                    ),
+                    isTapChangeListName[outerIndex]
+                        ? Container(
+                            width: 200,
+                            child: TextField(
+                              autofocus: true,
+                              controller: changeListNameController,
+                            ),
+                          )
+                        : InkWell(
+                            onTap: () {
+                              changeListNameController.text = '';
+                              setState(() {
+                                isTapChangeListName[outerIndex] = true;
+                              });
+                            },
+                            child: Text(
+                              '${innerList.name}',
+                              style: TextStyle(
+                                  color: Colors.black,
+                                  fontSize: 18,
+                                  fontWeight: FontWeight.bold),
+                            ),
+                          ),
                     Container(
                       height: 18,
                       width: 20,
@@ -662,7 +708,19 @@ class BoardScreenState extends State<BoardScreen> {
                         iconSize: 25,
                         padding: EdgeInsets.zero,
                         icon: Icon(Icons.more_vert),
-                        onSelected: (value) {},
+                        onSelected: (value) {
+                          if (value == 1) {
+                            setState(() {
+                              isTapNewCard[outerIndex] = true;
+                            });
+                            controllers[outerIndex].animateTo(
+                              controllers[outerIndex].position.maxScrollExtent -
+                                  5,
+                              curve: Curves.easeOut,
+                              duration: const Duration(milliseconds: 300),
+                            );
+                          }
+                        },
                         itemBuilder: (context) => [
                           PopupMenuItem(
                             value: 1,
@@ -697,23 +755,13 @@ class BoardScreenState extends State<BoardScreen> {
                     child: Container(
                       child: Padding(
                         padding: const EdgeInsets.all(8.0),
-                        child: Focus(
-                          onFocusChange: (hasFocus) {
-                            if (!hasFocus) {
-                              setState(() {
-                                isTapNewCard[outerIndex] = false;
-                                newCardController.text = "";
-                              });
-                            }
-                          },
-                          child: TextField(
-                            autofocus: true,
-                            controller: newCardController,
-                            decoration: InputDecoration(
-                              hintText: "Tên thẻ",
-                              hintStyle: TextStyle(
-                                fontSize: 18,
-                              ),
+                        child: TextField(
+                          autofocus: true,
+                          controller: newCardController,
+                          decoration: InputDecoration(
+                            hintText: "Tên thẻ",
+                            hintStyle: TextStyle(
+                              fontSize: 18,
                             ),
                           ),
                         ),
