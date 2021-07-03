@@ -4,6 +4,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:flutter_chips_input/flutter_chips_input.dart';
 import 'package:trello_clone/icons/app_icons.dart';
 import 'package:trello_clone/models/boards.dart';
 import 'package:trello_clone/models/user.dart';
@@ -771,10 +772,47 @@ class memberContent extends StatefulWidget {
 }
 
 class memberContentState extends State<memberContent> {
+  final _chipKey = GlobalKey<ChipsInputState>();
+  List<Users> users = [
+    Users(
+      userID: "12345",
+      userName: "name1",
+      profileName: "Name 1",
+      email: '123456@gmail.com',
+      avatar: 'assets/images/BlueBG.png',
+      workspaceList: [],
+    ),
+    Users(
+      userID: "12345",
+      userName: "name2",
+      profileName: "Name 2",
+      email: '123456@gmail.com',
+      avatar: 'assets/images/BlueBG.png',
+      workspaceList: [],
+    ),
+    Users(
+      userID: "12345",
+      userName: "name3",
+      profileName: "Name 3",
+      email: '123456@gmail.com',
+      avatar: 'assets/images/BlueBG.png',
+      workspaceList: [],
+    ),
+    Users(
+      userID: "12345",
+      userName: "Test4",
+      profileName: "Cun cun cute",
+      email: '123456@gmail.com',
+      avatar: 'assets/images/BlueBG.png',
+      workspaceList: [],
+    ),
+  ];
   GlobalKey key = GlobalKey();
   late Boards board;
   late List<Users> userList = [];
   memberContentState(this.board);
+
+
 
   @override
   void initState() {
@@ -869,7 +907,10 @@ class memberContentState extends State<memberContent> {
                             ),
                             Padding(
                               padding: EdgeInsets.fromLTRB(70, 0, 0, 0),
-                              child: Divider(height: 1, color: Colors.black,),
+                              child: Divider(
+                                height: 1,
+                                color: Colors.black,
+                              ),
                             ),
                           ],
                         );
@@ -891,7 +932,118 @@ class memberContentState extends State<memberContent> {
                         child: FloatingActionButton.extended(
                           key: key,
                           onPressed: () {
-                            // Add your onPressed code here!
+                            showDialog<String>(
+                              context: context,
+                              builder: (BuildContext context) => AlertDialog(
+                                title: const Text(
+                                  'Thêm thành viên',
+                                  style: TextStyle(fontWeight: FontWeight.bold),
+                                ),
+                                content: Column(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    SingleChildScrollView(
+                                      child: Column(
+                                        children: <Widget>[
+                                          ChipsInput(
+                                            key: _chipKey,
+                                            keyboardAppearance: Brightness.dark,
+                                            textCapitalization:
+                                                TextCapitalization.words,
+                                            // maxChips: 5,
+                                            textStyle: const TextStyle(
+                                                height: 1.5, fontSize: 20),
+                                            decoration: const InputDecoration(
+                                              // hintText: formControl.hint,
+                                              labelText: 'Tài khoản hoặc email',
+                                            ),
+                                            findSuggestions: (String query) {
+                                              print("Query: '$query'");
+                                              if (query.isNotEmpty) {
+                                                var lowercaseQuery =
+                                                    query.toLowerCase();
+                                                return users.where((profile) {
+                                                  return profile.userName
+                                                          .toLowerCase()
+                                                          .contains(query
+                                                              .toLowerCase()) ||
+                                                      profile.email
+                                                          .toLowerCase()
+                                                          .contains(query
+                                                              .toLowerCase());
+                                                }).toList(growable: false)
+                                                  ..sort((a, b) => a.userName
+                                                      .toLowerCase()
+                                                      .indexOf(lowercaseQuery)
+                                                      .compareTo(b.userName
+                                                          .toLowerCase()
+                                                          .indexOf(
+                                                              lowercaseQuery)));
+                                              }
+                                              return users;
+                                            },
+                                            onChanged: (data) {
+                                              // print(data);
+                                            },
+                                            chipBuilder: (context, state,
+                                                dynamic profile) {
+                                              return InputChip(
+                                                key: ObjectKey(profile),
+                                                label: Text(profile.userName),
+                                                avatar: CircleAvatar(
+                                                  backgroundImage: AssetImage(
+                                                      profile.avatar),
+                                                ),
+                                                onDeleted: () =>
+                                                    state.deleteChip(profile),
+                                                materialTapTargetSize:
+                                                    MaterialTapTargetSize
+                                                        .shrinkWrap,
+                                              );
+                                            },
+                                            suggestionBuilder: (context, state,
+                                                dynamic profile) {
+                                              return ListTile(
+                                                key: ObjectKey(profile),
+                                                leading: CircleAvatar(
+                                                  backgroundImage: AssetImage(
+                                                      profile.avatar),
+                                                ),
+                                                title: Text(profile.userName),
+                                                onTap: () => state
+                                                    .selectSuggestion(profile),
+                                              );
+                                            },
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                                actions: [
+                                  TextButton(
+                                    child: Text('HỦY',
+                                        style: TextStyle(
+                                            fontWeight: FontWeight.bold,
+                                            fontSize: 16)),
+                                    onPressed: () {
+                                      Navigator.of(context).pop();
+                                    },
+                                  ),
+                                  TextButton(
+                                    child: Text(
+                                      'THÊM',
+                                      style: TextStyle(
+                                          fontWeight: FontWeight.bold,
+                                          fontSize: 16),
+                                    ),
+                                    onPressed: () {
+                                      ///TODO: Add user in chip to board
+                                    },
+                                  )
+                                ],
+                              ),
+                            );
                           },
                           label: const Text('THÊM THÀNH VIÊN'),
                           icon: const Icon(Icons.group_add),

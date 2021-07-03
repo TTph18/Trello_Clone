@@ -216,7 +216,7 @@ class MemberListState extends State<MemberList> {
                   ),
                   TextButton(
                     child: Text(
-                      'Thêm',
+                      'THÊM',
                       style:
                           TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
                     ),
