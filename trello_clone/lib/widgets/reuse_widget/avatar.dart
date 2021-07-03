@@ -5,7 +5,7 @@ class avatar extends StatelessWidget {
   late double width = 50;
   late double height = 50;
   late Color borderColor = Colors.grey;
-  late AssetImage ava;
+  late Image ava;
 
   avatar(this.width, this.height, this.borderColor, this.ava);
 
@@ -19,7 +19,7 @@ class avatar extends StatelessWidget {
         border: Border.all(color: borderColor),
         image: new DecorationImage(
           fit: BoxFit.fill,
-          image: ava,
+          image: ava.image,
         ),
       ),
     );

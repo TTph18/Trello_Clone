@@ -13,6 +13,7 @@ import 'package:trello_clone/screens/board_screen/change_workspace.dart';
 import 'package:trello_clone/screens/main_screen/main_screen.dart';
 import 'package:trello_clone/screens/navigation/Navigation.dart';
 import 'package:trello_clone/services/database.dart';
+import 'package:trello_clone/widgets/reuse_widget/avatar.dart';
 import 'package:trello_clone/widgets/reuse_widget/custom_list_tile.dart';
 
 import '../../route_path.dart';
@@ -770,8 +771,9 @@ class memberContent extends StatefulWidget {
 }
 
 class memberContentState extends State<memberContent> {
+  GlobalKey key = GlobalKey();
   late Boards board;
-  late List<Users> userList;
+  late List<Users> userList = [];
   memberContentState(this.board);
 
   @override
@@ -793,7 +795,115 @@ class memberContentState extends State<memberContent> {
             Users _user = Users.fromDocument(item);
             userList.add(_user);
           }
-          return SizedBox(); //ListView.Builder here
+          return Stack(
+            children: [
+              Container(
+                height: MediaQuery.of(context).size.height - 72,
+                child: ListView(
+                  children: [
+                    Column(
+                      children: List.generate(userList.length, (int index) {
+                        return Column(
+                          children: [
+                            InkWell(
+                              child: Padding(
+                                padding: const EdgeInsets.fromLTRB(
+                                    16.0, 14.0, 0, 14.0),
+                                child: Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    Row(
+                                      children: [
+                                        avatar(
+                                          40,
+                                          40,
+                                          Colors.grey,
+                                          Image.network(
+                                            userList[index].avatar,
+                                            width: 40,
+                                            height: 40,
+                                          ),
+                                        ),
+                                        SizedBox(
+                                          width: 20,
+                                        ),
+                                        Column(
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.start,
+                                          children: <Widget>[
+                                            Align(
+                                              alignment: Alignment.centerLeft,
+                                              child: Text(
+                                                  userList[index].userName,
+                                                  textAlign: TextAlign.left,
+                                                  style: TextStyle(
+                                                      fontSize: 16,
+                                                      fontWeight:
+                                                          FontWeight.bold)),
+                                            ),
+                                            Align(
+                                              alignment: Alignment.centerLeft,
+                                              child: Text(
+                                                '@' +
+                                                    userList[index].profileName,
+                                                textAlign: TextAlign.left,
+                                                style: TextStyle(
+                                                    fontSize: 16,
+                                                    fontStyle:
+                                                        FontStyle.italic),
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      ],
+                                    ),
+                                    IconButton(
+                                        onPressed: () {
+                                          ///TODO: delete this user form board
+                                        },
+                                        icon: Icon(Icons.close)),
+                                  ],
+                                ),
+                              ),
+                            ),
+                            Padding(
+                              padding: EdgeInsets.fromLTRB(70, 0, 0, 0),
+                              child: Divider(height: 1, color: Colors.black,),
+                            ),
+                          ],
+                        );
+                      }),
+                    ),
+                  ],
+                ),
+              ),
+              Container(
+                height: MediaQuery.of(context).size.height - 85,
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  mainAxisSize: MainAxisSize.max,
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.fromLTRB(0, 0, 10, 0),
+                      child: Align(
+                        alignment: Alignment.bottomRight,
+                        child: FloatingActionButton.extended(
+                          key: key,
+                          onPressed: () {
+                            // Add your onPressed code here!
+                          },
+                          label: const Text('THÊM THÀNH VIÊN'),
+                          icon: const Icon(Icons.group_add),
+                          backgroundColor: Colors.green,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          );
         });
   }
 }
@@ -875,6 +985,8 @@ class mainMenuState extends State<mainMenu> {
                 /// Body
                 if (state == 1)
                   inforContent(creator, "")
+                else if (state == 2)
+                  memberContent(board)
                 else if (state == 4)
                   settingContent(board)
               ],

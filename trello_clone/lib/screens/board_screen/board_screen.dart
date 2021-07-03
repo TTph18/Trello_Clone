@@ -125,7 +125,7 @@ class _cardState extends State<_card> {
   int numFile = 0;
   int numFinish = 4;
   int numTotal = 4;
-  List<AssetImage> avas = [];
+  List<Image> avas = [];
 
   _cardState(this.name);
 
@@ -144,8 +144,8 @@ class _cardState extends State<_card> {
     numCom = 2;
     numFile = 3;
     avas = [
-      AssetImage('assets/images/BlueBG.png'),
-      AssetImage('assets/images/BlueBG.png'),
+      Image.asset('assets/images/BlueBG.png'),
+      Image.asset('assets/images/BlueBG.png'),
     ];
   }
 

@@ -336,7 +336,7 @@ class CardScreenState extends State<CardScreen> {
           child: Row(
             children: [
               avatar(50, 50, Colors.grey,
-                  AssetImage('assets/images/BlueBG.png')),
+                  Image.asset('assets/images/BlueBG.png')),
               SizedBox(width: 10,),
               Expanded(
                 child: TextField(

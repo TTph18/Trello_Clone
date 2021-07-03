@@ -354,7 +354,7 @@ class _NavigationState extends State<Navigation> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         avatar(70, 70, Colors.grey,
-                            AssetImage('assets/images/BlueBG.png')),
+                            Image.asset('assets/images/BlueBG.png')),
                         SizedBox(
                           height: 13,
                         ),

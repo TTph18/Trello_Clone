@@ -59,7 +59,7 @@ class NotificationScreenState extends State<NotificationScreen> {
                           50,
                           50,
                           Colors.grey,
-                          AssetImage(avas[index]),
+                          Image.asset(avas[index]),
                         ),
                         SizedBox(
                           width: 20,
