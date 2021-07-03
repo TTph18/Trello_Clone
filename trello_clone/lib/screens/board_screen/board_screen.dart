@@ -588,6 +588,8 @@ class BoardScreenState extends State<BoardScreen> {
                             alignment: FractionalOffset.center,
                             child: CircularProgressIndicator());
                       } else {
+                        controllers.clear();
+                        _lists.clear();
                         listName.clear();
                         for (var item in snapshot.data) {
                           Lists _list = Lists.fromDocument(item);
@@ -596,6 +598,8 @@ class BoardScreenState extends State<BoardScreen> {
                       }
                       for (int i = 0; i < listName.length + 1; i++)
                         controllers.add(new ScrollController());
+                      isTapNewCard = List.filled(listName.length, false);
+                      isTapNewList = false;
                       _lists = List.generate(
                         listName.length + 1,
                         (outerIndex) {
