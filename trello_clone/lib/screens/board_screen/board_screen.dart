@@ -483,37 +483,36 @@ class BoardScreenState extends State<BoardScreen> {
               actions: (isTapNewList || isTapNewCard.contains(true))
                   ? [
                       IconButton(
-                          icon: const Icon(Icons.check),
-                          onPressed: () {
-                            if (isTapNewList) {
-                              if (newListController.text != "") {
-                                ///TODO: Add new list to board
-                                setState(
-                                  () {
-                                    ///TODO: Reload list of lists in board
-                                    isTapNewList = false;
-                                    newListController.text = "";
-                                  },
-                                );
-                              }
+                        icon: const Icon(Icons.check),
+                        onPressed: () {
+                          if (isTapNewList) {
+                            if (newListController.text != "") {
+                              ///TODO: Add new list to board
+                              setState(
+                                () {
+                                  ///TODO: Reload list of lists in board
+                                  isTapNewList = false;
+                                  newListController.text = "";
+                                },
+                              );
                             }
-                            int index = isTapNewCard
-                                .indexWhere((element) => element == true);
-                            if (index != -1) {
-                              print("INNER CHECK: " + index.toString());
-                              if (newCardController.text != "") {
-                                ///TODO: Add new card to list [index]
-                                setState(
-                                  () {
-                                    ///TODO: Reload card in list [index]
-                                    print("INNER");
-                                    isTapNewCard[index] = false;
-                                    newListController.text = "";
-                                  },
-                                );
-                              }
+                          }
+                          int index = isTapNewCard
+                              .indexWhere((element) => element == true);
+                          if (index != -1) {
+                            if (newCardController.text != "") {
+                              ///TODO: Add new card to list [index]
+                              setState(
+                                () {
+                                  ///TODO: Reload card in list [index]
+                                  isTapNewCard[index] = false;
+                                  newListController.text = "";
+                                },
+                              );
                             }
-                          }),
+                          }
+                        },
+                      ),
                     ]
                   : [
                       IconButton(
