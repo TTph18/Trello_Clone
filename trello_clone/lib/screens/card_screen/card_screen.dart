@@ -2,6 +2,8 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:trello_clone/icons/app_icons.dart';
 import 'package:trello_clone/icons/my_flutter_app2_icons.dart';
+import 'package:trello_clone/models/boards.dart';
+import 'package:trello_clone/screens/board_screen/board_screen.dart';
 import 'dart:math' as math;
 
 import 'package:trello_clone/widgets/reuse_widget/avatar.dart';
@@ -17,7 +19,7 @@ class CardScreen extends StatefulWidget {
 
 class CardScreenState extends State<CardScreen> {
   late String cardName;
-
+  late Boards boards;
   CardScreenState(this.cardName);
 
   @override
@@ -31,7 +33,12 @@ class CardScreenState extends State<CardScreen> {
             return IconButton(
               icon: const Icon(Icons.clear),
               color: Colors.black,
-              onPressed: () {},
+              onPressed: () {
+                ///TODO: Uncomment after init boards
+                //Route route =
+                //MaterialPageRoute(builder: (context) => BoardScreen(boards, false));
+                //Navigator.push(context, route);
+              },
             );
           }),
           elevation: 0.0,
