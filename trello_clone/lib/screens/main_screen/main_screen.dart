@@ -191,14 +191,6 @@ class _MainScreenState extends State<MainScreen> {
         title: Text('Bảng'),
         actions: [
           IconButton(
-            icon: Transform(
-              alignment: Alignment.center,
-              transform: Matrix4.rotationY(math.pi),
-              child: Icon(MyFlutterApp.search),
-            ),
-            onPressed: () {},
-          ),
-          IconButton(
             icon: const Icon(MyFlutterApp.bell),
             onPressed: () {
               Navigator.of(context).pushNamed(NOTIFICATION_SCREEN);

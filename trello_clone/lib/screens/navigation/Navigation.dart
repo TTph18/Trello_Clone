@@ -6,7 +6,6 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:trello_clone/models/user.dart';
-import 'package:trello_clone/models/workspaces.dart';
 import 'package:trello_clone/route_path.dart';
 import 'package:trello_clone/services/database.dart';
 import 'package:trello_clone/widgets/reuse_widget/avatar.dart';
@@ -84,54 +83,152 @@ class NavigationMain extends StatelessWidget {
           if (snapshot.hasData) {
             hasData = true;
           } else {
-              hasData = false;
-              return Container(
-                  alignment: FractionalOffset.center,
-                  child: CircularProgressIndicator());
-            }
+            hasData = false;
+            return Container(
+                alignment: FractionalOffset.center,
+                child: CircularProgressIndicator());
+          }
           return Column(
             children: <Widget>[
               CustomListTile(Icons.dashboard, "Bảng", () => {}),
-              CustomListTile(Icons.home, "Trang chủ", () => {}),
               Divider(
                 thickness: 2,
               ),
-              Align(
-                alignment: Alignment.centerLeft,
-                child: Container(
-                  padding: EdgeInsets.fromLTRB(15, 0, 0, 0),
-                  child: Text("Nhóm",
-                      textAlign: TextAlign.left,
-                      style: TextStyle(fontWeight: FontWeight.bold)),
+              CustomListTile(
+                Icons.title,
+                "Đổi tên hiển thị",
+                () => showDialog<String>(
+                  context: context,
+                  builder: (BuildContext context) => AlertDialog(
+                    title: const Text(
+                      'Đổi tên hiển thị',
+                      style: TextStyle(fontWeight: FontWeight.bold),
+                    ),
+                    content: Container(
+                      width: MediaQuery.of(context).size.width * 0.8,
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          TextField(
+                            decoration: InputDecoration(
+                              alignLabelWithHint: true,
+                              labelStyle: TextStyle(
+                                fontSize: 22.0,
+                                height: 0.9,
+                              ),
+                              labelText: "Tên hiển thị",
+                            ),
+                          ),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.end,
+                            children: [
+                              TextButton(
+                                onPressed: () {
+                                  Navigator.of(context).pop();
+                                },
+                                child: Text(
+                                  "HỦY",
+                                  style: TextStyle(fontWeight: FontWeight.bold),
+                                ),
+                              ),
+                              TextButton(
+                                onPressed: () {
+                                  ///TODO: Change username
+                                  Navigator.of(context).pop();
+                                },
+                                child: Text("ĐỔI"),
+                              ),
+                            ],
+                          )
+                        ],
+                      ),
+                    ),
+                  ),
                 ),
               ),
-              MediaQuery.removePadding(
-                context: context,
-                removeTop: true,
-                child: ListView.builder(
-                  scrollDirection: Axis.vertical,
-                  shrinkWrap: true,
-                  physics: NeverScrollableScrollPhysics(),
-                  itemCount: snapshot.data.length,
-                  itemBuilder: (BuildContext context, int index) {
-                    Workspaces _wp = Workspaces.fromDocument(snapshot.data[index]);
-                    return CustomListTile(
-                      Icons.group_outlined,
-                      _wp.workspaceName.toString(),
-                      () => {},
-                    );
-                  },
+              CustomListTile(
+                Icons.shield,
+                "Đổi mật khẩu",
+                () => showDialog<String>(
+                  context: context,
+                  builder: (BuildContext context) => AlertDialog(
+                    title: const Text(
+                      'Đổi mật khẩu',
+                      style: TextStyle(fontWeight: FontWeight.bold),
+                    ),
+                    content: SingleChildScrollView(
+                      child: Container(
+                      width: MediaQuery.of(context).size.width * 0.8,
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          TextField(
+                            obscureText: true,
+                            decoration: InputDecoration(
+                              alignLabelWithHint: true,
+                              labelStyle: TextStyle(
+                                fontSize: 22.0,
+                                height: 0.9,
+                              ),
+                              labelText: "Mật khẩu cũ",
+                            ),
+                          ),
+                          TextField(
+                            obscureText: true,
+                            decoration: InputDecoration(
+                              alignLabelWithHint: true,
+                              labelStyle: TextStyle(
+                                fontSize: 22.0,
+                                height: 0.9,
+                              ),
+                              labelText: "Mật khẩu mới",
+                            ),
+                          ),
+                          TextField(
+                            obscureText: true,
+                            decoration: InputDecoration(
+                              alignLabelWithHint: true,
+                              labelStyle: TextStyle(
+                                fontSize: 22.0,
+                                height: 0.9,
+                              ),
+                              labelText: "Xác nhận mật khẩu mới",
+                            ),
+                          ),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.end,
+                            children: [
+                              TextButton(
+                                onPressed: () {
+                                  Navigator.of(context).pop();
+                                },
+                                child: Text(
+                                  "HỦY",
+                                  style: TextStyle(fontWeight: FontWeight.bold),
+                                ),
+                              ),
+                              TextButton(
+                                onPressed: () {
+                                  ///TODO: Change user's password
+                                  Navigator.of(context).pop();
+                                },
+                                child: Text("ĐỔI"),
+                              ),
+                            ],
+                          )
+                        ],
+                      ),
+                    ),),
+                  ),
                 ),
               ),
-              Divider(
-                thickness: 2,
-              ),
-              CustomListTile(Icons.credit_card, "Thẻ của tôi", () => {}),
-              CustomListTile(Icons.shield, "Đổi mật khẩu", () => {}),
-              CustomListTile(Icons.logout, "Đăng xuất", () => {
-                ///TODO: process on logout
-              Navigator.of(context).pushNamed(LOGIN)
-              }),
+              CustomListTile(
+                  Icons.logout,
+                  "Đăng xuất",
+                  () => {
+                        ///TODO: process on logout
+                        Navigator.of(context).pushNamed(LOGIN)
+                      }),
             ],
           );
         });
