@@ -1,6 +1,7 @@
 import 'dart:ui';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
@@ -829,6 +830,7 @@ class memberContentState extends State<memberContent> {
                 alignment: FractionalOffset.center,
                 child: CircularProgressIndicator());
           }
+          userList.clear();
           for (DocumentSnapshot item in snapshot.data) {
             Users _user = Users.fromDocument(item);
             userList.add(_user);
@@ -873,7 +875,7 @@ class memberContentState extends State<memberContent> {
                                             Align(
                                               alignment: Alignment.centerLeft,
                                               child: Text(
-                                                  userList[index].userName,
+                                                  userList[index].profileName,
                                                   textAlign: TextAlign.left,
                                                   style: TextStyle(
                                                       fontSize: 16,
@@ -884,7 +886,7 @@ class memberContentState extends State<memberContent> {
                                               alignment: Alignment.centerLeft,
                                               child: Text(
                                                 '@' +
-                                                    userList[index].profileName,
+                                                    userList[index].userName,
                                                 textAlign: TextAlign.left,
                                                 style: TextStyle(
                                                     fontSize: 16,
@@ -1163,7 +1165,10 @@ class mainMenuState extends State<mainMenu> {
                   Icons.delete,
                   "Xóa bảng",
                   () {
-                    ///TODO: process to delete board
+                    String uid = FirebaseAuth.instance.currentUser!.uid;
+                    if(uid == board.createdBy) {
+                        DatabaseService.deleteBoard(board.boardID);
+                    } else showAlertDialog(context, "Bạn không có quyền xóa bảng này!");
                     Navigator.of(context).pushNamed(MAIN_SCREEN);
                   },
                 ),
@@ -1180,6 +1185,30 @@ class mainMenuState extends State<mainMenu> {
                 ),
               ],
             ),
+    );
+  }
+  showAlertDialog(BuildContext context, String alertdialog) {
+
+    // set up the buttons
+    Widget cancelButton = ElevatedButton(
+      child: Text("Cancel"),
+      onPressed:  () {Navigator.of(context).pop();},
+    );
+
+    // set up the AlertDialog
+    AlertDialog alert = AlertDialog(
+      content: Text(alertdialog),
+      actions: [
+        cancelButton,
+      ],
+    );
+
+    // show the dialog
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return alert;
+      },
     );
   }
 }

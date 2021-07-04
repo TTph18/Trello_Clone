@@ -1,4 +1,5 @@
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:trello_clone/services/database.dart';
 
 Future<String?> signIn(String email, String password) async {
   try {
@@ -16,10 +17,13 @@ Future<String?> signIn(String email, String password) async {
   }
 }
 
-Future<String?> register(String email, String password) async {
+Future<String?> register(String email, String password, String userName, String profileName) async {
+  var newUID, newEmail;
   try {
     await FirebaseAuth.instance
-        .createUserWithEmailAndPassword(email: email, password: password);
+        .createUserWithEmailAndPassword(email: email, password: password)
+        .then((value) {newUID=value.user!.uid; newEmail=value.user!.email;});
+    DatabaseService.addUser(newUID, newEmail, userName, profileName);
     return "Registered";
   } on FirebaseAuthException catch (e) {
     if (e.code == 'weak-password') {

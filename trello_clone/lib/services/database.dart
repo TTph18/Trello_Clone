@@ -21,6 +21,18 @@ class DatabaseService {
     return snapshot.docs.first;
   }
 
+  //add a new user
+  static Future<void> addUser(String userID, String email, String userName, String profileName) async {
+    await FirebaseFirestore.instance.collection('users').add({
+      'userID': userID,
+      'email': email,
+      "avatar": "",
+      "profileName": profileName,
+      'userName': userName,
+      'workspaceList' : []
+    });
+  }
+
   //get current user workspace list
   static Future getUserWorkspaceList() async {
     List wpList = [];
@@ -79,6 +91,7 @@ class DatabaseService {
       'createdBy': uid,
       "userList": FieldValue.arrayUnion([uid]),
       "background": "",
+      'isPersonal': false,
       'workspaceID': workspaceID,
       'listList' : FieldValue.arrayUnion([]),
       'labelList' : FieldValue.arrayUnion([]),
@@ -98,28 +111,6 @@ class DatabaseService {
   //initialize a default board: 3 lists, 7 labels
   static Future<void> createThreeList(String boardID) async {
 
-  }
-
-  //add a card
-  static Future<void> addCard(String boardID, String listID, String cardName, String userID, DateTime startDate, DateTime dueDate) async {
-    String uid = FirebaseAuth.instance.currentUser!.uid;
-    final docRef = await FirebaseFirestore.instance.collection('card').add({
-      'cardName': cardName,
-      'createdBy': uid,
-      'description' : "",
-      'assignedUser': FieldValue.arrayUnion([uid]),
-      'labelList' : FieldValue.arrayUnion([]),
-      'status' : true,
-      'startDate': Timestamp.fromDate(startDate),
-      'dueDate': Timestamp.fromDate(dueDate)
-    });
-    //add card uid to list
-    await FirebaseFirestore.instance
-        .collection('boards')
-        .doc(boardID)
-        .collection('lists')
-        .doc(listID)
-        .update({"cardList": FieldValue.arrayUnion([docRef.id])});
   }
 
   //get list user data
@@ -154,12 +145,42 @@ class DatabaseService {
     return snapshot;
   }
 
+  //rename a workspace
+  static Future<void> renameWorkspace(String workspaceID, String newName) async {
+    await FirebaseFirestore.instance
+        .collection('workspaces')
+        .doc(workspaceID)
+        .update({"workspaceName": newName});
+  }
+
+  //delete a workspace
+  static Future<void> deleteWorkspace(String workspaceID) async {
+    await FirebaseFirestore.instance
+        .collection('workspaces')
+        .doc(workspaceID)
+        .delete();
+  }
+
   //delete a board
   static Future<void> deleteBoard(String boardID) async {
+    var oldWorkspaceID;
+    //get old wp id
+    await FirebaseFirestore.instance
+        .collection('boards')
+        .doc(boardID)
+        .get().then((value) {
+      oldWorkspaceID = value['workspaceID'].toString();
+    });
+    //delete board
     await FirebaseFirestore.instance
         .collection('boards')
         .doc(boardID)
         .delete();
+    //delete board from wp
+    await FirebaseFirestore.instance
+        .collection('workspaces')
+        .doc(oldWorkspaceID)
+        .update({"boardList": FieldValue.arrayRemove([boardID])});
   }
 
   //move a board to other workspace
@@ -195,5 +216,35 @@ class DatabaseService {
         .collection('boards')
         .doc(boardID)
         .update({"userList": FieldValue.arrayRemove([uid])});
+  }
+
+  //rename a board
+  static Future<void> renameBoard(String boardID, String newName) async {
+    await FirebaseFirestore.instance
+        .collection('boards')
+        .doc(boardID)
+        .update({"boardName": newName});
+  }
+
+  //add a card
+  static Future<void> addCard(String boardID, String listID, String cardName, String userID, DateTime startDate, DateTime dueDate) async {
+    String uid = FirebaseAuth.instance.currentUser!.uid;
+    final docRef = await FirebaseFirestore.instance.collection('card').add({
+      'cardName': cardName,
+      'createdBy': uid,
+      'description' : "",
+      'assignedUser': FieldValue.arrayUnion([uid]),
+      'labelList' : FieldValue.arrayUnion([]),
+      'status' : true,
+      'startDate': Timestamp.fromDate(startDate),
+      'dueDate': Timestamp.fromDate(dueDate)
+    });
+    //add card uid to list
+    await FirebaseFirestore.instance
+        .collection('boards')
+        .doc(boardID)
+        .collection('lists')
+        .doc(listID)
+        .update({"cardList": FieldValue.arrayUnion([docRef.id])});
   }
 }
