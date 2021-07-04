@@ -21,6 +21,18 @@ class DatabaseService {
     return snapshot.docs.first;
   }
 
+  //add a new user
+  static Future<void> addUser(String userID, String email, String userName, String profileName) async {
+    await FirebaseFirestore.instance.collection('users').add({
+      'userID': userID,
+      'email': email,
+      "avatar": "",
+      "profileName": profileName,
+      'userName': userName,
+      'workspaceList' : []
+    });
+  }
+
   //get current user workspace list
   static Future getUserWorkspaceList() async {
     List wpList = [];
