@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:trello_clone/models/boards.dart';
@@ -62,7 +63,10 @@ class ChangeWorkspaceState extends State<ChangeWorkspace> {
               actions: [
                 IconButton(
                     onPressed: () {
-                      ///TODO: Change workspace of board
+                      String uid = FirebaseAuth.instance.currentUser!.uid;
+                     if (currentBoard.createdBy == uid){
+                       DatabaseService.moveBoard(currentBoard.boardID, selectedWorkspace!.workspaceID);
+                     } else showAlertDialog(context, "Bạn không có quyền sửa bảng này!");
                       Route route = MaterialPageRoute(
                           builder: (context) =>
                               BoardScreen(currentBoard, true));
@@ -97,5 +101,29 @@ class ChangeWorkspaceState extends State<ChangeWorkspace> {
             ),
           );
         });
+  }
+  showAlertDialog(BuildContext context, String alertdialog) {
+
+    // set up the buttons
+    Widget cancelButton = ElevatedButton(
+      child: Text("Cancel"),
+      onPressed:  () {Navigator.of(context).pop();},
+    );
+
+    // set up the AlertDialog
+    AlertDialog alert = AlertDialog(
+      content: Text(alertdialog),
+      actions: [
+        cancelButton,
+      ],
+    );
+
+    // show the dialog
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return alert;
+      },
+    );
   }
 }
