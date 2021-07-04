@@ -81,7 +81,9 @@ class NavigationMain extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    changeNameController.value = TextEditingValue(text: 'Old name'); ///TODO: get username
+    changeNameController.value = TextEditingValue(text: 'Old name');
+
+    ///TODO: get username
     if (hasData) {}
     return FutureBuilder(
         future: DatabaseService.getUserWorkspaceList(),
@@ -165,70 +167,72 @@ class NavigationMain extends StatelessWidget {
                     ),
                     content: SingleChildScrollView(
                       child: Container(
-                      width: MediaQuery.of(context).size.width * 0.8,
-                      child: Column(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          TextField(
-                            controller: oldPasswordController,
-                            obscureText: true,
-                            decoration: InputDecoration(
-                              alignLabelWithHint: true,
-                              labelStyle: TextStyle(
-                                fontSize: 22.0,
-                                height: 0.9,
-                              ),
-                              labelText: "Mật khẩu cũ",
-                            ),
-                          ),
-                          TextField(
-                            controller: newPasswordcontroller,
-                            obscureText: true,
-                            decoration: InputDecoration(
-                              alignLabelWithHint: true,
-                              labelStyle: TextStyle(
-                                fontSize: 22.0,
-                                height: 0.9,
-                              ),
-                              labelText: "Mật khẩu mới",
-                            ),
-                          ),
-                          TextField(
-                            controller: confirmPasswordController,
-                            obscureText: true,
-                            decoration: InputDecoration(
-                              alignLabelWithHint: true,
-                              labelStyle: TextStyle(
-                                fontSize: 22.0,
-                                height: 0.9,
-                              ),
-                              labelText: "Xác nhận mật khẩu mới",
-                            ),
-                          ),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.end,
-                            children: [
-                              TextButton(
-                                onPressed: () {
-                                  Navigator.of(context).pop();
-                                },
-                                child: Text(
-                                  "HỦY",
-                                  style: TextStyle(fontWeight: FontWeight.bold),
+                        width: MediaQuery.of(context).size.width * 0.8,
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            TextField(
+                              controller: oldPasswordController,
+                              obscureText: true,
+                              decoration: InputDecoration(
+                                alignLabelWithHint: true,
+                                labelStyle: TextStyle(
+                                  fontSize: 22.0,
+                                  height: 0.9,
                                 ),
+                                labelText: "Mật khẩu cũ",
                               ),
-                              TextButton(
-                                onPressed: () {
-                                  ///TODO: Change user's password
-                                  Navigator.of(context).pop();
-                                },
-                                child: Text("ĐỔI"),
+                            ),
+                            TextField(
+                              controller: newPasswordcontroller,
+                              obscureText: true,
+                              decoration: InputDecoration(
+                                alignLabelWithHint: true,
+                                labelStyle: TextStyle(
+                                  fontSize: 22.0,
+                                  height: 0.9,
+                                ),
+                                labelText: "Mật khẩu mới",
                               ),
-                            ],
-                          )
-                        ],
+                            ),
+                            TextField(
+                              controller: confirmPasswordController,
+                              obscureText: true,
+                              decoration: InputDecoration(
+                                alignLabelWithHint: true,
+                                labelStyle: TextStyle(
+                                  fontSize: 22.0,
+                                  height: 0.9,
+                                ),
+                                labelText: "Xác nhận mật khẩu mới",
+                              ),
+                            ),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.end,
+                              children: [
+                                TextButton(
+                                  onPressed: () {
+                                    Navigator.of(context).pop();
+                                  },
+                                  child: Text(
+                                    "HỦY",
+                                    style:
+                                        TextStyle(fontWeight: FontWeight.bold),
+                                  ),
+                                ),
+                                TextButton(
+                                  onPressed: () {
+                                    ///TODO: Change user's password
+                                    Navigator.of(context).pop();
+                                  },
+                                  child: Text("ĐỔI"),
+                                ),
+                              ],
+                            )
+                          ],
+                        ),
                       ),
-                    ),),
+                    ),
                   ),
                 ),
               ),

@@ -96,6 +96,6 @@ class DragAndDropBuilderParameters {
     this.listDragHandle,
     this.itemDragHandle,
     this.constrainDraggingAxis = true,
-    this.disableScrolling = false,
+    this.disableScrolling = true,
   });
 }

@@ -469,7 +469,6 @@ class BoardScreenState extends State<BoardScreen> {
                             int index = isTapNewCard
                                 .indexWhere((element) => element == true);
                             if (index != -1) {
-                              print("INNER " + index.toString());
                               isTapNewCard[index] = false;
                               newCardController.text = "";
                             }
@@ -477,7 +476,6 @@ class BoardScreenState extends State<BoardScreen> {
                             index = isTapChangeListName
                                 .indexWhere((element) => element == true);
                             if (index != -1) {
-                              print("INNER " + index.toString());
                               isTapChangeListName[index] = false;
                               changeListNameController.text = "";
                             }
@@ -514,7 +512,6 @@ class BoardScreenState extends State<BoardScreen> {
                               );
                             }
                           }
-
                           int index = isTapNewCard
                               .indexWhere((element) => element == true);
                           if (index != -1) {
@@ -529,7 +526,6 @@ class BoardScreenState extends State<BoardScreen> {
                               );
                             }
                           }
-
                           index = isTapChangeListName
                               .indexWhere((element) => element == true);
                           if (index != -1) {
@@ -549,7 +545,9 @@ class BoardScreenState extends State<BoardScreen> {
                   : [
                       IconButton(
                         icon: const Icon(MyFlutterApp.bell),
-                        onPressed: () {},
+                        onPressed: () {
+                          Navigator.of(context).pushNamed(NOTIFICATION_SCREEN);
+                        },
                       ),
                       IconButton(
                         icon: const Icon(Icons.more_horiz),
@@ -594,8 +592,6 @@ class BoardScreenState extends State<BoardScreen> {
                       }
                       for (int i = 0; i < listName.length + 1; i++)
                         controllers.add(new ScrollController());
-                      isTapNewCard = List.filled(listName.length, false);
-                      isTapNewList = false;
                       _lists = List.generate(
                         listName.length + 1,
                         (outerIndex) {
@@ -661,7 +657,6 @@ class BoardScreenState extends State<BoardScreen> {
   }
 
   _buildList(int outerIndex) {
-    print("Outer Index: " + outerIndex.toString());
     var innerList = _lists[outerIndex];
     if (!innerList.isLast) {
       return DragAndDropList(
@@ -810,7 +805,8 @@ class BoardScreenState extends State<BoardScreen> {
           width: 6,
           thickness: 6,
         ),
-        maxheight: MediaQuery.of(context).size.height,
+        maxheight: MediaQuery.of(context).size.height -
+            MediaQuery.of(context).viewInsets.bottom,
         children: List.generate(
           innerList.children.length,
           (index) => _buildItem(innerList.children[index]),
@@ -832,25 +828,13 @@ class BoardScreenState extends State<BoardScreen> {
                 child: Container(
                   child: Padding(
                     padding: const EdgeInsets.all(8.0),
-                    child: Focus(
-                      onFocusChange: (hasFocus) {
-                        if (!hasFocus) {
-                          setState(
-                            () {
-                              isTapNewList = false;
-                              newListController.text = "";
-                            },
-                          );
-                        }
-                      },
-                      child: TextField(
-                        autofocus: true,
-                        controller: newListController,
-                        decoration: InputDecoration(
-                          hintText: "Tên danh sách",
-                          hintStyle: TextStyle(
-                            fontSize: 18,
-                          ),
+                    child: TextField(
+                      autofocus: true,
+                      controller: newListController,
+                      decoration: InputDecoration(
+                        hintText: "Tên danh sách",
+                        hintStyle: TextStyle(
+                          fontSize: 18,
                         ),
                       ),
                     ),
