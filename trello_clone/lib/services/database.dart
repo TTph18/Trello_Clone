@@ -136,6 +136,27 @@ class DatabaseService {
     return snapshot.docs.first;
   }
 
+  //add a workspace
+  static Future<void> addWorkspace(String workspaceName, List<String> userList) async {
+    String uid = FirebaseAuth.instance.currentUser!.uid;
+    final docRef = await FirebaseFirestore.instance.collection('workspaces').add({
+      'boardName': workspaceName,
+      'createdBy': uid,
+      "userList": FieldValue.arrayUnion([userList]),
+      'boardList' : FieldValue.arrayUnion([]),
+    });
+    //update workspaceID = document ID
+    await FirebaseFirestore.instance
+        .collection('workspaces')
+        .doc(docRef.id)
+        .update({"workspaceID": docRef.id});
+    //update workspaceID in user
+    await FirebaseFirestore.instance
+        .collection('users')
+        .doc(uid)
+        .update({"workspaceList": FieldValue.arrayUnion([docRef.id])});
+  }
+
   //get a wp data
   static Future getWorkspaceData(String workspaceID) async {
     var snapshot = await FirebaseFirestore.instance
@@ -159,6 +180,10 @@ class DatabaseService {
         .collection('workspaces')
         .doc(workspaceID)
         .delete();
+    await FirebaseFirestore.instance
+        .collection('users')
+        .doc(workspaceID)
+        .update({"workspaceList": FieldValue.arrayRemove([workspaceID])});
   }
 
   //delete a board
@@ -177,10 +202,17 @@ class DatabaseService {
         .doc(boardID)
         .delete();
     //delete board from wp
+    List<String> boardList;
     await FirebaseFirestore.instance
         .collection('workspaces')
         .doc(oldWorkspaceID)
-        .update({"boardList": FieldValue.arrayRemove([boardID])});
+        .get().then((value) {
+          boardList = value['boardList'].cast<String>();
+          boardList.remove(boardID);
+          FirebaseFirestore.instance
+              .collection('workspaces')
+              .doc(oldWorkspaceID).update({"boardList": boardList});
+    });
   }
 
   //move a board to other workspace
@@ -194,10 +226,17 @@ class DatabaseService {
         oldWorkspaceID = value['workspaceID'].toString();
     });
     //delete board id from old wp
+    List<String> boardList;
     await FirebaseFirestore.instance
         .collection('workspaces')
         .doc(oldWorkspaceID)
-        .update({"boardList": FieldValue.arrayRemove([boardID])});
+        .get().then((value) {
+      boardList = value['boardList'].cast<String>();
+      boardList.remove(boardID);
+      FirebaseFirestore.instance
+          .collection('workspaces')
+          .doc(oldWorkspaceID).update({"boardList": boardList});
+    });
     //update board id in new wp
     await FirebaseFirestore.instance
         .collection('workspaces')
