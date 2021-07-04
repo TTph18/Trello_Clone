@@ -67,10 +67,7 @@ class ChangeWorkspaceState extends State<ChangeWorkspace> {
                      if (currentBoard.createdBy == uid){
                        DatabaseService.moveBoard(currentBoard.boardID, selectedWorkspace!.workspaceID);
                      } else showAlertDialog(context, "Bạn không có quyền sửa bảng này!");
-                      Route route = MaterialPageRoute(
-                          builder: (context) =>
-                              BoardScreen(currentBoard, true));
-                      Navigator.push(context, route);
+
                     },
                     icon: Icon(Icons.check)),
               ],
@@ -106,7 +103,7 @@ class ChangeWorkspaceState extends State<ChangeWorkspace> {
 
     // set up the buttons
     Widget cancelButton = ElevatedButton(
-      child: Text("Cancel"),
+      child: Text("Đóng"),
       onPressed:  () {Navigator.of(context).pop();},
     );
 
