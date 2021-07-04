@@ -21,138 +21,140 @@ class _RegisterFormState extends State<RegisterForm> {
   @override
   Widget build(BuildContext context) {
     return Expanded(
-      child: SingleChildScrollView(
-        scrollDirection: Axis.vertical,
-        child: Column(
-            children: [
-              WillPopScope(
-                onWillPop: () async => true,
-                child: Form(
-                    key: _registerFormKey,
-                    child: Padding(
-                        padding: const EdgeInsets.fromLTRB(20.0, 10.0, 20.0, 0),
-                        child: Container(
-                            color: Colors.white,
-                            child: Padding(
-                                padding: const EdgeInsets.fromLTRB(30.0, 30.0, 30.0, 20.0),
-                                child: Column(children: [
-                                  Image(
-                                    image: AssetImage('assets/images/trello.png'),
-                                    width: 130,
-                                  ),
-                                  Padding(
-                                    padding: const EdgeInsets.fromLTRB(0, 30.0, 0, 0.0),
-                                    child: Column(
-                                      children: [
-                                        TextFormField(
-                                          controller: _emailTextController,
-                                          decoration: InputDecoration(hintText: "Email"),
-                                          validator: (value) {
-                                            if (_emailTextController.text.length <= 0) {
-                                              return "Email không được để trống";
-                                            }
-                                            return null;
-                                          },
-                                        ),
-                                        TextFormField(
-                                          controller: _userNameTextController,
-                                          decoration: InputDecoration(hintText: "Tên đăng nhập"),
-                                          validator: (value) {
-                                            if (_userNameTextController.text.length <= 0) {
-                                              return "Tên đăng nhập không được để trống";
-                                            }
-                                            return null;
-                                          },
-                                        ),
-                                        TextFormField(
-                                          controller: _profileNameTextController,
-                                          decoration: InputDecoration(hintText: "Tên hiển thị"),
-                                          validator: (value) {
-                                            if (_profileNameTextController.text.length <= 0) {
-                                              return "Tên hiển thị không được để trống";
-                                            }
-                                            return null;
-                                          },
-                                        ),
-                                        TextFormField(
-                                          controller: _passwordTextController,
-                                          obscureText: true,
-                                          decoration: InputDecoration(hintText: "Mật khẩu"),
-                                        ),
-                                        TextFormField(
-                                          controller: _checkpasswordTextController,
-                                          obscureText: true,
-                                          decoration: InputDecoration(
-                                              hintText: "Nhập lại mật khẩu"),
-                                          validator: (value) {
-                                            if (_checkpasswordTextController.text != _passwordTextController.text) {
-                                              return "Mật khẩu nhập không khớp";
-                                            }
-                                            return null;
-                                          },
-                                        ),
-                                      Row(
-                                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+      child: Center(
+        child: SingleChildScrollView(
+          scrollDirection: Axis.vertical,
+          child: Column(
+              children: [
+                WillPopScope(
+                  onWillPop: () async => true,
+                  child: Form(
+                      key: _registerFormKey,
+                      child: Padding(
+                          padding: const EdgeInsets.fromLTRB(20.0, 10.0, 20.0, 0),
+                          child: Container(
+                              color: Colors.white,
+                              child: Padding(
+                                  padding: const EdgeInsets.fromLTRB(30.0, 30.0, 30.0, 20.0),
+                                  child: Column(children: [
+                                    Image(
+                                      image: AssetImage('assets/images/trello.png'),
+                                      width: 130,
+                                    ),
+                                    Padding(
+                                      padding: const EdgeInsets.fromLTRB(0, 30.0, 0, 0.0),
+                                      child: Column(
                                         children: [
-                                          Padding(
-                                            padding: EdgeInsets.fromLTRB(0, 20.0, 0, 10.0),
-                                            child: ElevatedButton(
-                                                style: ButtonStyle(
-                                                  backgroundColor: MaterialStateProperty.resolveWith<Color>(
-                                                        (Set<MaterialState> states) {
-                                                      if (states.contains(MaterialState.pressed))
-                                                        return Colors.green;
-                                                      return Colors.green; // Use the component's default.
-                                                    },
-                                                  ),
-                                                ),
-                                                onPressed: () async {
-                                                  Navigator.of(context).pushNamed(LOGIN);
-                                                },
-                                                child: Text("Quay lại", style: TextStyle(
-                                                  color: Colors.white,
-                                                  fontSize: 16,
-                                                ),)
-                                            ),
+                                          TextFormField(
+                                            controller: _emailTextController,
+                                            decoration: InputDecoration(hintText: "Email"),
+                                            validator: (value) {
+                                              if (_emailTextController.text.length <= 0) {
+                                                return "Email không được để trống";
+                                              }
+                                              return null;
+                                            },
                                           ),
-                                          Padding(
-                                            padding: EdgeInsets.fromLTRB(0, 20.0, 0, 10.0),
-                                            child: ElevatedButton(
-                                                style: ButtonStyle(
-                                                  backgroundColor: MaterialStateProperty.resolveWith<Color>(
-                                                        (Set<MaterialState> states) {
-                                                      if (states.contains(MaterialState.pressed))
-                                                        return Colors.green;
-                                                      return Colors.green; // Use the component's default.
-                                                    },
+                                          TextFormField(
+                                            controller: _userNameTextController,
+                                            decoration: InputDecoration(hintText: "Tên đăng nhập"),
+                                            validator: (value) {
+                                              if (_userNameTextController.text.length <= 0) {
+                                                return "Tên đăng nhập không được để trống";
+                                              }
+                                              return null;
+                                            },
+                                          ),
+                                          TextFormField(
+                                            controller: _profileNameTextController,
+                                            decoration: InputDecoration(hintText: "Tên hiển thị"),
+                                            validator: (value) {
+                                              if (_profileNameTextController.text.length <= 0) {
+                                                return "Tên hiển thị không được để trống";
+                                              }
+                                              return null;
+                                            },
+                                          ),
+                                          TextFormField(
+                                            controller: _passwordTextController,
+                                            obscureText: true,
+                                            decoration: InputDecoration(hintText: "Mật khẩu"),
+                                          ),
+                                          TextFormField(
+                                            controller: _checkpasswordTextController,
+                                            obscureText: true,
+                                            decoration: InputDecoration(
+                                                hintText: "Nhập lại mật khẩu"),
+                                            validator: (value) {
+                                              if (_checkpasswordTextController.text != _passwordTextController.text) {
+                                                return "Mật khẩu nhập không khớp";
+                                              }
+                                              return null;
+                                            },
+                                          ),
+                                        Row(
+                                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                                          children: [
+                                            Padding(
+                                              padding: EdgeInsets.fromLTRB(0, 20.0, 0, 10.0),
+                                              child: ElevatedButton(
+                                                  style: ButtonStyle(
+                                                    backgroundColor: MaterialStateProperty.resolveWith<Color>(
+                                                          (Set<MaterialState> states) {
+                                                        if (states.contains(MaterialState.pressed))
+                                                          return Colors.green;
+                                                        return Colors.green; // Use the component's default.
+                                                      },
+                                                    ),
                                                   ),
-                                                ),
-                                                onPressed: () async {
-                                                  if(_registerFormKey.currentState!.validate()) {
-                                                    String? shouldNavigate =  await register(_emailTextController.text, _passwordTextController.text, _userNameTextController.text, _profileNameTextController.text);
-                                                    if (shouldNavigate=="Registered") {
-                                                      Navigator.of(context).pushNamed(LOGIN);
-                                                    } else {
-                                                      _error = shouldNavigate!;
-                                                      showAlertDialog(context);
+                                                  onPressed: () async {
+                                                    Navigator.of(context).pushNamed(LOGIN);
+                                                  },
+                                                  child: Text("Quay lại", style: TextStyle(
+                                                    color: Colors.white,
+                                                    fontSize: 16,
+                                                  ),)
+                                              ),
+                                            ),
+                                            Padding(
+                                              padding: EdgeInsets.fromLTRB(0, 20.0, 0, 10.0),
+                                              child: ElevatedButton(
+                                                  style: ButtonStyle(
+                                                    backgroundColor: MaterialStateProperty.resolveWith<Color>(
+                                                          (Set<MaterialState> states) {
+                                                        if (states.contains(MaterialState.pressed))
+                                                          return Colors.green;
+                                                        return Colors.green; // Use the component's default.
+                                                      },
+                                                    ),
+                                                  ),
+                                                  onPressed: () async {
+                                                    if(_registerFormKey.currentState!.validate()) {
+                                                      String? shouldNavigate =  await register(_emailTextController.text, _passwordTextController.text, _userNameTextController.text, _profileNameTextController.text);
+                                                      if (shouldNavigate=="Registered") {
+                                                        Navigator.of(context).pushNamed(LOGIN);
+                                                      } else {
+                                                        _error = shouldNavigate!;
+                                                        showAlertDialog(context);
+                                                      }
                                                     }
-                                                  }
-                                                },
-                                                child: Text("Xác nhận", style: TextStyle(
-                                                  color: Colors.white,
-                                                  fontSize: 16,
-                                                ),)
+                                                  },
+                                                  child: Text("Xác nhận", style: TextStyle(
+                                                    color: Colors.white,
+                                                    fontSize: 16,
+                                                  ),)
+                                              ),
                                             ),
-                                          ),
+                                          ],
+                                        ),
                                         ],
                                       ),
-                                      ],
-                                    ),
-                                  )
-                                ]))))),
-                ),
-            ],
-          ),
+                                    )
+                                  ]))))),
+                  ),
+              ],
+            ),
+        ),
       ),
     );
   }
