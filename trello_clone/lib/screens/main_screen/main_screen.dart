@@ -216,7 +216,9 @@ class GroupInfo extends StatelessWidget {
             builder: (BuildContext context, AsyncSnapshot snapshot) {
               if (!snapshot.hasData) {
                 hasData = false;
-                return SizedBox();
+                return Container(
+                    alignment: FractionalOffset.center,
+                    child: CircularProgressIndicator());
               } else
                 hasData = true;
               if (!hasData) {
