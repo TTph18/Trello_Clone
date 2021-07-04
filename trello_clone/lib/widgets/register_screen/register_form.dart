@@ -91,11 +91,9 @@ class _RegisterFormState extends State<RegisterForm> {
                                             decoration: InputDecoration(
                                                 hintText: "Nhập lại mật khẩu"),
                                             validator: (value) {
-                                              validator: (value) {
                                                 if (_passwordTextController.text.length <= 0) {
                                                   return "Mật khẩu không được để trống";
                                                 }
-                                              },
                                               if (_checkpasswordTextController.text != _passwordTextController.text) {
                                                 return "Mật khẩu nhập không khớp";
                                               }
