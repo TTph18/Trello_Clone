@@ -389,7 +389,7 @@ class BoardScreenState extends State<BoardScreen> {
   late List<ListCard> _lists;
   late List<bool> isTapNewCard = List.filled(_lists.length, false);
   TextEditingController newCardController = TextEditingController();
-  late List<bool> isTapChangeListName = List.filled(_lists.length, false);
+  late List<bool> isTapChangeListName = List.filled(_lists.length + 1, false);
   TextEditingController changeListNameController = TextEditingController();
   late bool isTapNewList = false;
   TextEditingController newListController = TextEditingController();
@@ -403,8 +403,8 @@ class BoardScreenState extends State<BoardScreen> {
     listName = ["To Do", "Completed"];
     for (int i = 0; i < listName.length + 1; i++)
       controllers.add(new ScrollController());
-    print(listName.length + 1);
-    isTapNewCard = List.filled(listName.length, false);
+
+    isTapNewCard = List.filled(listName.length + 1, false);
     isTapNewList = false;
     cards = [
       _card("Thẻ 1"),
@@ -548,10 +548,6 @@ class BoardScreenState extends State<BoardScreen> {
                     ]
                   : [
                       IconButton(
-                        icon: const Icon(Icons.filter_list),
-                        onPressed: () {},
-                      ),
-                      IconButton(
                         icon: const Icon(MyFlutterApp.bell),
                         onPressed: () {},
                       ),
@@ -661,6 +657,7 @@ class BoardScreenState extends State<BoardScreen> {
   }
 
   _buildList(int outerIndex) {
+    print("Outer Index: " + outerIndex.toString());
     var innerList = _lists[outerIndex];
     if (!innerList.isLast) {
       return DragAndDropList(
