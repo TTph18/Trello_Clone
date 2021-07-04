@@ -19,6 +19,7 @@ import 'package:trello_clone/widgets/reuse_widget/avatar.dart';
 import 'package:trello_clone/widgets/reuse_widget/custom_list_tile.dart';
 
 import '../../route_path.dart';
+import 'board_screen.dart';
 
 class inforContent extends StatefulWidget {
   late Users creator;
@@ -394,11 +395,13 @@ class settingContentState extends State<settingContent> {
     new Labels(color: "0xffc377e0", labelName: ""),
     new Labels(color: "0xff0079bf", labelName: ""),
   ];
+  String uid = FirebaseAuth.instance.currentUser!.uid;
   settingContentState(this.board);
 
   @override
   void initState() {
     super.initState();
+    mycontroller.value = new TextEditingValue(text: board.boardName);
   }
 
   @override
@@ -409,7 +412,6 @@ class settingContentState extends State<settingContent> {
     content.add(
       InkWell(
         onTap: () {
-          mycontroller.value = new TextEditingValue(text: board.boardName);
           showDialog<String>(
             context: context,
             builder: (BuildContext context) => AlertDialog(
@@ -448,14 +450,21 @@ class settingContentState extends State<settingContent> {
                             style: TextStyle(fontWeight: FontWeight.bold),
                           ),
                           onPressed: () {
-                            showModalBottomSheet(
-                              context: context,
-                              builder: (BuildContext bc) {
-                                return LabelDetailModalBottom(true,
-                                    Labels(color: "0xffb3bec4", labelName: ""));
-                              },
-                              isScrollControlled: true,
-                            );
+                            setState(() {
+                              if (board.createdBy == uid){
+                                DatabaseService.renameBoard(board.boardID, mycontroller.text);
+                              } else showAlertDialog(context, "Bạn không có quyền sửa bảng này!");
+                              /* setState(() async {
+                                var snapshot = await FirebaseFirestore.instance
+                                    .collection('boards')
+                                    .doc(board.boardID)
+                                    .get();
+                                board = Boards.fromDocument(snapshot);
+                                mycontroller.text = board.boardName;
+                              });*/
+                              Navigator.of(context).pop();
+                              Navigator.of(context).pushNamed(MAIN_SCREEN);
+                            });
                           },
                         )
                       ],
@@ -475,7 +484,7 @@ class settingContentState extends State<settingContent> {
                 Align(
                   alignment: Alignment.centerLeft,
                   child: Text(
-                    board.boardName,
+                    mycontroller.text,
                     textAlign: TextAlign.left,
                     style: TextStyle(
                       fontSize: 15,
@@ -675,10 +684,14 @@ class settingContentState extends State<settingContent> {
                   style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
                 ),
                 onPressed: () {
-                  /// TODO: delete user from board
-                  Route route =
+                  if(board.createdBy == uid)
+                    showAlertDialog(context, "Người tạo không thể rời khỏi bảng!");
+                  else {
+                      DatabaseService.leaveBoard(board.boardID, uid);
+                      Route route =
                       MaterialPageRoute(builder: (context) => MainScreen());
-                  Navigator.push(context, route);
+                      Navigator.push(context, route);
+                  }
                 },
               )
             ],
@@ -1077,7 +1090,7 @@ class mainMenuState extends State<mainMenu> {
   Boards board;
 
   mainMenuState(this.creator, this.board);
-
+  String uid = FirebaseAuth.instance.currentUser!.uid;
   @override
   void initState() {
     super.initState();
@@ -1165,7 +1178,6 @@ class mainMenuState extends State<mainMenu> {
                   Icons.delete,
                   "Xóa bảng",
                   () {
-                    String uid = FirebaseAuth.instance.currentUser!.uid;
                     if(uid == board.createdBy) {
                         DatabaseService.deleteBoard(board.boardID);
                     } else showAlertDialog(context, "Bạn không có quyền xóa bảng này!");
@@ -1187,28 +1199,28 @@ class mainMenuState extends State<mainMenu> {
             ),
     );
   }
-  showAlertDialog(BuildContext context, String alertdialog) {
+}
+showAlertDialog(BuildContext context, String alertdialog) {
 
-    // set up the buttons
-    Widget cancelButton = ElevatedButton(
-      child: Text("Cancel"),
-      onPressed:  () {Navigator.of(context).pop();},
-    );
+  // set up the buttons
+  Widget cancelButton = ElevatedButton(
+    child: Text("Đóng"),
+    onPressed:  () {Navigator.of(context).pop();},
+  );
 
-    // set up the AlertDialog
-    AlertDialog alert = AlertDialog(
-      content: Text(alertdialog),
-      actions: [
-        cancelButton,
-      ],
-    );
+  // set up the AlertDialog
+  AlertDialog alert = AlertDialog(
+    content: Text(alertdialog),
+    actions: [
+      cancelButton,
+    ],
+  );
 
-    // show the dialog
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return alert;
-      },
-    );
-  }
+  // show the dialog
+  showDialog(
+    context: context,
+    builder: (BuildContext context) {
+      return alert;
+    },
+  );
 }

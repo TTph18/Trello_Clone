@@ -251,10 +251,17 @@ class DatabaseService {
 
   //leave a board
   static Future<void> leaveBoard(String boardID, String uid) async {
+    List<String> userList;
     await FirebaseFirestore.instance
         .collection('boards')
         .doc(boardID)
-        .update({"userList": FieldValue.arrayRemove([uid])});
+        .get().then((value) {
+      userList = value['userList'].cast<String>();
+      userList.remove(uid);
+      FirebaseFirestore.instance
+          .collection('workspaces')
+          .doc(boardID).update({"userList": userList});
+    });
   }
 
   //rename a board
