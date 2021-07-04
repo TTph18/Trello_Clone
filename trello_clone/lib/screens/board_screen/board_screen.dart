@@ -377,6 +377,8 @@ class BoardScreen extends StatefulWidget {
 
 class BoardScreenState extends State<BoardScreen> {
   final GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey<ScaffoldState>();
+  late Future<Boards> futureBoards;
+  late Future<Users> futureUsers;
   late Boards boards;
   late bool isShowDrawer;
   late List<String> listName = [];
@@ -396,10 +398,21 @@ class BoardScreenState extends State<BoardScreen> {
 
   late List<ScrollController> controllers = [];
 
+  Future<Boards> getBoards() async {
+    var doc = await DatabaseService.getBoardData(boards.boardID);
+    Boards temp = Boards.fromDocument(doc);
+    return temp;
+  }
+  Future<Users> getBoardUser() async {
+    var doc = await DatabaseService.getUserData(boards.createdBy);
+    Users temp = Users.fromDocument(doc);
+    return temp;
+  }
   @override
   void initState() {
     super.initState();
-
+    futureBoards = getBoards();
+    futureUsers = getBoardUser();
     listName = ["To Do", "Completed"];
     for (int i = 0; i < listName.length + 1; i++)
       controllers.add(new ScrollController());
@@ -434,14 +447,16 @@ class BoardScreenState extends State<BoardScreen> {
   @override
   Widget build(BuildContext context) {
     return FutureBuilder(
-        future: DatabaseService.getUserData(boards.createdBy),
+        future: Future.wait([futureBoards, futureUsers]),
         builder: (BuildContext context, AsyncSnapshot snapshot) {
+          Users boardOwner;
           if (snapshot.hasData) {
+            boards = snapshot.data[0];
+            boardOwner = snapshot.data[1];
           } else
             return Container(
                 alignment: FractionalOffset.center,
                 child: CircularProgressIndicator());
-          Users boardOwner = Users.fromDocument(snapshot.data);
           return Scaffold(
             key: _scaffoldKey,
             backgroundColor: const Color.fromRGBO(0, 121, 190, 1.0),

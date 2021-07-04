@@ -83,6 +83,15 @@ class DatabaseService {
     return snapshot.docs;
   }
 
+  // get lists in board
+  static Future getBoardData(String boardID) async {
+    var snapshot = await FirebaseFirestore.instance
+        .collection('boards')
+        .doc(boardID)
+        .get();
+    return snapshot;
+  }
+
   //add a board
   static Future<void> addBoard(String boardName, String workspaceID) async {
     String uid = FirebaseAuth.instance.currentUser!.uid;
@@ -116,15 +125,21 @@ class DatabaseService {
   //get list user data
   static Future getListUserData(List<String> userIDList) async {
     List listUser = [];
-    for(var item in userIDList)
-      {
+    for(var item in userIDList) {
         var snapshot = await FirebaseFirestore.instance
             .collection('users')
             .where('userID', isEqualTo: item)
             .get();
         listUser.add(snapshot.docs.first);
-      }
+    }
     return listUser;
+  }
+
+  static Future getAllUsesrData() async {
+      var snapshot = await FirebaseFirestore.instance
+          .collection('users')
+          .get();
+    return snapshot.docs;
   }
 
   //get a user data
@@ -213,6 +228,30 @@ class DatabaseService {
               .collection('workspaces')
               .doc(oldWorkspaceID).update({"boardList": boardList});
     });
+  }
+
+  //delete a user in a board
+  static Future<void> deleteUserInBoard(String userID, String boardID) async {
+    List<String> userList;
+    //get old wp id
+    await FirebaseFirestore.instance
+        .collection('boards')
+        .doc(boardID)
+        .get().then((value) {
+      userList = value['workspaceID'].cast<String>();
+      userList.remove(userID);
+      FirebaseFirestore.instance
+          .collection('boards')
+          .doc(boardID).update({"userList": userList});
+    });
+  }
+
+  //move a board to other workspace
+  static Future<void> addUserToBoard(String boardID, String userID) async {
+    await FirebaseFirestore.instance
+        .collection('boards')
+        .doc(boardID)
+        .update(({"userList": FieldValue.arrayUnion([userID])}));
   }
 
   //move a board to other workspace

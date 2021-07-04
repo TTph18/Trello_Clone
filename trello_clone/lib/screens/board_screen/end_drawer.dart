@@ -383,6 +383,7 @@ class settingContent extends StatefulWidget {
 
 class settingContentState extends State<settingContent> {
   TextEditingController mycontroller = TextEditingController();
+  late Future<Boards> futureBoards;
   late Boards board;
   late Workspaces workspace;
   late String boardName = "Đặc tả hình thức";
@@ -397,117 +398,127 @@ class settingContentState extends State<settingContent> {
   ];
   String uid = FirebaseAuth.instance.currentUser!.uid;
   settingContentState(this.board);
+  Future<Boards> getBoards() async {
+    var doc = await DatabaseService.getBoardData(board.boardID);
+    Boards temp = Boards.fromDocument(doc);
+    return temp;
+  }
 
   @override
   void initState() {
     super.initState();
-    mycontroller.value = new TextEditingValue(text: board.boardName);
+    futureBoards = getBoards();
   }
 
   @override
   Widget build(BuildContext context) {
     var content = <Widget>[];
-
+    mycontroller.value = new TextEditingValue(text: board.boardName);
     /// Board name inkwell
-    content.add(
-      InkWell(
-        onTap: () {
-          showDialog<String>(
-            context: context,
-            builder: (BuildContext context) => AlertDialog(
-              title: const Text(
-                'Tên',
-                style: TextStyle(fontWeight: FontWeight.bold),
-              ),
-              content: Container(
-                width: MediaQuery.of(context).size.width * 0.8,
+    content.add(FutureBuilder(
+        future: futureBoards,
+        builder: (BuildContext context, AsyncSnapshot snapshot) {
+          if (snapshot.hasData) {
+            board = snapshot.data;
+          } else
+            return Container(
+                alignment: FractionalOffset.center,
+                child: CircularProgressIndicator());
+          return InkWell(
+            onTap: () {
+              showDialog<String>(
+                context: context,
+                builder: (BuildContext context) => AlertDialog(
+                  title: const Text(
+                    'Tên',
+                    style: TextStyle(fontWeight: FontWeight.bold),
+                  ),
+                  content: Container(
+                    width: MediaQuery.of(context).size.width * 0.8,
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        TextField(
+                          controller: mycontroller,
+                          decoration: InputDecoration(
+                            hintStyle: TextStyle(
+                              fontSize: 18,
+                            ),
+                          ),
+                        ),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.end,
+                          children: [
+                            TextButton(
+                              child: Text(
+                                'HỦY',
+                                style: TextStyle(fontWeight: FontWeight.bold),
+                              ),
+                              onPressed: () {
+                                Navigator.of(context).pop();
+                              },
+                            ),
+                            TextButton(
+                              child: Text(
+                                'HOÀN THÀNH',
+                                style: TextStyle(fontWeight: FontWeight.bold),
+                              ),
+                              onPressed: () {
+                                setState(() {
+                                  if (board.createdBy == uid) {
+                                    DatabaseService.renameBoard(
+                                        board.boardID, mycontroller.text);
+                                  } else
+                                    showAlertDialog(context,
+                                        "Bạn không có quyền sửa bảng này!");
+                                  setState(() {
+                                    futureBoards = getBoards();
+                                  });
+                                  Navigator.of(context).pop();
+                                });
+                              },
+                            )
+                          ],
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              );
+            },
+            enableFeedback: false,
+            child: Padding(
+                padding: EdgeInsets.fromLTRB(70, 18, 0, 15),
                 child: Column(
-                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    TextField(
-                      controller: mycontroller,
-                      decoration: InputDecoration(
-                        hintStyle: TextStyle(
-                          fontSize: 18,
+                    Align(
+                      alignment: Alignment.centerLeft,
+                      child: Text(
+                        board.boardName,
+                        textAlign: TextAlign.left,
+                        style: TextStyle(
+                          fontSize: 15,
                         ),
                       ),
                     ),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.end,
-                      children: [
-                        TextButton(
-                          child: Text(
-                            'HỦY',
-                            style: TextStyle(fontWeight: FontWeight.bold),
-                          ),
-                          onPressed: () {
-                            Navigator.of(context).pop();
-                          },
+                    SizedBox(
+                      height: 2,
+                    ),
+                    Align(
+                      alignment: Alignment.centerLeft,
+                      child: Text(
+                        "Tên",
+                        textAlign: TextAlign.left,
+                        style: TextStyle(
+                          fontSize: 12,
                         ),
-                        TextButton(
-                          child: Text(
-                            'HOÀN THÀNH',
-                            style: TextStyle(fontWeight: FontWeight.bold),
-                          ),
-                          onPressed: () {
-                            setState(() {
-                              if (board.createdBy == uid){
-                                DatabaseService.renameBoard(board.boardID, mycontroller.text);
-                              } else showAlertDialog(context, "Bạn không có quyền sửa bảng này!");
-                              /* setState(() async {
-                                var snapshot = await FirebaseFirestore.instance
-                                    .collection('boards')
-                                    .doc(board.boardID)
-                                    .get();
-                                board = Boards.fromDocument(snapshot);
-                                mycontroller.text = board.boardName;
-                              });*/
-                              Navigator.of(context).pop();
-                              Navigator.of(context).pushNamed(MAIN_SCREEN);
-                            });
-                          },
-                        )
-                      ],
+                      ),
                     ),
                   ],
-                ),
-              ),
-            ),
+                )),
           );
-        },
-        enableFeedback: false,
-        child: Padding(
-            padding: EdgeInsets.fromLTRB(70, 18, 0, 15),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Align(
-                  alignment: Alignment.centerLeft,
-                  child: Text(
-                    mycontroller.text,
-                    textAlign: TextAlign.left,
-                    style: TextStyle(
-                      fontSize: 15,
-                    ),
-                  ),
-                ),
-                SizedBox(
-                  height: 2,
-                ),
-                Align(
-                  alignment: Alignment.centerLeft,
-                  child: Text(
-                    "Tên",
-                    textAlign: TextAlign.left,
-                    style: TextStyle(
-                      fontSize: 12,
-                    ),
-                  ),
-                ),
-              ],
-            )),
-      ),
-    );
+        }));
     content.add(customDivide());
 
     /// Group name inkwell
@@ -684,13 +695,14 @@ class settingContentState extends State<settingContent> {
                   style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
                 ),
                 onPressed: () {
-                  if(board.createdBy == uid)
-                    showAlertDialog(context, "Người tạo không thể rời khỏi bảng!");
+                  if (board.createdBy == uid)
+                    showAlertDialog(
+                        context, "Người tạo không thể rời khỏi bảng!");
                   else {
-                      DatabaseService.leaveBoard(board.boardID, uid);
-                      Route route =
-                      MaterialPageRoute(builder: (context) => MainScreen());
-                      Navigator.push(context, route);
+                    DatabaseService.leaveBoard(board.boardID, uid);
+                    Route route =
+                        MaterialPageRoute(builder: (context) => MainScreen());
+                    Navigator.push(context, route);
                   }
                 },
               )
@@ -823,31 +835,38 @@ class memberContentState extends State<memberContent> {
   ];
   GlobalKey key = GlobalKey();
   late Boards board;
+  late Future<List<Users>> futureUserList;
   late List<Users> userList = [];
+  late List<Users> selectedUser = [];
   memberContentState(this.board);
 
-
+  Future<List<Users>> getListUser() async {
+    var doc = await DatabaseService.getListUserData(board.userList);
+    List<Users> temp = [];
+    for (var item in doc) {
+      Users _user = Users.fromDocument(item);
+      temp.add(_user);
+    }
+    return temp;
+  }
 
   @override
   void initState() {
     super.initState();
+    futureUserList = getListUser();
   }
 
   @override
   Widget build(BuildContext context) {
     return FutureBuilder(
-        future: DatabaseService.getListUserData(board.userList),
+        future: futureUserList,
         builder: (BuildContext context, AsyncSnapshot snapshot) {
           if (!snapshot.hasData) {
             return Container(
                 alignment: FractionalOffset.center,
                 child: CircularProgressIndicator());
-          }
-          userList.clear();
-          for (DocumentSnapshot item in snapshot.data) {
-            Users _user = Users.fromDocument(item);
-            userList.add(_user);
-          }
+          } else
+            userList = snapshot.data;
           return Stack(
             children: [
               Container(
@@ -898,8 +917,7 @@ class memberContentState extends State<memberContent> {
                                             Align(
                                               alignment: Alignment.centerLeft,
                                               child: Text(
-                                                '@' +
-                                                    userList[index].userName,
+                                                '@' + userList[index].userName,
                                                 textAlign: TextAlign.left,
                                                 style: TextStyle(
                                                     fontSize: 16,
@@ -960,76 +978,127 @@ class memberContentState extends State<memberContent> {
                                     SingleChildScrollView(
                                       child: Column(
                                         children: <Widget>[
-                                          ChipsInput(
-                                            key: _chipKey,
-                                            keyboardAppearance: Brightness.dark,
-                                            textCapitalization:
-                                                TextCapitalization.words,
-                                            // maxChips: 5,
-                                            textStyle: const TextStyle(
-                                                height: 1.5, fontSize: 20),
-                                            decoration: const InputDecoration(
-                                              // hintText: formControl.hint,
-                                              labelText: 'Tài khoản hoặc email',
-                                            ),
-                                            findSuggestions: (String query) {
-                                              print("Query: '$query'");
-                                              if (query.isNotEmpty) {
-                                                var lowercaseQuery =
-                                                    query.toLowerCase();
-                                                return users.where((profile) {
-                                                  return profile.userName
-                                                          .toLowerCase()
-                                                          .contains(query
-                                                              .toLowerCase()) ||
-                                                      profile.email
-                                                          .toLowerCase()
-                                                          .contains(query
-                                                              .toLowerCase());
-                                                }).toList(growable: false)
-                                                  ..sort((a, b) => a.userName
-                                                      .toLowerCase()
-                                                      .indexOf(lowercaseQuery)
-                                                      .compareTo(b.userName
-                                                          .toLowerCase()
-                                                          .indexOf(
-                                                              lowercaseQuery)));
-                                              }
-                                              return users;
-                                            },
-                                            onChanged: (data) {
-                                              // print(data);
-                                            },
-                                            chipBuilder: (context, state,
-                                                dynamic profile) {
-                                              return InputChip(
-                                                key: ObjectKey(profile),
-                                                label: Text(profile.userName),
-                                                avatar: CircleAvatar(
-                                                  backgroundImage: AssetImage(
-                                                      profile.avatar),
-                                                ),
-                                                onDeleted: () =>
-                                                    state.deleteChip(profile),
-                                                materialTapTargetSize:
-                                                    MaterialTapTargetSize
-                                                        .shrinkWrap,
-                                              );
-                                            },
-                                            suggestionBuilder: (context, state,
-                                                dynamic profile) {
-                                              return ListTile(
-                                                key: ObjectKey(profile),
-                                                leading: CircleAvatar(
-                                                  backgroundImage: AssetImage(
-                                                      profile.avatar),
-                                                ),
-                                                title: Text(profile.userName),
-                                                onTap: () => state
-                                                    .selectSuggestion(profile),
-                                              );
-                                            },
-                                          ),
+                                          FutureBuilder(
+                                              future: DatabaseService
+                                                  .getAllUsesrData(),
+                                              builder: (BuildContext context,
+                                                  AsyncSnapshot snapshot) {
+                                                if (!snapshot.hasData) {
+                                                  return Container(
+                                                      alignment:
+                                                          FractionalOffset
+                                                              .center,
+                                                      child:
+                                                          CircularProgressIndicator());
+                                                } else {
+                                                  selectedUser.clear();
+                                                  users.clear();
+                                                  for (DocumentSnapshot item
+                                                      in snapshot.data) {
+                                                    Users _user =
+                                                        Users.fromDocument(
+                                                            item);
+                                                    users.add(_user);
+                                                  }
+                                                }
+                                                return ChipsInput(
+                                                  key: _chipKey,
+                                                  keyboardAppearance:
+                                                      Brightness.dark,
+                                                  textCapitalization:
+                                                      TextCapitalization.words,
+                                                  // maxChips: 5,
+                                                  textStyle: const TextStyle(
+                                                      height: 1.5,
+                                                      fontSize: 20),
+                                                  decoration:
+                                                      const InputDecoration(
+                                                    // hintText: formControl.hint,
+                                                    labelText:
+                                                        'Tài khoản hoặc email',
+                                                  ),
+                                                  findSuggestions:
+                                                      (String query) {
+                                                    print("Query: '$query'");
+                                                    if (query.isNotEmpty) {
+                                                      var lowercaseQuery =
+                                                          query.toLowerCase();
+                                                      return users.where(
+                                                          (profile) {
+                                                        return profile.userName
+                                                                .toLowerCase()
+                                                                .contains(query
+                                                                    .toLowerCase()) ||
+                                                            profile.email
+                                                                .toLowerCase()
+                                                                .contains(query
+                                                                    .toLowerCase());
+                                                      }).toList(growable: false)
+                                                        ..sort((a, b) => a
+                                                            .userName
+                                                            .toLowerCase()
+                                                            .indexOf(
+                                                                lowercaseQuery)
+                                                            .compareTo(b
+                                                                .userName
+                                                                .toLowerCase()
+                                                                .indexOf(
+                                                                    lowercaseQuery)));
+                                                    }
+                                                    return users;
+                                                  },
+                                                  onChanged: (data) {
+                                                    // print(data);
+                                                  },
+                                                  chipBuilder: (context, state,
+                                                      dynamic profile) {
+                                                    return InputChip(
+                                                      key: ObjectKey(profile),
+                                                      label: Text(
+                                                          profile.userName),
+                                                      avatar: CircleAvatar(
+                                                        backgroundImage:
+                                                            AssetImage(
+                                                                profile.avatar),
+                                                      ),
+                                                      onDeleted: () => state
+                                                          .deleteChip(profile),
+                                                      materialTapTargetSize:
+                                                          MaterialTapTargetSize
+                                                              .shrinkWrap,
+                                                    );
+                                                  },
+                                                  suggestionBuilder: (context,
+                                                      state, dynamic profile) {
+                                                    return ListTile(
+                                                        key: ObjectKey(profile),
+                                                        leading: CircleAvatar(
+                                                          backgroundImage:
+                                                              AssetImage(profile
+                                                                  .avatar),
+                                                        ),
+                                                        title: Text(
+                                                            profile.userName),
+                                                        onTap: () {
+                                                          if (!checkUserAvailable(
+                                                              profile.userID)) {
+                                                            state
+                                                                .selectSuggestion(
+                                                                    profile);
+                                                            selectedUser
+                                                                .add(profile);
+                                                            setState(() {
+                                                              futureUserList =
+                                                                  getListUser();
+                                                            });
+                                                          } else
+                                                            showAlertDialog(
+                                                                context,
+                                                                "Thành viên này đã trong bảng!"); //Somehow cant close this dialog
+                                                        });
+                                                  },
+                                                );
+                                              }),
                                         ],
                                       ),
                                     ),
@@ -1053,7 +1122,14 @@ class memberContentState extends State<memberContent> {
                                           fontSize: 16),
                                     ),
                                     onPressed: () {
-                                      ///TODO: Add user in chip to board
+                                      for (var item in selectedUser) {
+                                        DatabaseService.addUserToBoard(
+                                            board.boardID, item.userID);
+                                        setState(() {
+                                          userList.add(item);
+                                        });
+                                      }
+                                      Navigator.of(context).pop();
                                     },
                                   )
                                 ],
@@ -1073,6 +1149,13 @@ class memberContentState extends State<memberContent> {
           );
         });
   }
+
+  bool checkUserAvailable(String userID) {
+    for (var item in userList) {
+      if (userID == item.userID) return true;
+    }
+    return false;
+  }
 }
 
 class mainMenu extends StatefulWidget {
@@ -1090,10 +1173,20 @@ class mainMenuState extends State<mainMenu> {
   Boards board;
 
   mainMenuState(this.creator, this.board);
+
+  late Future<Boards> futureBoards;
   String uid = FirebaseAuth.instance.currentUser!.uid;
+
+  Future<Boards> getBoards() async {
+    var doc = await DatabaseService.getBoardData(board.boardID);
+    Boards temp = Boards.fromDocument(doc);
+    return temp;
+  }
+
   @override
   void initState() {
     super.initState();
+    futureBoards = getBoards();
     state = 0;
   }
 
@@ -1110,102 +1203,121 @@ class mainMenuState extends State<mainMenu> {
         title = "Thiết lập bảng";
         break;
     }
-    return Drawer(
-      child: state != 0
-          ? Column(
-              children: [
-                /// Header
-                SizedBox(
-                  height: 24,
-                ),
-                Container(
-                  decoration: BoxDecoration(
-                    color: Color.fromRGBO(244, 245, 247, 1.0),
-                    boxShadow: <BoxShadow>[
-                      BoxShadow(
-                        color: Colors.black45,
-                        spreadRadius: 1.0,
-                        blurRadius: 2.0,
-                        offset: Offset(2, 3),
-                      ),
-                    ],
-                  ),
-                  child: Row(
+    return FutureBuilder(
+        future: futureBoards,
+        builder: (BuildContext context, AsyncSnapshot snapshot) {
+          if (snapshot.hasData) {
+            board = snapshot.data;
+          } else
+            return Container(
+                alignment: FractionalOffset.center,
+                child: CircularProgressIndicator());
+          return Drawer(
+            child: state != 0
+                ? Column(
                     children: [
-                      IconButton(
-                          onPressed: () {
-                            setState(
-                              () {
-                                state = 0;
-                              },
-                            );
-                          },
-                          icon: Icon(Icons.arrow_back_outlined)),
-                      Text(
-                        title,
-                        style: TextStyle(fontSize: 18),
+                      /// Header
+                      SizedBox(
+                        height: 24,
+                      ),
+                      Container(
+                        decoration: BoxDecoration(
+                          color: Color.fromRGBO(244, 245, 247, 1.0),
+                          boxShadow: <BoxShadow>[
+                            BoxShadow(
+                              color: Colors.black45,
+                              spreadRadius: 1.0,
+                              blurRadius: 2.0,
+                              offset: Offset(2, 3),
+                            ),
+                          ],
+                        ),
+                        child: Row(
+                          children: [
+                            IconButton(
+                                onPressed: () {
+                                  setState(
+                                    () {
+                                      state = 0;
+                                      futureBoards = getBoards();
+                                      Route route = MaterialPageRoute(builder: (context) => BoardScreen(board, false));
+                                      Navigator.push(context, route);
+                                    },
+                                  );
+                                },
+                                icon: Icon(Icons.arrow_back_outlined)),
+                            Text(
+                              title,
+                              style: TextStyle(fontSize: 18),
+                            ),
+                          ],
+                        ),
+                      ),
+
+                      /// Body
+                      if (state == 1)
+                        inforContent(creator, "")
+                      else if (state == 2)
+                        memberContent(board)
+                      else if (state == 4)
+                        settingContent(board)
+                    ],
+                  )
+                : Column(
+                    children: [
+                      SizedBox(
+                        height: 24,
+                      ),
+                      CustomListTile(Icons.info_outline, "Về bảng này", () {
+                        setState(() {
+                          state = 1;
+                        });
+                      }),
+                      CustomListTile(MyFlutterApp.person_outline, "Thành viên",
+                          () {
+                        setState(() {
+                          state = 2;
+                          futureBoards = getBoards();
+                        });
+                      }),
+                      Divider(),
+                      CustomListTile(
+                        Icons.delete,
+                        "Xóa bảng",
+                        () {
+                          if (uid == board.createdBy) {
+                            DatabaseService.deleteBoard(board.boardID);
+                          } else
+                            showAlertDialog(
+                                context, "Bạn không có quyền xóa bảng này!");
+                          Navigator.of(context).pushNamed(MAIN_SCREEN);
+                        },
+                      ),
+                      CustomListTile(
+                        Icons.settings,
+                        "Thiết lập bảng",
+                        () {
+                          setState(
+                            () {
+                              state = 4;
+                            },
+                          );
+                        },
                       ),
                     ],
                   ),
-                ),
-
-                /// Body
-                if (state == 1)
-                  inforContent(creator, "")
-                else if (state == 2)
-                  memberContent(board)
-                else if (state == 4)
-                  settingContent(board)
-              ],
-            )
-          : Column(
-              children: [
-                SizedBox(
-                  height: 24,
-                ),
-                CustomListTile(Icons.info_outline, "Về bảng này", () {
-                  setState(() {
-                    state = 1;
-                  });
-                }),
-                CustomListTile(MyFlutterApp.person_outline, "Thành viên", () {
-                  setState(() {
-                    state = 2;
-                  });
-                }),
-                Divider(),
-                CustomListTile(
-                  Icons.delete,
-                  "Xóa bảng",
-                  () {
-                    if(uid == board.createdBy) {
-                        DatabaseService.deleteBoard(board.boardID);
-                    } else showAlertDialog(context, "Bạn không có quyền xóa bảng này!");
-                    Navigator.of(context).pushNamed(MAIN_SCREEN);
-                  },
-                ),
-                CustomListTile(
-                  Icons.settings,
-                  "Thiết lập bảng",
-                  () {
-                    setState(
-                      () {
-                        state = 4;
-                      },
-                    );
-                  },
-                ),
-              ],
-            ),
-    );
+          );
+        });
   }
 }
-showAlertDialog(BuildContext context, String alertdialog) {
 
+showAlertDialog(BuildContext context, String alertdialog) {
   // set up the buttons
   Widget cancelButton = ElevatedButton(
     child: Text("Đóng"),
-    onPressed:  () {Navigator.of(context).pop();},
+    onPressed: () {
+      Navigator.of(context).pop();
+    },
   );
 
   // set up the AlertDialog
