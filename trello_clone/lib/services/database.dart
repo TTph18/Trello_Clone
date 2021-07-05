@@ -135,6 +135,7 @@ class DatabaseService {
     return listUser;
   }
 
+  //get all user data
   static Future getAllUsesrData() async {
       var snapshot = await FirebaseFirestore.instance
           .collection('users')
@@ -238,7 +239,7 @@ class DatabaseService {
         .collection('boards')
         .doc(boardID)
         .get().then((value) {
-      userList = value['workspaceID'].cast<String>();
+      userList = value['userList'].cast<String>();
       userList.remove(userID);
       FirebaseFirestore.instance
           .collection('boards')

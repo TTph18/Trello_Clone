@@ -839,6 +839,7 @@ class memberContentState extends State<memberContent> {
   late List<Users> userList = [];
   late List<Users> selectedUser = [];
   memberContentState(this.board);
+  String uid = FirebaseAuth.instance.currentUser!.uid;
 
   Future<List<Users>> getListUser() async {
     var doc = await DatabaseService.getListUserData(board.userList);
@@ -931,9 +932,42 @@ class memberContentState extends State<memberContent> {
                                     ),
                                     IconButton(
                                         onPressed: () {
-                                          ///TODO: delete this user form board
+                                          {
+                                            showDialog<String>(
+                                              context: context,
+                                              builder: (BuildContext context) => AlertDialog(
+                                                content: Text("Bạn xác nhận muốn xóa thành viên này?"),
+                                                actions: [
+                                                  TextButton(
+                                                    child: Text('HỦY',
+                                                        style: TextStyle(
+                                                            fontWeight: FontWeight.bold,
+                                                            fontSize: 16)),
+                                                    onPressed: () {
+                                                      Navigator.of(context).pop();
+                                                    },
+                                                  ),
+                                                  TextButton(
+                                                    child: Text(
+                                                      'XÁC NHẬN',
+                                                      style: TextStyle(
+                                                          fontWeight: FontWeight.bold,
+                                                          fontSize: 16),
+                                                    ),
+                                                    onPressed: () {
+                                                      DatabaseService.deleteUserInBoard(userList[index].userID, board.boardID);
+                                                      setState(() {
+                                                        futureUserList = getListUser();
+                                                      });
+                                                      Navigator.of(context).pop();
+                                                    },
+                                                  )
+                                                ],
+                                              ),
+                                            );
+                                          }
                                         },
-                                        icon: Icon(Icons.close)),
+                                        icon: Icon(Icons.close, color: (userList[index].userID == board.createdBy) ? Colors.transparent : Colors.black),)
                                   ],
                                 ),
                               ),
