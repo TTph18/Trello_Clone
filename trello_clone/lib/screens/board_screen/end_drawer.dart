@@ -135,245 +135,6 @@ Widget customDivide() {
   );
 }
 
-Widget customColorInkWell(Labels labels, BuildContext context) {
-  return InkWell(
-    onTap: () {
-      showModalBottomSheet(
-        context: context,
-        builder: (BuildContext bc) {
-          return LabelDetailModalBottom(false, labels);
-        },
-        isScrollControlled: true,
-      );
-    },
-    child: Ink(
-      child: Container(
-        height: 40,
-        width: double.infinity,
-        child: Ink(
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(5),
-            color: Color(int.parse(labels.color)),
-          ),
-          child: Align(
-              alignment: Alignment.centerLeft,
-              child: Padding(
-                padding: const EdgeInsets.fromLTRB(10, 0, 0, 0),
-                child: Text(
-                  labels.labelName,
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 18,
-                  ),
-                  textAlign: TextAlign.left,
-                ),
-              )),
-        ),
-      ),
-    ),
-  );
-}
-
-Widget LabelDetailModalBottom(bool isCreate, Labels label) {
-  TextEditingController mycontroller = TextEditingController();
-  mycontroller.value = new TextEditingValue(text: label.labelName);
-  String title = "Nhãn mới";
-  if (!isCreate) title = "Sửa nhãn";
-  List<Labels> labelColors = [
-    Labels(color: "0xff61bd4f", labelName: ""),
-    Labels(color: "0xfff2d600", labelName: ""),
-    Labels(color: "0xffffab4a", labelName: ""),
-    Labels(color: "0xffeb5a46", labelName: ""),
-    Labels(color: "0xffc377e0", labelName: ""),
-    Labels(color: "0xff0079bf", labelName: ""),
-    Labels(color: "0xff00c2e0", labelName: ""),
-    Labels(color: "0xff51e898", labelName: ""),
-    Labels(color: "0xffff80ce", labelName: ""),
-    Labels(color: "0xff355263", labelName: ""),
-    Labels(color: "0xffb3bec4", labelName: ""),
-  ];
-
-  String labelSelectedColor = label.color;
-  return StatefulBuilder(
-    builder: (BuildContext context, StateSetter mystate) {
-      return Padding(
-        padding: EdgeInsets.all(20),
-        child: Container(
-          padding:
-              EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Align(
-                alignment: Alignment.centerLeft,
-                child: Text(
-                  title,
-                  textAlign: TextAlign.left,
-                  style: TextStyle(
-                    fontSize: 16,
-                  ),
-                ),
-              ),
-              SizedBox(
-                height: 10,
-              ),
-              TextField(
-                controller: mycontroller,
-                decoration: InputDecoration(
-                  hintText: "Tên nhãn…",
-                  hintStyle: TextStyle(
-                    fontSize: 18,
-                  ),
-                ),
-              ),
-              SizedBox(
-                height: 20,
-              ),
-              Container(
-                child: GridView.count(
-                  shrinkWrap: true,
-                  primary: false,
-                  padding: const EdgeInsets.all(4),
-                  childAspectRatio: 2,
-                  crossAxisSpacing: 10,
-                  mainAxisSpacing: 10,
-                  crossAxisCount: 4,
-                  children: List.generate(
-                    labelColors.length,
-                    (index) {
-                      return Ink(
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.all(Radius.circular(5)),
-                          color: Color(int.parse(labelColors[index].color)),
-                        ),
-                        child: labelColors[index].color == labelSelectedColor
-                            ? Container(
-                                alignment: Alignment.center,
-                                child: Icon(
-                                  Icons.check,
-                                  size: 30,
-                                  color: Colors.white,
-                                ),
-                              )
-                            : InkWell(
-                                onTap: () {
-                                  mystate(
-                                    () {
-                                      labelSelectedColor =
-                                          labelColors[index].color;
-                                    },
-                                  );
-                                },
-                              ),
-                      );
-                    },
-                  ),
-                ),
-              ),
-              SizedBox(
-                height: 10,
-              ),
-              isCreate
-                  ? Row(
-                      mainAxisAlignment: MainAxisAlignment.end,
-                      children: [
-                        TextButton(
-                          onPressed: () {
-                            Navigator.pop(context);
-                          },
-                          child: Text(
-                            "HỦY",
-                            textAlign: TextAlign.right,
-                            style: TextStyle(
-                              fontSize: 18,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                        ),
-                        TextButton(
-                          onPressed: () {
-                            if (isCreate) {
-                              ///TODO: Create new label if text field contain text
-                            } else {
-                              ///TODO: Edit label
-                            }
-                            Navigator.pop(context);
-                          },
-                          child: Text(
-                            "HOÀN THÀNH",
-                            textAlign: TextAlign.right,
-                            style: TextStyle(
-                              fontSize: 18,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                        ),
-                      ],
-                    )
-                  : Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        TextButton(
-                          onPressed: () {
-                            ///TODO: Delete label info
-                            Navigator.pop(context);
-                          },
-                          child: Text(
-                            "XÓA",
-                            textAlign: TextAlign.right,
-                            style: TextStyle(
-                              fontSize: 18,
-                              fontWeight: FontWeight.bold,
-                              color: Colors.red,
-                            ),
-                          ),
-                        ),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.end,
-                          children: [
-                            TextButton(
-                              onPressed: () {
-                                Navigator.pop(context);
-                              },
-                              child: Text(
-                                "HỦY",
-                                textAlign: TextAlign.right,
-                                style: TextStyle(
-                                  fontSize: 18,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                            ),
-                            TextButton(
-                              onPressed: () {
-                                if (isCreate) {
-                                  ///TODO: Create new label if text field contain text
-                                } else {
-                                  ///TODO: Edit label
-                                }
-                                Navigator.pop(context);
-                              },
-                              child: Text(
-                                "HOÀN THÀNH",
-                                textAlign: TextAlign.right,
-                                style: TextStyle(
-                                  fontSize: 18,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ],
-                    ),
-            ],
-          ),
-        ),
-      );
-    },
-  );
-}
-
 class settingContent extends StatefulWidget {
   late Boards board;
   settingContent(this.board);
@@ -384,36 +145,47 @@ class settingContent extends StatefulWidget {
 class settingContentState extends State<settingContent> {
   TextEditingController mycontroller = TextEditingController();
   late Future<Boards> futureBoards;
+  late Future<List<Labels>> futureListLabels;
   late Boards board;
   late Workspaces workspace;
   late String boardName = "Đặc tả hình thức";
   late String grName = "Shop ngáo và những người bạn";
-  List<Labels> currentLabels = [
-    new Labels(color: "0xff61bd4f", labelName: ""),
-    new Labels(color: "0xfff2d600", labelName: ""),
-    new Labels(color: "0xffffab4a", labelName: ""),
-    new Labels(color: "0xffeb5a46", labelName: ""),
-    new Labels(color: "0xffc377e0", labelName: ""),
-    new Labels(color: "0xff0079bf", labelName: ""),
-  ];
+  late List<Labels> currentLabels = [];
   String uid = FirebaseAuth.instance.currentUser!.uid;
   settingContentState(this.board);
+
+  void _update() {
+    setState(() {futureListLabels = getLabels(board.boardID);});
+  }
+
   Future<Boards> getBoards() async {
     var doc = await DatabaseService.getBoardData(board.boardID);
     Boards temp = Boards.fromDocument(doc);
     return temp;
   }
 
+  Future<List<Labels>> getLabels(String boardID) async {
+    List<Labels> list = [];
+    var doc = await DatabaseService.getAllLabel(boardID);
+    for (var item in doc) {
+      Labels temp = Labels.fromDocument(item);
+      list.add(temp);
+    }
+    return list;
+  }
+
   @override
   void initState() {
     super.initState();
     futureBoards = getBoards();
+    futureListLabels = getLabels(board.boardID);
   }
 
   @override
   Widget build(BuildContext context) {
     var content = <Widget>[];
     mycontroller.value = new TextEditingValue(text: board.boardName);
+
     /// Board name inkwell
     content.add(FutureBuilder(
         future: futureBoards,
@@ -581,47 +353,59 @@ class settingContentState extends State<settingContent> {
 
     /// Label inkwell
     content.add(
-      InkWell(
-        onTap: () => showDialog<String>(
-          context: context,
-          builder: (BuildContext context) => AlertDialog(
-            title: const Text(
-              'Chỉnh sửa nhãn',
-              style: TextStyle(fontWeight: FontWeight.bold),
-            ),
-            content: Container(
-              width: MediaQuery.of(context).size.width * 0.8,
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: CreateBody(),
-              ),
-            ),
-          ),
-        ),
-        child: Padding(
-          padding: EdgeInsets.fromLTRB(70, 18, 0, 15),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Container(
-                child: Align(
-                  alignment: Alignment.centerLeft,
-                  child: Text(
-                    "Chỉnh sửa nhãn",
-                    textAlign: TextAlign.left,
-                    style: TextStyle(
-                      fontSize: 15,
-                      color: Colors.black,
+      FutureBuilder(
+          future: futureListLabels,
+          builder: (BuildContext context, AsyncSnapshot snapshot) {
+            if (snapshot.hasData) {
+              currentLabels.clear();
+              currentLabels = snapshot.data;
+            } else {
+              return Container(
+                  alignment: FractionalOffset.center,
+                  child: CircularProgressIndicator());
+            }
+            return InkWell(
+              onTap: () => showDialog<String>(
+                context: context,
+                builder: (BuildContext context) => AlertDialog(
+                  title: const Text(
+                    'Chỉnh sửa nhãn',
+                    style: TextStyle(fontWeight: FontWeight.bold),
+                  ),
+                  content: Container(
+                    width: MediaQuery.of(context).size.width * 0.8,
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: CreateBody(),
                     ),
-                    maxLines: 2,
-                    overflow: TextOverflow.visible,
                   ),
                 ),
               ),
-            ],
-          ),
-        ),
-      ),
+              child: Padding(
+                padding: EdgeInsets.fromLTRB(70, 18, 0, 15),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Container(
+                      child: Align(
+                        alignment: Alignment.centerLeft,
+                        child: Text(
+                          "Chỉnh sửa nhãn",
+                          textAlign: TextAlign.left,
+                          style: TextStyle(
+                            fontSize: 15,
+                            color: Colors.black,
+                          ),
+                          maxLines: 2,
+                          overflow: TextOverflow.visible,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            );
+          }),
     );
     content.add(customDivide());
 
@@ -747,6 +531,7 @@ class settingContentState extends State<settingContent> {
         Padding(
           padding: const EdgeInsets.fromLTRB(0, 0, 0, 4),
           child: customColorInkWell(
+            board,
             currentLabels[i],
             context,
           ),
@@ -777,7 +562,9 @@ class settingContentState extends State<settingContent> {
                 context: context,
                 builder: (BuildContext bc) {
                   return LabelDetailModalBottom(
-                      true, Labels(color: "0xffb3bec4", labelName: ""));
+                      true,
+                      Labels(labelID: "", color: "0xffb3bec4", labelName: ""),
+                      board);
                 },
                 isScrollControlled: true,
               );
@@ -787,6 +574,244 @@ class settingContentState extends State<settingContent> {
       ),
     );
     return content;
+  }
+  Widget customColorInkWell(Boards board, Labels labels, BuildContext context) {
+    return InkWell(
+      onTap: () {
+        showModalBottomSheet(
+          context: context,
+          builder: (BuildContext bc) {
+            return LabelDetailModalBottom(false, labels, board);
+          },
+          isScrollControlled: true,
+        );
+      },
+      child: Ink(
+        child: Container(
+          height: 40,
+          width: double.infinity,
+          child: Ink(
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(5),
+              color: Color(int.parse(labels.color)),
+            ),
+            child: Align(
+                alignment: Alignment.centerLeft,
+                child: Padding(
+                  padding: const EdgeInsets.fromLTRB(10, 0, 0, 0),
+                  child: Text(
+                    labels.labelName,
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 18,
+                    ),
+                    textAlign: TextAlign.left,
+                  ),
+                )),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget LabelDetailModalBottom(bool isCreate, Labels label, Boards board) {
+    TextEditingController mycontroller = TextEditingController();
+    mycontroller.value = new TextEditingValue(text: label.labelName);
+    String title = "Nhãn mới";
+    if (!isCreate) title = "Sửa nhãn";
+    List<Labels> labelColors = [
+      Labels(color: "0xff61bd4f", labelName: "", labelID: ""),
+      Labels(color: "0xfff2d600", labelName: "", labelID: ""),
+      Labels(color: "0xffffab4a", labelName: "", labelID: ""),
+      Labels(color: "0xffeb5a46", labelName: "", labelID: ""),
+      Labels(color: "0xffc377e0", labelName: "", labelID: ""),
+      Labels(color: "0xff0079bf", labelName: "", labelID: ""),
+      Labels(color: "0xff00c2e0", labelName: "", labelID: ""),
+      Labels(color: "0xff51e898", labelName: "", labelID: ""),
+      Labels(color: "0xffff80ce", labelName: "", labelID: ""),
+      Labels(color: "0xff355263", labelName: "", labelID: ""),
+      Labels(color: "0xffb3bec4", labelName: "", labelID: ""),
+    ];
+    String labelSelectedColor = label.color;
+    return StatefulBuilder(
+      builder: (BuildContext context, StateSetter mystate) {
+        return Padding(
+          padding: EdgeInsets.all(20),
+          child: Container(
+            padding:
+            EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Align(
+                  alignment: Alignment.centerLeft,
+                  child: Text(
+                    title,
+                    textAlign: TextAlign.left,
+                    style: TextStyle(
+                      fontSize: 16,
+                    ),
+                  ),
+                ),
+                SizedBox(
+                  height: 10,
+                ),
+                TextField(
+                  controller: mycontroller,
+                  decoration: InputDecoration(
+                    hintText: "Tên nhãn…",
+                    hintStyle: TextStyle(
+                      fontSize: 18,
+                    ),
+                  ),
+                ),
+                SizedBox(
+                  height: 20,
+                ),
+                Container(
+                  child: GridView.count(
+                    shrinkWrap: true,
+                    primary: false,
+                    padding: const EdgeInsets.all(4),
+                    childAspectRatio: 2,
+                    crossAxisSpacing: 10,
+                    mainAxisSpacing: 10,
+                    crossAxisCount: 4,
+                    children: List.generate(
+                      labelColors.length,
+                          (index) {
+                        return Ink(
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.all(Radius.circular(5)),
+                            color: Color(int.parse(labelColors[index].color)),
+                          ),
+                          child: labelColors[index].color == labelSelectedColor
+                              ? Container(
+                            alignment: Alignment.center,
+                            child: Icon(
+                              Icons.check,
+                              size: 30,
+                              color: Colors.white,
+                            ),
+                          )
+                              : InkWell(
+                            onTap: () {
+                              mystate(
+                                    () {
+                                  labelSelectedColor =
+                                      labelColors[index].color;
+                                },
+                              );
+                            },
+                          ),
+                        );
+                      },
+                    ),
+                  ),
+                ),
+                SizedBox(
+                  height: 10,
+                ),
+                isCreate
+                    ? Row(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: [
+                    TextButton(
+                      onPressed: () {
+                        Navigator.pop(context);
+                      },
+                      child: Text(
+                        "HỦY",
+                        textAlign: TextAlign.right,
+                        style: TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ),
+                    TextButton(
+                      onPressed: () {
+                        if (isCreate) {
+                          ///TODO: Create new label if text field contain text
+                        } else {
+                          _update();
+                        }
+                        Navigator.pop(context);
+                      },
+                      child: Text(
+                        "HOÀN THÀNH",
+                        textAlign: TextAlign.right,
+                        style: TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ),
+                  ],
+                )
+                    : Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    TextButton(
+                      onPressed: () {
+                        ///TODO: Delete label info
+                        Navigator.pop(context);
+                      },
+                      child: Text(
+                        "XÓA",
+                        textAlign: TextAlign.right,
+                        style: TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.red,
+                        ),
+                      ),
+                    ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.end,
+                      children: [
+                        TextButton(
+                          onPressed: () {
+                            Navigator.pop(context);
+                          },
+                          child: Text(
+                            "HỦY",
+                            textAlign: TextAlign.right,
+                            style: TextStyle(
+                              fontSize: 18,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ),
+                        TextButton(
+                          onPressed: () {
+                              DatabaseService.updateLabel(
+                                  board.boardID,
+                                  label.labelID,
+                                  mycontroller.text,
+                                  labelSelectedColor);
+                            _update();
+                            Navigator.pop(context);
+                          },
+                          child: Text(
+                            "HOÀN THÀNH",
+                            textAlign: TextAlign.right,
+                            style: TextStyle(
+                              fontSize: 18,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ),
+        );
+      },
+    );
   }
 }
 
@@ -931,43 +956,58 @@ class memberContentState extends State<memberContent> {
                                       ],
                                     ),
                                     IconButton(
-                                        onPressed: () {
-                                          {
-                                            showDialog<String>(
-                                              context: context,
-                                              builder: (BuildContext context) => AlertDialog(
-                                                content: Text("Bạn xác nhận muốn xóa thành viên này?"),
-                                                actions: [
-                                                  TextButton(
-                                                    child: Text('HỦY',
-                                                        style: TextStyle(
-                                                            fontWeight: FontWeight.bold,
-                                                            fontSize: 16)),
-                                                    onPressed: () {
-                                                      Navigator.of(context).pop();
-                                                    },
-                                                  ),
-                                                  TextButton(
-                                                    child: Text(
-                                                      'XÁC NHẬN',
+                                      onPressed: () {
+                                        {
+                                          showDialog<String>(
+                                            context: context,
+                                            builder: (BuildContext context) =>
+                                                AlertDialog(
+                                              content: Text(
+                                                  "Bạn xác nhận muốn xóa thành viên này?"),
+                                              actions: [
+                                                TextButton(
+                                                  child: Text('HỦY',
                                                       style: TextStyle(
-                                                          fontWeight: FontWeight.bold,
-                                                          fontSize: 16),
-                                                    ),
-                                                    onPressed: () {
-                                                      DatabaseService.deleteUserInBoard(userList[index].userID, board.boardID);
-                                                      setState(() {
-                                                        futureUserList = getListUser();
-                                                      });
-                                                      Navigator.of(context).pop();
-                                                    },
-                                                  )
-                                                ],
-                                              ),
-                                            );
-                                          }
-                                        },
-                                        icon: Icon(Icons.close, color: (uid != board.createdBy ||userList[index].userID == board.createdBy) ? Colors.transparent : Colors.black),)
+                                                          fontWeight:
+                                                              FontWeight.bold,
+                                                          fontSize: 16)),
+                                                  onPressed: () {
+                                                    Navigator.of(context).pop();
+                                                  },
+                                                ),
+                                                TextButton(
+                                                  child: Text(
+                                                    'XÁC NHẬN',
+                                                    style: TextStyle(
+                                                        fontWeight:
+                                                            FontWeight.bold,
+                                                        fontSize: 16),
+                                                  ),
+                                                  onPressed: () {
+                                                    DatabaseService
+                                                        .deleteUserInBoard(
+                                                            userList[index]
+                                                                .userID,
+                                                            board.boardID);
+                                                    setState(() {
+                                                      futureUserList =
+                                                          getListUser();
+                                                    });
+                                                    Navigator.of(context).pop();
+                                                  },
+                                                )
+                                              ],
+                                            ),
+                                          );
+                                        }
+                                      },
+                                      icon: Icon(Icons.close,
+                                          color: (uid != board.createdBy ||
+                                                  userList[index].userID ==
+                                                      board.createdBy)
+                                              ? Colors.transparent
+                                              : Colors.black),
+                                    )
                                   ],
                                 ),
                               ),
@@ -998,176 +1038,215 @@ class memberContentState extends State<memberContent> {
                         alignment: Alignment.bottomRight,
                         child: FloatingActionButton.extended(
                           key: key,
-                          onPressed: (uid != board.createdBy) ? null : () {
-                            showDialog<String>(
-                              context: context,
-                              builder: (BuildContext context) => AlertDialog(
-                                title: const Text(
-                                  'Thêm thành viên',
-                                  style: TextStyle(fontWeight: FontWeight.bold),
-                                ),
-                                content: Column(
-                                  mainAxisSize: MainAxisSize.min,
-                                  children: [
-                                    SingleChildScrollView(
-                                      child: Column(
-                                        children: <Widget>[
-                                          FutureBuilder(
-                                              future: DatabaseService
-                                                  .getAllUsesrData(),
-                                              builder: (BuildContext context,
-                                                  AsyncSnapshot snapshot) {
-                                                if (!snapshot.hasData) {
-                                                  return Container(
-                                                      alignment:
-                                                          FractionalOffset
-                                                              .center,
-                                                      child:
-                                                          CircularProgressIndicator());
-                                                } else {
-                                                  selectedUser.clear();
-                                                  users.clear();
-                                                  for (DocumentSnapshot item
-                                                      in snapshot.data) {
-                                                    Users _user =
-                                                        Users.fromDocument(
-                                                            item);
-                                                    users.add(_user);
-                                                  }
-                                                }
-                                                return ChipsInput(
-                                                  key: _chipKey,
-                                                  keyboardAppearance:
-                                                      Brightness.dark,
-                                                  textCapitalization:
-                                                      TextCapitalization.words,
-                                                  // maxChips: 5,
-                                                  textStyle: const TextStyle(
-                                                      height: 1.5,
-                                                      fontSize: 20),
-                                                  decoration:
-                                                      const InputDecoration(
-                                                    // hintText: formControl.hint,
-                                                    labelText:
-                                                        'Tài khoản hoặc email',
-                                                  ),
-                                                  findSuggestions:
-                                                      (String query) {
-                                                    print("Query: '$query'");
-                                                    if (query.isNotEmpty) {
-                                                      var lowercaseQuery =
-                                                          query.toLowerCase();
-                                                      return users.where(
-                                                          (profile) {
-                                                        return profile.userName
-                                                                .toLowerCase()
-                                                                .contains(query
-                                                                    .toLowerCase()) ||
-                                                            profile.email
-                                                                .toLowerCase()
-                                                                .contains(query
-                                                                    .toLowerCase());
-                                                      }).toList(growable: false)
-                                                        ..sort((a, b) => a
-                                                            .userName
-                                                            .toLowerCase()
-                                                            .indexOf(
-                                                                lowercaseQuery)
-                                                            .compareTo(b
-                                                                .userName
-                                                                .toLowerCase()
-                                                                .indexOf(
-                                                                    lowercaseQuery)));
-                                                    }
-                                                    return users;
-                                                  },
-                                                  onChanged: (data) {
-                                                    // print(data);
-                                                  },
-                                                  chipBuilder: (context, state,
-                                                      dynamic profile) {
-                                                    return InputChip(
-                                                      key: ObjectKey(profile),
-                                                      label: Text(
-                                                          profile.userName),
-                                                      avatar: CircleAvatar(
-                                                        backgroundImage:
-                                                            AssetImage(
-                                                                profile.avatar),
-                                                      ),
-                                                      onDeleted: () {
-                                                        state.deleteChip(profile);
-                                                        selectedUser.remove(profile);
-                                                      },
-                                                      materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                                                    );
-                                                  },
-                                                  suggestionBuilder: (context,
-                                                      state, dynamic profile) {
-                                                    return ListTile(
-                                                        key: ObjectKey(profile),
-                                                        leading: CircleAvatar(
-                                                          backgroundImage:
-                                                              AssetImage(profile
-                                                                  .avatar),
+                          onPressed: (uid != board.createdBy)
+                              ? null
+                              : () {
+                                  showDialog<String>(
+                                    context: context,
+                                    builder: (BuildContext context) =>
+                                        AlertDialog(
+                                      title: const Text(
+                                        'Thêm thành viên',
+                                        style: TextStyle(
+                                            fontWeight: FontWeight.bold),
+                                      ),
+                                      content: Column(
+                                        mainAxisSize: MainAxisSize.min,
+                                        children: [
+                                          SingleChildScrollView(
+                                            child: Column(
+                                              children: <Widget>[
+                                                FutureBuilder(
+                                                    future: DatabaseService
+                                                        .getAllUsesrData(),
+                                                    builder:
+                                                        (BuildContext context,
+                                                            AsyncSnapshot
+                                                                snapshot) {
+                                                      if (!snapshot.hasData) {
+                                                        return Container(
+                                                            alignment:
+                                                                FractionalOffset
+                                                                    .center,
+                                                            child:
+                                                                CircularProgressIndicator());
+                                                      } else {
+                                                        selectedUser.clear();
+                                                        users.clear();
+                                                        for (DocumentSnapshot item
+                                                            in snapshot.data) {
+                                                          Users _user = Users
+                                                              .fromDocument(
+                                                                  item);
+                                                          users.add(_user);
+                                                        }
+                                                      }
+                                                      return ChipsInput(
+                                                        key: _chipKey,
+                                                        keyboardAppearance:
+                                                            Brightness.dark,
+                                                        textCapitalization:
+                                                            TextCapitalization
+                                                                .words,
+                                                        // maxChips: 5,
+                                                        textStyle:
+                                                            const TextStyle(
+                                                                height: 1.5,
+                                                                fontSize: 20),
+                                                        decoration:
+                                                            const InputDecoration(
+                                                          // hintText: formControl.hint,
+                                                          labelText:
+                                                              'Tài khoản hoặc email',
                                                         ),
-                                                        title: Text(
-                                                            profile.userName),
-                                                        onTap: () {
-                                                          if (!checkUserAvailable(
-                                                              profile.userID)) {
-                                                            state.selectSuggestion(profile);
-                                                            selectedUser.add(profile);
-                                                            setState(() {
-                                                              futureUserList = getListUser();
-                                                            });
-                                                          } else
-                                                            ///TODO: can't close dialog
-                                                            showAlertDialog(context, "Thành viên này đã trong bảng!");
-                                                        });
-                                                  },
-                                                );
-                                              }),
+                                                        findSuggestions:
+                                                            (String query) {
+                                                          print(
+                                                              "Query: '$query'");
+                                                          if (query
+                                                              .isNotEmpty) {
+                                                            var lowercaseQuery =
+                                                                query
+                                                                    .toLowerCase();
+                                                            return users.where(
+                                                                (profile) {
+                                                              return profile
+                                                                      .userName
+                                                                      .toLowerCase()
+                                                                      .contains(
+                                                                          query
+                                                                              .toLowerCase()) ||
+                                                                  profile.email
+                                                                      .toLowerCase()
+                                                                      .contains(
+                                                                          query
+                                                                              .toLowerCase());
+                                                            }).toList(
+                                                                growable: false)
+                                                              ..sort((a, b) => a
+                                                                  .userName
+                                                                  .toLowerCase()
+                                                                  .indexOf(
+                                                                      lowercaseQuery)
+                                                                  .compareTo(b
+                                                                      .userName
+                                                                      .toLowerCase()
+                                                                      .indexOf(
+                                                                          lowercaseQuery)));
+                                                          }
+                                                          return users;
+                                                        },
+                                                        onChanged: (data) {
+                                                          // print(data);
+                                                        },
+                                                        chipBuilder: (context,
+                                                            state,
+                                                            dynamic profile) {
+                                                          return InputChip(
+                                                            key: ObjectKey(
+                                                                profile),
+                                                            label: Text(profile
+                                                                .userName),
+                                                            avatar:
+                                                                CircleAvatar(
+                                                              backgroundImage:
+                                                                  AssetImage(
+                                                                      profile
+                                                                          .avatar),
+                                                            ),
+                                                            onDeleted: () {
+                                                              state.deleteChip(
+                                                                  profile);
+                                                              selectedUser
+                                                                  .remove(
+                                                                      profile);
+                                                            },
+                                                            materialTapTargetSize:
+                                                                MaterialTapTargetSize
+                                                                    .shrinkWrap,
+                                                          );
+                                                        },
+                                                        suggestionBuilder:
+                                                            (context,
+                                                                state,
+                                                                dynamic
+                                                                    profile) {
+                                                          return ListTile(
+                                                              key: ObjectKey(
+                                                                  profile),
+                                                              leading:
+                                                                  CircleAvatar(
+                                                                backgroundImage:
+                                                                    AssetImage(
+                                                                        profile
+                                                                            .avatar),
+                                                              ),
+                                                              title: Text(profile
+                                                                  .userName),
+                                                              onTap: () {
+                                                                if (!checkUserAvailable(
+                                                                    profile
+                                                                        .userID)) {
+                                                                  state.selectSuggestion(
+                                                                      profile);
+                                                                  selectedUser.add(
+                                                                      profile);
+                                                                  setState(() {
+                                                                    futureUserList =
+                                                                        getListUser();
+                                                                  });
+                                                                } else
+
+                                                                  ///TODO: can't close dialog
+                                                                  showAlertDialog(
+                                                                      context,
+                                                                      "Thành viên này đã trong bảng!");
+                                                              });
+                                                        },
+                                                      );
+                                                    }),
+                                              ],
+                                            ),
+                                          ),
                                         ],
                                       ),
+                                      actions: [
+                                        TextButton(
+                                          child: Text('HỦY',
+                                              style: TextStyle(
+                                                  fontWeight: FontWeight.bold,
+                                                  fontSize: 16)),
+                                          onPressed: () {
+                                            Navigator.of(context).pop();
+                                          },
+                                        ),
+                                        TextButton(
+                                          child: Text(
+                                            'THÊM',
+                                            style: TextStyle(
+                                                fontWeight: FontWeight.bold,
+                                                fontSize: 16),
+                                          ),
+                                          onPressed: () {
+                                            for (var item in selectedUser) {
+                                              DatabaseService.addUserToBoard(
+                                                  board.boardID, item.userID);
+                                              setState(() {
+                                                userList.add(item);
+                                              });
+                                            }
+                                            Navigator.of(context).pop();
+                                          },
+                                        )
+                                      ],
                                     ),
-                                  ],
-                                ),
-                                actions: [
-                                  TextButton(
-                                    child: Text('HỦY',
-                                        style: TextStyle(
-                                            fontWeight: FontWeight.bold,
-                                            fontSize: 16)),
-                                    onPressed: () {
-                                      Navigator.of(context).pop();
-                                    },
-                                  ),
-                                  TextButton(
-                                    child: Text(
-                                      'THÊM',
-                                      style: TextStyle(
-                                          fontWeight: FontWeight.bold,
-                                          fontSize: 16),
-                                    ),
-                                    onPressed: () {
-                                      for (var item in selectedUser) {
-                                        DatabaseService.addUserToBoard(
-                                            board.boardID, item.userID);
-                                        setState(() {
-                                          userList.add(item);
-                                        });
-                                      }
-                                      Navigator.of(context).pop();
-                                    },
-                                  )
-                                ],
-                              ),
-                            );
-                          },
+                                  );
+                                },
                           label: const Text('THÊM THÀNH VIÊN'),
                           icon: const Icon(Icons.group_add),
-                          backgroundColor: (uid == board.createdBy) ? Colors.green : Colors.grey,
+                          backgroundColor: (uid == board.createdBy)
+                              ? Colors.green
+                              : Colors.grey,
                         ),
                       ),
                     ),
@@ -1269,8 +1348,11 @@ class mainMenuState extends State<mainMenu> {
                                     () {
                                       state = 0;
                                       futureBoards = getBoards();
+
                                       ///TODO: drawer not showing
-                                      Route route = MaterialPageRoute(builder: (context) => BoardScreen(board, true));
+                                      Route route = MaterialPageRoute(
+                                          builder: (context) =>
+                                              BoardScreen(board, true));
                                       Navigator.push(context, route);
                                     },
                                   );

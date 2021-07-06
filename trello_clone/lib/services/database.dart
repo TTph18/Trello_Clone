@@ -322,6 +322,23 @@ class DatabaseService {
         .update({"boardName": newName});
   }
 
+  static Future getAllLabel(String boardID) async {
+    var snapshot = await FirebaseFirestore.instance
+        .collection('boards')
+        .doc(boardID)
+        .collection('labels')
+        .get();
+    return snapshot.docs;
+  }
+
+  static Future updateLabel(String boardID, String labelID, String labelName, String labelColor) async {
+    var snapshot = await FirebaseFirestore.instance
+        .collection('boards')
+        .doc(boardID)
+        .collection('labels')
+        .doc(labelID).update({"labelName": labelName, "labelColor": labelColor});
+  }
+
   //add a card
   static Future<void> addCard(String boardID, String listID, String cardName, String userID, DateTime startDate, DateTime dueDate) async {
     String uid = FirebaseAuth.instance.currentUser!.uid;

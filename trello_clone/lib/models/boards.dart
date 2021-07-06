@@ -27,14 +27,15 @@ class Boards {
 }
 
 class Labels {
-
+  final String labelID;
   final String color;
   final String labelName;
 
-  Labels({required this.color, required this.labelName});
+  Labels({required this.labelID, required this.color, required this.labelName});
 
   factory Labels.fromDocument(DocumentSnapshot document) {
     return Labels(
+        labelID: document['labelID'],
         color: document['color'],
         labelName: document['labelName']
     );
