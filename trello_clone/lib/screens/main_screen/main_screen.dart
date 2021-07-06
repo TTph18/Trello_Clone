@@ -1,5 +1,6 @@
 import 'dart:math' as math;
 
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
@@ -62,14 +63,14 @@ class BoardInfo extends StatelessWidget {
 
 class GroupName extends StatelessWidget {
   TextEditingController changeNameController = TextEditingController();
+  String uid = FirebaseAuth.instance.currentUser!.uid;
+  late Workspaces group;
 
-  late String grName;
-
-  GroupName(this.grName);
+  GroupName(this.group);
 
   @override
   Widget build(BuildContext context) {
-    changeNameController.value = new TextEditingValue(text: grName,);
+    changeNameController.value = new TextEditingValue(text: group.workspaceName,);
     return Stack(
       children: <Widget>[
         Container(
@@ -91,7 +92,7 @@ class GroupName extends StatelessWidget {
               Padding(
                 padding: EdgeInsets.fromLTRB(15, 0, 15, 0),
                 child: Text(
-                  grName,
+                  group.workspaceName,
                   style: TextStyle(
                     color: Colors.black,
                     fontWeight: FontWeight.normal,
@@ -143,8 +144,8 @@ class GroupName extends StatelessWidget {
                                   ),
                                   TextButton(
                                     onPressed: () {
-                                      ///TODO: Change workspace's name
-                                      Navigator.of(context).pop();
+                                      DatabaseService.renameWorkspace(group.workspaceID, changeNameController.text);
+                                      Navigator.of(context).pushNamed(MAIN_SCREEN);
                                     },
                                     child: Text("SỬA"),
                                   ),
@@ -162,7 +163,12 @@ class GroupName extends StatelessWidget {
                     }
                   if (value == 2)
                   {
-                    ///TODO: Delete workspace
+                    if(uid != group.createdBy){
+                      showAlertDialog(context, "Bạn không có quyền xóa nhóm này!");
+                    } else {
+                      DatabaseService.deleteWorkspace(group.workspaceID);
+                      Navigator.of(context).pushNamed(MAIN_SCREEN);
+                    }
                   }
                 },
                 itemBuilder: (context) => [
@@ -189,30 +195,19 @@ class GroupName extends StatelessWidget {
 }
 
 class GroupInfo extends StatelessWidget {
-  late String grName;
-  late String grID;
+  late Workspaces group;
   bool hasData = false;
-  GroupInfo(this.grName, this.grID);
+  GroupInfo(this.group);
 
-  List<AssetImage> boardImage = [
-    AssetImage('assets/images/BlueBG.png'),
-    AssetImage('assets/images/BlueBG.png'),
-  ];
-  List<String> boardName = [
-    "Tên bảng 1",
-    "Tên bảng 2",
-  ];
-  List<Function> boardOnPress = [
-    () => {},
-    () => {},
-  ];
+  AssetImage boardImage = AssetImage('assets/images/BlueBG.png');
+  Function boardOnPress = () => {};
   @override
   Widget build(BuildContext context) {
     return Column(
       children: [
-        GroupName(this.grName),
+        GroupName(this.group),
         FutureBuilder(
-            future: DatabaseService.getBoardList(grID),
+            future: DatabaseService.getBoardList(group.workspaceID),
             builder: (BuildContext context, AsyncSnapshot snapshot) {
               if (!snapshot.hasData) {
                 hasData = false;
@@ -231,7 +226,7 @@ class GroupInfo extends StatelessWidget {
                   itemBuilder: (BuildContext context, int index) {
                     Boards _br = Boards.fromDocument(snapshot.data[index]);
                     return BoardInfo(
-                        boardImage[index], _br, boardOnPress[index]);
+                        boardImage, _br, boardOnPress);
                   },
                 );
             }),
@@ -242,7 +237,6 @@ class GroupInfo extends StatelessWidget {
 
 class _MainScreenState extends State<MainScreen> {
   int selectedIndex = 0;
-  List<String> groupName = ["Tên bảng 1", "Tên bảng 2", "Tên bảng 3"];
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -277,8 +271,7 @@ class _MainScreenState extends State<MainScreen> {
                       itemBuilder: (BuildContext context, int index) {
                         Workspaces _wp =
                             Workspaces.fromDocument(snapshot.data[index]);
-                        return GroupInfo(_wp.workspaceName.toString(),
-                            _wp.workspaceID.toString());
+                        return GroupInfo(_wp);
                       },
                     ),
                   );
@@ -339,4 +332,29 @@ class _MainScreenState extends State<MainScreen> {
           )),
     );
   }
+}
+showAlertDialog(BuildContext context, String alertdialog) {
+  // set up the buttons
+  Widget cancelButton = ElevatedButton(
+    child: Text("Đóng"),
+    onPressed: () {
+      Navigator.of(context).pop();
+    },
+  );
+
+  // set up the AlertDialog
+  AlertDialog alert = AlertDialog(
+    content: Text(alertdialog),
+    actions: [
+      cancelButton,
+    ],
+  );
+
+  // show the dialog
+  showDialog(
+    context: context,
+    builder: (BuildContext context) {
+      return alert;
+    },
+  );
 }

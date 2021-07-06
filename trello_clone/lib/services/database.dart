@@ -118,7 +118,7 @@ class DatabaseService {
   }
 
   //initialize a default board: 3 lists, 7 labels
-  static Future<void> createThreeList(String boardID) async {
+  static Future<void> initializeComponent(String boardID) async {
 
   }
 
@@ -156,18 +156,18 @@ class DatabaseService {
   static Future<void> addWorkspace(String workspaceName, List<String> userList) async {
     String uid = FirebaseAuth.instance.currentUser!.uid;
     final docRef = await FirebaseFirestore.instance.collection('workspaces').add({
-      'boardName': workspaceName,
+      'workspaceName': workspaceName,
       'createdBy': uid,
-      "userList": FieldValue.arrayUnion([userList]),
-      'boardList' : FieldValue.arrayUnion([]),
+      "userList": userList,
+      'boardList' : [],
     });
     //update workspaceID = document ID
-    await FirebaseFirestore.instance
+    var snap = await FirebaseFirestore.instance
         .collection('workspaces')
         .doc(docRef.id)
         .update({"workspaceID": docRef.id});
     //update workspaceID in user
-    await FirebaseFirestore.instance
+    var snapshot =await FirebaseFirestore.instance
         .collection('users')
         .doc(uid)
         .update({"workspaceList": FieldValue.arrayUnion([docRef.id])});
@@ -192,14 +192,24 @@ class DatabaseService {
 
   //delete a workspace
   static Future<void> deleteWorkspace(String workspaceID) async {
+    String uid = FirebaseAuth.instance.currentUser!.uid;
+    //delete workspace from user
+    List<String> workspaceList;
+    await FirebaseFirestore.instance
+        .collection('users')
+        .doc(uid)
+        .get().then((value) {
+      workspaceList = value['workspaceList'].cast<String>();
+      workspaceList.remove(workspaceID);
+      FirebaseFirestore.instance
+          .collection('users')
+          .doc(uid).update({"workspaceList": workspaceList});
+    });
+    //delete workspace
     await FirebaseFirestore.instance
         .collection('workspaces')
         .doc(workspaceID)
         .delete();
-    await FirebaseFirestore.instance
-        .collection('users')
-        .doc(workspaceID)
-        .update({"workspaceList": FieldValue.arrayRemove([workspaceID])});
   }
 
   //delete a board
