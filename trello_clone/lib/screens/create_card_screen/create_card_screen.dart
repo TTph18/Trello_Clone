@@ -82,6 +82,51 @@ class CreateCardScreenState extends State<CreateCardScreen> {
   var cardNameTxtCtrl = TextEditingController();
   var descriptionTxtCtrl = TextEditingController();
 
+  ///Date picker
+  DateTime selectedDate = DateTime.now();
+  var startDateTxtCtrl = TextEditingController();
+  var endDateTxtCtrl = TextEditingController();
+
+  Future<Null> _selectDate(BuildContext context) async {
+    final DateTime picked = (await showDatePicker(
+        context: context,
+        initialDate: selectedDate,
+        initialDatePickerMode: DatePickerMode.day,
+        firstDate: DateTime(2015),
+        lastDate: DateTime(2101)))!;
+    if (picked != null)
+      setState(() {
+        selectedDate = picked;
+      });
+  }
+
+  ///Time picker
+  TimeOfDay selectedTime = TimeOfDay(hour: 00, minute: 00);
+  var startTimeTxtCtrl = TextEditingController();
+  var endTimeTxtCtrl = TextEditingController();
+
+  Future<Null> _selectTime(BuildContext context) async {
+    final TimeOfDay picked = (await showTimePicker(
+      context: context,
+      initialTime: selectedTime,
+    ))!;
+    if (picked != null)
+      setState(() {
+        selectedTime = picked;
+      });
+  }
+
+  String? selectedNotiTime = "2 giờ trước";
+  List<String> notificationTimeList = [
+    "Vào ngày hết hạn",
+    "5 phút trước",
+    "10 phút trước",
+    "15 phút trước",
+    "1 giờ trước",
+    "2 giờ trước",
+    "1 ngày trước",
+    "2 ngày trước"];
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -403,10 +448,162 @@ class CreateCardScreenState extends State<CreateCardScreen> {
                                 IconButton(
                                   icon: Icon(MyFlutterApp.clock),
                                   alignment: Alignment.centerLeft,
-                                  onPressed: () {},
+                                  onPressed: () {
+                                    showDialog(
+                                      context: context,
+                                      builder: (BuildContext context) =>
+                                          AlertDialog(
+                                        title: const Text(
+                                          'Ngày bắt đầu',
+                                          style: TextStyle(
+                                              fontWeight: FontWeight.bold),
+                                        ),
+                                            content: Container(
+                                              height: 120,
+                                              child: Column(
+                                                children: [
+                                                  Row(
+                                                    children: [
+                                                      Container(
+                                                        width: MediaQuery.of(context)
+                                                            .size
+                                                            .width / 3.7,
+                                                        child: TextField(
+                                                          onTap: () {
+                                                            _selectDate(context);
+                                                          },
+                                                          decoration: InputDecoration(
+                                                            hintText: "Chọn ngày",
+                                                            contentPadding: const EdgeInsets.only(bottom:0),
+                                                          ),
+                                                        ),
+                                                      ),
+                                                      SizedBox(width: 10,),
+                                                      Container(
+                                                        width: MediaQuery.of(context)
+                                                            .size
+                                                            .width / 3.7,
+                                                        child: TextField(
+                                                          onTap: () {
+                                                            _selectTime(context);
+                                                          },
+                                                          decoration: InputDecoration(
+                                                            hintText: "Chọn thời gian",
+                                                            contentPadding: const EdgeInsets.only(bottom:0),
+                                                          ),
+                                                        ),
+                                                      ),
+                                                      Container(
+                                                        child: IconButton(
+                                                          icon: Icon(Icons.close),
+                                                          onPressed: () {},
+                                                        ),
+                                                      ),
+                                                    ],
+                                                  ),
+                                                  SizedBox(height: 20,),
+                                                  Row(
+                                                    mainAxisAlignment: MainAxisAlignment.end,
+                                                      children: [
+                                                        Container(
+                                                          child: TextButton(
+                                                            onPressed: () {},
+                                                            child: Text("HỦY"),
+                                                          ),
+                                                        ),
+                                                        Container(
+                                                          child: TextButton(
+                                                            onPressed: () {},
+                                                            child: Text("HOÀN TẤT"),
+                                                          ),
+                                                        ),
+                                                      ],
+                                                    ),
+                                                ],
+                                              ),
+                                            ),
+                                          ),
+                                    );
+                                  },
                                 ),
                                 TextButton(
-                                  onPressed: () {},
+                                  onPressed: () {
+                                    showDialog(
+                                      context: context,
+                                      builder: (BuildContext context) =>
+                                          AlertDialog(
+                                            title: const Text(
+                                              'Ngày bắt đầu',
+                                              style: TextStyle(
+                                                  fontWeight: FontWeight.bold),
+                                            ),
+                                            content: Container(
+                                              height: 120,
+                                              child: Column(
+                                                children: [
+                                                  Row(
+                                                    children: [
+                                                      Container(
+                                                        width: MediaQuery.of(context)
+                                                            .size
+                                                            .width / 3.7,
+                                                        child: TextField(
+                                                          onTap: () {
+                                                            _selectDate(context);
+                                                          },
+                                                          decoration: InputDecoration(
+                                                            hintText: "Chọn ngày",
+                                                            contentPadding: const EdgeInsets.only(bottom:0),
+                                                          ),
+                                                        ),
+                                                      ),
+                                                      SizedBox(width: 10,),
+                                                      Container(
+                                                        width: MediaQuery.of(context)
+                                                            .size
+                                                            .width / 3.7,
+                                                        child: TextField(
+                                                          onTap: () {
+                                                            _selectTime(context);
+                                                          },
+                                                          decoration: InputDecoration(
+                                                            hintText: "Chọn thời gian",
+                                                            contentPadding: const EdgeInsets.only(bottom:0),
+                                                          ),
+                                                        ),
+                                                      ),
+                                                      Container(
+                                                        child: IconButton(
+                                                          icon: Icon(Icons.close),
+                                                          onPressed: () {},
+                                                        ),
+                                                      ),
+                                                    ],
+                                                  ),
+                                                  SizedBox(height: 20,),
+                                                  Row(
+                                                    mainAxisAlignment: MainAxisAlignment.end,
+                                                    children: [
+                                                      Container(
+                                                        child: TextButton(
+                                                          onPressed: () {},
+                                                          child: Text("HỦY"),
+                                                        ),
+                                                      ),
+                                                      Container(
+                                                        child: TextButton(
+                                                          onPressed: () {},
+                                                          child: Text("HOÀN TẤT"),
+                                                        ),
+                                                      ),
+                                                    ],
+                                                  ),
+                                                ],
+                                              ),
+                                            ),
+                                          ),
+                                    );
+                                  },
                                   child: Text("Ngày bắt đầu...",
                                       style: TextStyle(
                                           fontSize: 18.0,
@@ -428,7 +625,131 @@ class CreateCardScreenState extends State<CreateCardScreen> {
                                   width: 48,
                                 ),
                                 TextButton(
-                                  onPressed: () {},
+                                  onPressed: () {
+                                    showDialog(
+                                      context: context,
+                                      builder: (BuildContext context) =>
+                                          AlertDialog(
+                                            title: const Text(
+                                              'Ngày hết hạn',
+                                              style: TextStyle(
+                                                  fontWeight: FontWeight.bold),
+                                            ),
+                                            content: Container(
+                                              height: 225,
+                                              child: Column(
+                                                children: [
+                                                  Row(
+                                                    children: [
+                                                      Container(
+                                                        width: MediaQuery.of(context)
+                                                            .size
+                                                            .width / 3.7,
+                                                        child: TextField(
+                                                          onTap: () {
+                                                            _selectDate(context);
+                                                          },
+                                                          decoration: InputDecoration(
+                                                            hintText: "Chọn ngày",
+                                                            contentPadding: const EdgeInsets.only(bottom:0),
+                                                          ),
+                                                        ),
+                                                      ),
+                                                      SizedBox(width: 10,),
+                                                      Container(
+                                                        width: MediaQuery.of(context)
+                                                            .size
+                                                            .width / 3.7,
+                                                        child: TextField(
+                                                          onTap: () {
+                                                            _selectTime(context);
+                                                          },
+                                                          decoration: InputDecoration(
+                                                            hintText: "Chọn thời gian",
+                                                            contentPadding: const EdgeInsets.only(bottom:0),
+                                                          ),
+                                                        ),
+                                                      ),
+                                                      Container(
+                                                        child: IconButton(
+                                                          icon: Icon(Icons.close),
+                                                          onPressed: () {},
+                                                        ),
+                                                      ),
+                                                    ],
+                                                  ),
+                                                  SizedBox(height: 20,),
+                                                  Container(
+                                                    alignment: Alignment.centerLeft,
+                                                    child: Text("Thiết lập nhắc nhở", style: TextStyle(fontWeight: FontWeight.bold),),
+                                                  ),
+                                                  SizedBox(height: 20,),
+                                                  Row(
+                                                    children: [
+                                                      Container(
+                                                        width: MediaQuery.of(context)
+                                                            .size
+                                                            .width / 3.7 * 2 + 10,
+                                                        child: DropdownButtonFormField<String>(
+                                                          value: selectedNotiTime,
+                                                          decoration: InputDecoration(
+                                                            contentPadding: EdgeInsets.only(bottom: 0),
+                                                          ),
+                                                          onChanged: (value) {
+                                                            setState(() {
+                                                              selectedNotiTime = value;
+                                                            });
+                                                          },
+                                                          selectedItemBuilder: (BuildContext context) {
+                                                            return notificationTimeList.map<Widget>((String item) {
+                                                              return Text(
+                                                                item,
+                                                              );
+                                                            }).toList();
+                                                          },
+                                                          items: notificationTimeList.map((String item) {
+                                                            return DropdownMenuItem<String>(
+                                                                value: item,
+                                                                child: Row(
+                                                                  children: [
+                                                                    Text(item,),
+                                                                  ],
+                                                                ));
+                                                          }).toList(),
+                                                        ),
+                                                      ),
+                                                      Container(
+                                                        child: IconButton(
+                                                          icon: Icon(Icons.close),
+                                                          onPressed: () {},
+                                                        ),
+                                                      ),
+                                                    ],
+                                                  ),
+                                                  SizedBox(height: 20,),
+                                                  Row(
+                                                    mainAxisAlignment: MainAxisAlignment.end,
+                                                    children: [
+                                                      Container(
+                                                        child: TextButton(
+                                                          onPressed: () {},
+                                                          child: Text("HỦY"),
+                                                        ),
+                                                      ),
+                                                      Container(
+                                                        child: TextButton(
+                                                          onPressed: () {},
+                                                          child: Text("HOÀN TẤT"),
+                                                        ),
+                                                      ),
+                                                    ],
+                                                  ),
+                                                ],
+                                              ),
+                                            ),
+                                          ),
+                                    );
+                                  },
                                   child: Text("Ngày hết hạn...",
                                       style: TextStyle(
                                           fontSize: 18.0,
