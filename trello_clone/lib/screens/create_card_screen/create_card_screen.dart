@@ -84,7 +84,6 @@ class CreateCardScreenState extends State<CreateCardScreen> {
 
   ///Date picker
   int dateTypePicked = 0;
-
   /// 0 = no date is picked, 1 = start date is picked, 2 = end date is picked
   DateTime selectedDate = DateTime.now();
   var startDateTxtCtrl = TextEditingController();
