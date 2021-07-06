@@ -83,6 +83,7 @@ class CreateCardScreenState extends State<CreateCardScreen> {
   var descriptionTxtCtrl = TextEditingController();
 
   ///Date picker
+  int dateTypePicked = 0; /// 0 = no date is picked, 1 = start date is picked, 2 = end date is picked
   DateTime selectedDate = DateTime.now();
   var startDateTxtCtrl = TextEditingController();
   var endDateTxtCtrl = TextEditingController();
@@ -94,13 +95,33 @@ class CreateCardScreenState extends State<CreateCardScreen> {
         initialDatePickerMode: DatePickerMode.day,
         firstDate: DateTime(2015),
         lastDate: DateTime(2101)))!;
-    if (picked != null)
-      setState(() {
-        selectedDate = picked;
-      });
+    setState(() {
+      selectedDate = picked;
+      switch (dateTypePicked)
+        {
+          case 1:
+            if (selectedDate.year != DateTime.now().year)
+              startDateTxtCtrl.text = selectedDate.day.toString() + " thg " + selectedDate.month.toString() + ", " + selectedDate.year.toString();
+            else
+              startDateTxtCtrl.text = selectedDate.day.toString() + " thg " + selectedDate.month.toString();
+            break;
+        case 2:
+          if (selectedDate.year != DateTime.now().year)
+            endDateTxtCtrl.text = selectedDate.day.toString() + " thg " + selectedDate.month.toString() + ", " + selectedDate.year.toString();
+          else
+            endDateTxtCtrl.text = selectedDate.day.toString() + " thg " + selectedDate.month.toString();
+          break;
+        default:
+          startDateTxtCtrl.text = "";
+          endDateTxtCtrl.text = "";
+        }
+
+      selectedDate = DateTime.now();
+    });
   }
 
   ///Time picker
+  int timeTypePicked = 0; /// 0 = no time is picked, 1 = start time is picked, 2 = end time is picked
   TimeOfDay selectedTime = TimeOfDay(hour: 00, minute: 00);
   var startTimeTxtCtrl = TextEditingController();
   var endTimeTxtCtrl = TextEditingController();
@@ -110,10 +131,31 @@ class CreateCardScreenState extends State<CreateCardScreen> {
       context: context,
       initialTime: selectedTime,
     ))!;
-    if (picked != null)
-      setState(() {
-        selectedTime = picked;
-      });
+    setState(() {
+      selectedTime = picked;
+      switch (timeTypePicked)
+      {
+        case 1:
+          startTimeTxtCtrl.text = selectedTime.hour.toString() + ":";
+          if (selectedTime.minute >= 10)
+            startTimeTxtCtrl.text = startTimeTxtCtrl.text + selectedTime.minute.toString();
+          else
+            startTimeTxtCtrl.text = startTimeTxtCtrl.text + "0" + selectedTime.minute.toString();
+          break;
+        case 2:
+          endTimeTxtCtrl.text = selectedTime.hour.toString() + ":";
+          if (selectedTime.minute >= 10)
+            endTimeTxtCtrl.text = endTimeTxtCtrl.text + selectedTime.minute.toString();
+          else
+            endTimeTxtCtrl.text = endTimeTxtCtrl.text + "0" + selectedTime.minute.toString();
+          break;
+        default:
+          startTimeTxtCtrl.text = "";
+          endTimeTxtCtrl.text = "";
+      }
+
+      selectedTime = TimeOfDay(hour: 00, minute: 00);
+    });
   }
 
   String? selectedNotiTime = "2 giờ trước";
@@ -469,7 +511,9 @@ class CreateCardScreenState extends State<CreateCardScreen> {
                                                             .size
                                                             .width / 3.7,
                                                         child: TextField(
+                                                          controller: startDateTxtCtrl,
                                                           onTap: () {
+                                                            dateTypePicked = 1;
                                                             _selectDate(context);
                                                           },
                                                           decoration: InputDecoration(
@@ -484,7 +528,9 @@ class CreateCardScreenState extends State<CreateCardScreen> {
                                                             .size
                                                             .width / 3.7,
                                                         child: TextField(
+                                                          controller: startTimeTxtCtrl,
                                                           onTap: () {
+                                                            timeTypePicked = 1;
                                                             _selectTime(context);
                                                           },
                                                           decoration: InputDecoration(
@@ -507,13 +553,21 @@ class CreateCardScreenState extends State<CreateCardScreen> {
                                                       children: [
                                                         Container(
                                                           child: TextButton(
-                                                            onPressed: () {},
+                                                            onPressed: () {
+                                                              startDateTxtCtrl.text = "";
+                                                              startTimeTxtCtrl.text = "";
+                                                              Navigator.of(context, rootNavigator: true).pop('dialog');
+                                                            },
                                                             child: Text("HỦY"),
                                                           ),
                                                         ),
                                                         Container(
                                                           child: TextButton(
-                                                            onPressed: () {},
+                                                            onPressed: () {
+                                                              startDateTxtCtrl.text = "";
+                                                              startTimeTxtCtrl.text = "";
+                                                              Navigator.of(context, rootNavigator: true).pop('dialog');
+                                                            },
                                                             child: Text("HOÀN TẤT"),
                                                           ),
                                                         ),
@@ -548,7 +602,9 @@ class CreateCardScreenState extends State<CreateCardScreen> {
                                                             .size
                                                             .width / 3.7,
                                                         child: TextField(
+                                                          controller: startDateTxtCtrl,
                                                           onTap: () {
+                                                            dateTypePicked = 1;
                                                             _selectDate(context);
                                                           },
                                                           decoration: InputDecoration(
@@ -563,7 +619,9 @@ class CreateCardScreenState extends State<CreateCardScreen> {
                                                             .size
                                                             .width / 3.7,
                                                         child: TextField(
+                                                          controller: startTimeTxtCtrl,
                                                           onTap: () {
+                                                            timeTypePicked = 1;
                                                             _selectTime(context);
                                                           },
                                                           decoration: InputDecoration(
@@ -575,7 +633,10 @@ class CreateCardScreenState extends State<CreateCardScreen> {
                                                       Container(
                                                         child: IconButton(
                                                           icon: Icon(Icons.close),
-                                                          onPressed: () {},
+                                                          onPressed: () {
+                                                            startDateTxtCtrl.text = "";
+                                                            startTimeTxtCtrl.text = "";
+                                                          },
                                                         ),
                                                       ),
                                                     ],
@@ -586,13 +647,21 @@ class CreateCardScreenState extends State<CreateCardScreen> {
                                                     children: [
                                                       Container(
                                                         child: TextButton(
-                                                          onPressed: () {},
+                                                          onPressed: () {
+                                                            startDateTxtCtrl.text = "";
+                                                            startTimeTxtCtrl.text = "";
+                                                            Navigator.of(context, rootNavigator: true).pop('dialog');
+                                                          },
                                                           child: Text("HỦY"),
                                                         ),
                                                       ),
                                                       Container(
                                                         child: TextButton(
-                                                          onPressed: () {},
+                                                          onPressed: () {
+                                                            startDateTxtCtrl.text = "";
+                                                            startTimeTxtCtrl.text = "";
+                                                            Navigator.of(context, rootNavigator: true).pop('dialog');
+                                                          },
                                                           child: Text("HOÀN TẤT"),
                                                         ),
                                                       ),
@@ -636,7 +705,7 @@ class CreateCardScreenState extends State<CreateCardScreen> {
                                                   fontWeight: FontWeight.bold),
                                             ),
                                             content: Container(
-                                              height: 225,
+                                              height: 285,
                                               child: Column(
                                                 children: [
                                                   Row(
@@ -646,7 +715,9 @@ class CreateCardScreenState extends State<CreateCardScreen> {
                                                             .size
                                                             .width / 3.7,
                                                         child: TextField(
+                                                          controller: endDateTxtCtrl,
                                                           onTap: () {
+                                                            dateTypePicked = 2;
                                                             _selectDate(context);
                                                           },
                                                           decoration: InputDecoration(
@@ -661,7 +732,9 @@ class CreateCardScreenState extends State<CreateCardScreen> {
                                                             .size
                                                             .width / 3.7,
                                                         child: TextField(
+                                                          controller: endTimeTxtCtrl,
                                                           onTap: () {
+                                                            timeTypePicked = 2;
                                                             _selectTime(context);
                                                           },
                                                           decoration: InputDecoration(
@@ -673,7 +746,10 @@ class CreateCardScreenState extends State<CreateCardScreen> {
                                                       Container(
                                                         child: IconButton(
                                                           icon: Icon(Icons.close),
-                                                          onPressed: () {},
+                                                          onPressed: () {
+                                                            endDateTxtCtrl.text = "";
+                                                            endTimeTxtCtrl.text = "";
+                                                          },
                                                         ),
                                                       ),
                                                     ],
@@ -718,6 +794,7 @@ class CreateCardScreenState extends State<CreateCardScreen> {
                                                           }).toList(),
                                                         ),
                                                       ),
+
                                                       Container(
                                                         child: IconButton(
                                                           icon: Icon(Icons.close),
@@ -727,18 +804,31 @@ class CreateCardScreenState extends State<CreateCardScreen> {
                                                     ],
                                                   ),
                                                   SizedBox(height: 20,),
+                                                  Container(
+                                                    alignment: Alignment.centerLeft,
+                                                    child: Text("Nhắc nhở chỉ được gửi đến các thành viên và người theo dõi thẻ."),
+                                                  ),
+                                                  SizedBox(height: 20,),
                                                   Row(
                                                     mainAxisAlignment: MainAxisAlignment.end,
                                                     children: [
                                                       Container(
                                                         child: TextButton(
-                                                          onPressed: () {},
+                                                          onPressed: () {
+                                                            endTimeTxtCtrl.text = "";
+                                                            endDateTxtCtrl.text = "";
+                                                            Navigator.of(context, rootNavigator: true).pop('dialog');
+                                                          },
                                                           child: Text("HỦY"),
                                                         ),
                                                       ),
                                                       Container(
                                                         child: TextButton(
-                                                          onPressed: () {},
+                                                          onPressed: () {
+                                                            endTimeTxtCtrl.text = "";
+                                                            endDateTxtCtrl.text = "";
+                                                            Navigator.of(context, rootNavigator: true).pop('dialog');
+                                                          },
                                                           child: Text("HOÀN TẤT"),
                                                         ),
                                                       ),
