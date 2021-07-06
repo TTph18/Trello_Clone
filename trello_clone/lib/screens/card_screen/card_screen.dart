@@ -21,92 +21,101 @@ class CardScreenState extends State<CardScreen> {
   late Boards boards;
   CardScreenState(this.cardName);
 
-  ///Date picker
-  int dateTypePicked = 0;
-  /// 0 = no date is picked, 1 = start date is picked, 2 = end date is picked
-  DateTime selectedDate = DateTime.now();
+  ///StartDate picker
+  ///Load this from database, if = null, assaign Datetime now to it
   var startDateTxtCtrl = TextEditingController();
-  var endDateTxtCtrl = TextEditingController();
+  DateTime selectedStartDate = DateTime.now();
 
-  Future<Null> _selectDate(BuildContext context) async {
+  Future<Null> _selectedStartDate(BuildContext context) async {
     final DateTime picked = (await showDatePicker(
         context: context,
-        initialDate: selectedDate,
+        initialDate: selectedStartDate,
         initialDatePickerMode: DatePickerMode.day,
         firstDate: DateTime(2015),
         lastDate: DateTime(2101)))!;
     setState(() {
-      selectedDate = picked;
-      switch (dateTypePicked) {
-        case 1:
-          if (selectedDate.year != DateTime.now().year)
-            startDateTxtCtrl.text = selectedDate.day.toString() +
-                " thg " +
-                selectedDate.month.toString() +
-                ", " +
-                selectedDate.year.toString();
-          else
-            startDateTxtCtrl.text = selectedDate.day.toString() +
-                " thg " +
-                selectedDate.month.toString();
-          break;
-        case 2:
-          if (selectedDate.year != DateTime.now().year)
-            endDateTxtCtrl.text = selectedDate.day.toString() +
-                " thg " +
-                selectedDate.month.toString() +
-                ", " +
-                selectedDate.year.toString();
-          else
-            endDateTxtCtrl.text = selectedDate.day.toString() +
-                " thg " +
-                selectedDate.month.toString();
-          break;
-        default:
-          startDateTxtCtrl.text = "";
-          endDateTxtCtrl.text = "";
-      }
+      selectedStartDate = picked;
+      if (selectedStartDate.year != DateTime.now().year)
+        startDateTxtCtrl.text = selectedStartDate.day.toString() +
+            " thg " +
+            selectedStartDate.month.toString() +
+            ", " +
+            selectedStartDate.year.toString();
+      else
+        startDateTxtCtrl.text = selectedStartDate.day.toString() +
+            " thg " +
+            selectedStartDate.month.toString();
     });
   }
 
-  ///Time picker
-  int timeTypePicked = 0;
+  ///EndDate picker
+  ///Load this from database, if = null, assaign Datetime now to it
+  var endDateTxtCtrl = TextEditingController();
+  DateTime selectedEndDate = DateTime.now();
 
-  /// 0 = no time is picked, 1 = start time is picked, 2 = end time is picked
-  TimeOfDay selectedTime = TimeOfDay(hour: 9, minute: 0);
+  Future<Null> _selectedEndDate(BuildContext context) async {
+    final DateTime picked = (await showDatePicker(
+        context: context,
+        initialDate: selectedEndDate,
+        initialDatePickerMode: DatePickerMode.day,
+        firstDate: DateTime(2015),
+        lastDate: DateTime(2101)))!;
+    setState(() {
+      selectedEndDate = picked;
+      if (selectedEndDate.year != DateTime.now().year)
+        endDateTxtCtrl.text = selectedEndDate.day.toString() +
+            " thg " +
+            selectedEndDate.month.toString() +
+            ", " +
+            selectedEndDate.year.toString();
+      else
+        endDateTxtCtrl.text = selectedEndDate.day.toString() +
+            " thg " +
+            selectedEndDate.month.toString();
+    });
+  }
+
+  ///StartTime Picker
+  ///Load this from database, if = null, assaign Datetime now to it
+  TimeOfDay selectedStartTime = TimeOfDay(hour: 9, minute: 0);
   var startTimeTxtCtrl = TextEditingController();
-  var endTimeTxtCtrl = TextEditingController();
 
-  Future<Null> _selectTime(BuildContext context) async {
+  Future<Null> _selectedStartTime(BuildContext context) async {
     final TimeOfDay picked = (await showTimePicker(
       context: context,
-      initialTime: selectedTime,
+      initialTime: selectedStartTime,
     ))!;
     setState(() {
-      selectedTime = picked;
-      switch (timeTypePicked) {
-        case 1:
-          startTimeTxtCtrl.text = selectedTime.hour.toString() + ":";
-          if (selectedTime.minute >= 10)
-            startTimeTxtCtrl.text =
-                startTimeTxtCtrl.text + selectedTime.minute.toString();
-          else
-            startTimeTxtCtrl.text =
-                startTimeTxtCtrl.text + "0" + selectedTime.minute.toString();
-          break;
-        case 2:
-          endTimeTxtCtrl.text = selectedTime.hour.toString() + ":";
-          if (selectedTime.minute >= 10)
-            endTimeTxtCtrl.text =
-                endTimeTxtCtrl.text + selectedTime.minute.toString();
-          else
-            endTimeTxtCtrl.text =
-                endTimeTxtCtrl.text + "0" + selectedTime.minute.toString();
-          break;
-        default:
-          startTimeTxtCtrl.text = "";
-          endTimeTxtCtrl.text = "";
-      }
+      selectedStartTime = picked;
+      startTimeTxtCtrl.text = selectedStartTime.hour.toString() + ":";
+      if (selectedStartTime.minute >= 10)
+        startTimeTxtCtrl.text =
+            startTimeTxtCtrl.text + selectedStartTime.minute.toString();
+      else
+        startTimeTxtCtrl.text =
+            startTimeTxtCtrl.text + "0" + selectedStartTime.minute.toString();
+    });
+  }
+
+  ///EndTime Picker
+  ///Load this from database, if = null, assaign Datetime now to it
+  TimeOfDay selectedEndTime = TimeOfDay(hour: 9, minute: 0);
+  var endTimeTxtCtrl = TextEditingController();
+
+  Future<Null> _selectedEndTime(BuildContext context) async {
+    final TimeOfDay picked = (await showTimePicker(
+      context: context,
+      initialTime: selectedEndTime,
+    ))!;
+    setState(() {
+      selectedEndTime = picked;
+      endTimeTxtCtrl.text = selectedEndTime.hour.toString() + ":";
+      if (selectedEndTime.minute >= 10)
+        endTimeTxtCtrl.text =
+            endTimeTxtCtrl.text + selectedEndTime.minute.toString();
+      else
+        endTimeTxtCtrl.text =
+            endTimeTxtCtrl.text + "0" + selectedEndTime.minute.toString();
     });
   }
 
@@ -124,7 +133,11 @@ class CardScreenState extends State<CardScreen> {
   ];
 
   ///String value to set for startDate, endDate TextButton
+  ///if startDate (timestamp type) from database = null, then = null
+  ///else endDateStr = "Bắt đầu vào ngày $selectedDay tháng $selectedMonth, năm $selectedYear lúc $selectedTimeStr";
   String startDateStr = "";
+  ///if startDate (timestamp type) from database = null, then = null
+  ///else endDateStr = "Hết hạn vào ngày $selectedDay tháng $selectedMonth, năm $selectedYear lúc $selectedTimeStr";
   String endDateStr = "";
 
   @override
@@ -328,20 +341,20 @@ class CardScreenState extends State<CardScreen> {
 
                   onTap: () {
                     startDateTxtCtrl.text =
-                        selectedDate.day.toString() +
+                        selectedStartDate.day.toString() +
                             " thg " +
-                            selectedDate.month.toString();
+                            selectedStartDate.month.toString();
                     startTimeTxtCtrl.text =
-                        selectedTime.hour.toString() + ":";
-                    if (selectedTime.minute >= 10)
+                        selectedStartTime.hour.toString() + ":";
+                    if (selectedStartTime.minute >= 10)
                       startTimeTxtCtrl.text =
                           startTimeTxtCtrl.text +
-                              selectedTime.minute.toString();
+                              selectedStartTime.minute.toString();
                     else
                       startTimeTxtCtrl.text =
                           startTimeTxtCtrl.text +
                               "0" +
-                              selectedTime.minute.toString();
+                              selectedStartTime.minute.toString();
                     showDialog(
                       context: context,
                       builder: (BuildContext context) =>
@@ -367,8 +380,7 @@ class CardScreenState extends State<CardScreen> {
                                           controller:
                                           startDateTxtCtrl,
                                           onTap: () {
-                                            dateTypePicked = 1;
-                                            _selectDate(context);
+                                            _selectedStartDate(context);
                                           },
                                           decoration:
                                           InputDecoration(
@@ -393,8 +405,7 @@ class CardScreenState extends State<CardScreen> {
                                           controller:
                                           startTimeTxtCtrl,
                                           onTap: () {
-                                            timeTypePicked = 1;
-                                            _selectTime(context);
+                                            _selectedStartTime(context);
                                           },
                                           decoration:
                                           InputDecoration(
@@ -430,9 +441,13 @@ class CardScreenState extends State<CardScreen> {
                                       Container(
                                         child: TextButton(
                                           onPressed: () {
-                                            selectedDate =
+                                            ///Reset start date, if from database not null, reset it by the data
+                                            ///else reset it by DateTime.now()
+                                            selectedStartDate =
                                                 DateTime.now();
-                                            selectedTime =
+                                            ///Reset start time, if from database not null, reset it by the data
+                                            ///else reset it by TimeOfDay(hour: 9, minute: 0)
+                                            selectedStartTime =
                                                 TimeOfDay(
                                                     hour: 9,
                                                     minute: 0);
@@ -457,10 +472,10 @@ class CardScreenState extends State<CardScreen> {
                                             else
                                             {
                                               setState(() {
-                                                String selectedDay = selectedDate.day.toString();
-                                                String selectedMonth = selectedDate.month.toString();
-                                                String selectedYear = selectedDate.year.toString();
-                                                String selectedTimeStr = selectedTime.hour.toString() + (selectedTime.minute >= 10 ? ":0" + selectedTime.minute.toString() : ":0" + selectedTime.minute.toString());
+                                                String selectedDay = selectedStartDate.day.toString();
+                                                String selectedMonth = selectedStartDate.month.toString();
+                                                String selectedYear = selectedStartDate.year.toString();
+                                                String selectedTimeStr = selectedStartTime.hour.toString() + (selectedStartTime.minute >= 10 ? ":0" + selectedStartTime.minute.toString() : ":0" + selectedStartTime.minute.toString());
                                                 startDateStr = "Bắt đầu vào ngày $selectedDay tháng $selectedMonth, năm $selectedYear lúc $selectedTimeStr";
                                               });
                                               ///save selected Date and selected time to database. This condition means:
@@ -528,20 +543,20 @@ class CardScreenState extends State<CardScreen> {
                   ),
                   onTap: () {
                     endDateTxtCtrl.text =
-                        selectedDate.day.toString() +
+                        selectedEndDate.day.toString() +
                             " thg " +
-                            selectedDate.month.toString();
+                            selectedEndDate.month.toString();
                     endTimeTxtCtrl.text =
-                        selectedTime.hour.toString() + ":";
-                    if (selectedTime.minute >= 10)
+                        selectedEndTime.hour.toString() + ":";
+                    if (selectedEndTime.minute >= 10)
                       endTimeTxtCtrl.text =
                           endTimeTxtCtrl.text +
-                              selectedTime.minute.toString();
+                              selectedEndTime.minute.toString();
                     else
                       endTimeTxtCtrl.text =
                           endTimeTxtCtrl.text +
                               "0" +
-                              selectedTime.minute.toString();
+                              selectedEndTime.minute.toString();
                     showDialog(
                       context: context,
                       builder: (BuildContext context) =>
@@ -567,8 +582,7 @@ class CardScreenState extends State<CardScreen> {
                                           controller:
                                           endDateTxtCtrl,
                                           onTap: () {
-                                            dateTypePicked = 2;
-                                            _selectDate(context);
+                                            _selectedEndDate(context);
                                           },
                                           decoration:
                                           InputDecoration(
@@ -593,8 +607,7 @@ class CardScreenState extends State<CardScreen> {
                                           controller:
                                           endTimeTxtCtrl,
                                           onTap: () {
-                                            timeTypePicked = 2;
-                                            _selectTime(context);
+                                            _selectedEndTime(context);
                                           },
                                           decoration:
                                           InputDecoration(
@@ -691,9 +704,13 @@ class CardScreenState extends State<CardScreen> {
                                       Container(
                                         child: TextButton(
                                           onPressed: () {
-                                            selectedDate =
+                                            ///Reset end date, if from database not null, reset it by the data
+                                            ///else reset it by DateTime.now()
+                                            selectedEndDate =
                                                 DateTime.now();
-                                            selectedTime =
+                                            ///Reset end time, if from database not null, reset it by the data
+                                            ///else reset it by TimeOfDay(hour: 9, minute: 0)
+                                            selectedEndTime =
                                                 TimeOfDay(
                                                     hour: 9,
                                                     minute: 0);
@@ -718,10 +735,10 @@ class CardScreenState extends State<CardScreen> {
                                             else
                                             {
                                               setState(() {
-                                                String selectedDay = selectedDate.day.toString();
-                                                String selectedMonth = selectedDate.month.toString();
-                                                String selectedYear = selectedDate.year.toString();
-                                                String selectedTimeStr = selectedTime.hour.toString() + (selectedTime.minute >= 10 ? ":0" + selectedTime.minute.toString() : ":0" + selectedTime.minute.toString());
+                                                String selectedDay = selectedEndDate.day.toString();
+                                                String selectedMonth = selectedEndDate.month.toString();
+                                                String selectedYear = selectedEndDate.year.toString();
+                                                String selectedTimeStr = selectedEndTime.hour.toString() + (selectedEndTime.minute >= 10 ? ":0" + selectedEndTime.minute.toString() : ":0" + selectedEndTime.minute.toString());
                                                 endDateStr = "Hết hạn vào ngày $selectedDay tháng $selectedMonth, năm $selectedYear lúc $selectedTimeStr";
                                               });
                                               ///save selected Date and selected time to database. This condition means:
