@@ -967,7 +967,7 @@ class memberContentState extends State<memberContent> {
                                             );
                                           }
                                         },
-                                        icon: Icon(Icons.close, color: (userList[index].userID == board.createdBy) ? Colors.transparent : Colors.black),)
+                                        icon: Icon(Icons.close, color: (uid != board.createdBy ||userList[index].userID == board.createdBy) ? Colors.transparent : Colors.black),)
                                   ],
                                 ),
                               ),
@@ -998,7 +998,7 @@ class memberContentState extends State<memberContent> {
                         alignment: Alignment.bottomRight,
                         child: FloatingActionButton.extended(
                           key: key,
-                          onPressed: () {
+                          onPressed: (uid != board.createdBy) ? null : () {
                             showDialog<String>(
                               context: context,
                               builder: (BuildContext context) => AlertDialog(
@@ -1095,11 +1095,11 @@ class memberContentState extends State<memberContent> {
                                                             AssetImage(
                                                                 profile.avatar),
                                                       ),
-                                                      onDeleted: () => state
-                                                          .deleteChip(profile),
-                                                      materialTapTargetSize:
-                                                          MaterialTapTargetSize
-                                                              .shrinkWrap,
+                                                      onDeleted: () {
+                                                        state.deleteChip(profile);
+                                                        selectedUser.remove(profile);
+                                                      },
+                                                      materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
                                                     );
                                                   },
                                                   suggestionBuilder: (context,
@@ -1116,19 +1116,14 @@ class memberContentState extends State<memberContent> {
                                                         onTap: () {
                                                           if (!checkUserAvailable(
                                                               profile.userID)) {
-                                                            state
-                                                                .selectSuggestion(
-                                                                    profile);
-                                                            selectedUser
-                                                                .add(profile);
+                                                            state.selectSuggestion(profile);
+                                                            selectedUser.add(profile);
                                                             setState(() {
-                                                              futureUserList =
-                                                                  getListUser();
+                                                              futureUserList = getListUser();
                                                             });
                                                           } else
-                                                            showAlertDialog(
-                                                                context,
-                                                                "Thành viên này đã trong bảng!"); //Somehow cant close this dialog
+                                                            ///TODO: can't close dialog
+                                                            showAlertDialog(context, "Thành viên này đã trong bảng!");
                                                         });
                                                   },
                                                 );
@@ -1172,7 +1167,7 @@ class memberContentState extends State<memberContent> {
                           },
                           label: const Text('THÊM THÀNH VIÊN'),
                           icon: const Icon(Icons.group_add),
-                          backgroundColor: Colors.green,
+                          backgroundColor: (uid == board.createdBy) ? Colors.green : Colors.grey,
                         ),
                       ),
                     ),
@@ -1274,7 +1269,8 @@ class mainMenuState extends State<mainMenu> {
                                     () {
                                       state = 0;
                                       futureBoards = getBoards();
-                                      Route route = MaterialPageRoute(builder: (context) => BoardScreen(board, false));
+                                      ///TODO: drawer not showing
+                                      Route route = MaterialPageRoute(builder: (context) => BoardScreen(board, true));
                                       Navigator.push(context, route);
                                     },
                                   );

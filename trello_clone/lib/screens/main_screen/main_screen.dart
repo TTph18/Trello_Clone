@@ -194,18 +194,8 @@ class GroupInfo extends StatelessWidget {
   bool hasData = false;
   GroupInfo(this.grName, this.grID);
 
-  List<AssetImage> boardImage = [
-    AssetImage('assets/images/BlueBG.png'),
-    AssetImage('assets/images/BlueBG.png'),
-  ];
-  List<String> boardName = [
-    "Tên bảng 1",
-    "Tên bảng 2",
-  ];
-  List<Function> boardOnPress = [
-    () => {},
-    () => {},
-  ];
+  AssetImage boardImage = AssetImage('assets/images/BlueBG.png');
+  Function boardOnPress = () => {};
   @override
   Widget build(BuildContext context) {
     return Column(
@@ -231,7 +221,7 @@ class GroupInfo extends StatelessWidget {
                   itemBuilder: (BuildContext context, int index) {
                     Boards _br = Boards.fromDocument(snapshot.data[index]);
                     return BoardInfo(
-                        boardImage[index], _br, boardOnPress[index]);
+                        boardImage, _br, boardOnPress);
                   },
                 );
             }),
@@ -242,7 +232,6 @@ class GroupInfo extends StatelessWidget {
 
 class _MainScreenState extends State<MainScreen> {
   int selectedIndex = 0;
-  List<String> groupName = ["Tên bảng 1", "Tên bảng 2", "Tên bảng 3"];
   @override
   Widget build(BuildContext context) {
     return Scaffold(

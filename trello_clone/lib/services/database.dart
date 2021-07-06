@@ -156,18 +156,18 @@ class DatabaseService {
   static Future<void> addWorkspace(String workspaceName, List<String> userList) async {
     String uid = FirebaseAuth.instance.currentUser!.uid;
     final docRef = await FirebaseFirestore.instance.collection('workspaces').add({
-      'boardName': workspaceName,
+      'workspaceName': workspaceName,
       'createdBy': uid,
-      "userList": FieldValue.arrayUnion([userList]),
-      'boardList' : FieldValue.arrayUnion([]),
+      "userList": userList,
+      'boardList' : [],
     });
     //update workspaceID = document ID
-    await FirebaseFirestore.instance
+    var snap = await FirebaseFirestore.instance
         .collection('workspaces')
         .doc(docRef.id)
         .update({"workspaceID": docRef.id});
     //update workspaceID in user
-    await FirebaseFirestore.instance
+    var snapshot =await FirebaseFirestore.instance
         .collection('users')
         .doc(uid)
         .update({"workspaceList": FieldValue.arrayUnion([docRef.id])});
