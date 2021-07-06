@@ -1,5 +1,6 @@
 import 'dart:math' as math;
 
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
@@ -62,7 +63,7 @@ class BoardInfo extends StatelessWidget {
 
 class GroupName extends StatelessWidget {
   TextEditingController changeNameController = TextEditingController();
-
+  String uid = FirebaseAuth.instance.currentUser!.uid;
   late Workspaces group;
 
   GroupName(this.group);
@@ -162,7 +163,12 @@ class GroupName extends StatelessWidget {
                     }
                   if (value == 2)
                   {
-                    ///TODO: Delete workspace
+                    if(uid != group.createdBy){
+                      showAlertDialog(context, "Bạn không có quyền xóa nhóm này!");
+                    } else {
+                      DatabaseService.deleteWorkspace(group.workspaceID);
+                      Navigator.of(context).pushNamed(MAIN_SCREEN);
+                    }
                   }
                 },
                 itemBuilder: (context) => [
@@ -326,4 +332,29 @@ class _MainScreenState extends State<MainScreen> {
           )),
     );
   }
+}
+showAlertDialog(BuildContext context, String alertdialog) {
+  // set up the buttons
+  Widget cancelButton = ElevatedButton(
+    child: Text("Đóng"),
+    onPressed: () {
+      Navigator.of(context).pop();
+    },
+  );
+
+  // set up the AlertDialog
+  AlertDialog alert = AlertDialog(
+    content: Text(alertdialog),
+    actions: [
+      cancelButton,
+    ],
+  );
+
+  // show the dialog
+  showDialog(
+    context: context,
+    builder: (BuildContext context) {
+      return alert;
+    },
+  );
 }
