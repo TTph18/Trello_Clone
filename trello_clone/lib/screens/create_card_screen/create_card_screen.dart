@@ -83,7 +83,9 @@ class CreateCardScreenState extends State<CreateCardScreen> {
   var descriptionTxtCtrl = TextEditingController();
 
   ///Date picker
-  int dateTypePicked = 0; /// 0 = no date is picked, 1 = start date is picked, 2 = end date is picked
+  int dateTypePicked = 0;
+
+  /// 0 = no date is picked, 1 = start date is picked, 2 = end date is picked
   DateTime selectedDate = DateTime.now();
   var startDateTxtCtrl = TextEditingController();
   var endDateTxtCtrl = TextEditingController();
@@ -97,32 +99,43 @@ class CreateCardScreenState extends State<CreateCardScreen> {
         lastDate: DateTime(2101)))!;
     setState(() {
       selectedDate = picked;
-      switch (dateTypePicked)
-        {
-          case 1:
-            if (selectedDate.year != DateTime.now().year)
-              startDateTxtCtrl.text = selectedDate.day.toString() + " thg " + selectedDate.month.toString() + ", " + selectedDate.year.toString();
-            else
-              startDateTxtCtrl.text = selectedDate.day.toString() + " thg " + selectedDate.month.toString();
-            break;
+      switch (dateTypePicked) {
+        case 1:
+          if (selectedDate.year != DateTime.now().year)
+            startDateTxtCtrl.text = selectedDate.day.toString() +
+                " thg " +
+                selectedDate.month.toString() +
+                ", " +
+                selectedDate.year.toString();
+          else
+            startDateTxtCtrl.text = selectedDate.day.toString() +
+                " thg " +
+                selectedDate.month.toString();
+          break;
         case 2:
           if (selectedDate.year != DateTime.now().year)
-            endDateTxtCtrl.text = selectedDate.day.toString() + " thg " + selectedDate.month.toString() + ", " + selectedDate.year.toString();
+            endDateTxtCtrl.text = selectedDate.day.toString() +
+                " thg " +
+                selectedDate.month.toString() +
+                ", " +
+                selectedDate.year.toString();
           else
-            endDateTxtCtrl.text = selectedDate.day.toString() + " thg " + selectedDate.month.toString();
+            endDateTxtCtrl.text = selectedDate.day.toString() +
+                " thg " +
+                selectedDate.month.toString();
           break;
         default:
           startDateTxtCtrl.text = "";
           endDateTxtCtrl.text = "";
-        }
-
-      selectedDate = DateTime.now();
+      }
     });
   }
 
   ///Time picker
-  int timeTypePicked = 0; /// 0 = no time is picked, 1 = start time is picked, 2 = end time is picked
-  TimeOfDay selectedTime = TimeOfDay(hour: 00, minute: 00);
+  int timeTypePicked = 0;
+
+  /// 0 = no time is picked, 1 = start time is picked, 2 = end time is picked
+  TimeOfDay selectedTime = TimeOfDay(hour: 9, minute: 0);
   var startTimeTxtCtrl = TextEditingController();
   var endTimeTxtCtrl = TextEditingController();
 
@@ -133,33 +146,35 @@ class CreateCardScreenState extends State<CreateCardScreen> {
     ))!;
     setState(() {
       selectedTime = picked;
-      switch (timeTypePicked)
-      {
+      switch (timeTypePicked) {
         case 1:
           startTimeTxtCtrl.text = selectedTime.hour.toString() + ":";
           if (selectedTime.minute >= 10)
-            startTimeTxtCtrl.text = startTimeTxtCtrl.text + selectedTime.minute.toString();
+            startTimeTxtCtrl.text =
+                startTimeTxtCtrl.text + selectedTime.minute.toString();
           else
-            startTimeTxtCtrl.text = startTimeTxtCtrl.text + "0" + selectedTime.minute.toString();
+            startTimeTxtCtrl.text =
+                startTimeTxtCtrl.text + "0" + selectedTime.minute.toString();
           break;
         case 2:
           endTimeTxtCtrl.text = selectedTime.hour.toString() + ":";
           if (selectedTime.minute >= 10)
-            endTimeTxtCtrl.text = endTimeTxtCtrl.text + selectedTime.minute.toString();
+            endTimeTxtCtrl.text =
+                endTimeTxtCtrl.text + selectedTime.minute.toString();
           else
-            endTimeTxtCtrl.text = endTimeTxtCtrl.text + "0" + selectedTime.minute.toString();
+            endTimeTxtCtrl.text =
+                endTimeTxtCtrl.text + "0" + selectedTime.minute.toString();
           break;
         default:
           startTimeTxtCtrl.text = "";
           endTimeTxtCtrl.text = "";
       }
-
-      selectedTime = TimeOfDay(hour: 00, minute: 00);
     });
   }
 
-  String? selectedNotiTime = "2 giờ trước";
+  String? selectedNotiTime = "Không nhắc nhở";
   List<String> notificationTimeList = [
+    "Không nhắc nhở",
     "Vào ngày hết hạn",
     "5 phút trước",
     "10 phút trước",
@@ -167,7 +182,12 @@ class CreateCardScreenState extends State<CreateCardScreen> {
     "1 giờ trước",
     "2 giờ trước",
     "1 ngày trước",
-    "2 ngày trước"];
+    "2 ngày trước"
+  ];
+
+  ///String value to set for startDate, endDate TextButton
+  String startDateStr = "";
+  String endDateStr = "";
 
   @override
   Widget build(BuildContext context) {
@@ -487,10 +507,26 @@ class CreateCardScreenState extends State<CreateCardScreen> {
                             ///DateStart
                             Row(
                               children: [
+                                ///DateStart IconButton
                                 IconButton(
                                   icon: Icon(MyFlutterApp.clock),
                                   alignment: Alignment.centerLeft,
                                   onPressed: () {
+                                    startDateTxtCtrl.text =
+                                        selectedDate.day.toString() +
+                                            " thg " +
+                                            selectedDate.month.toString();
+                                    startTimeTxtCtrl.text =
+                                        selectedTime.hour.toString() + ":";
+                                    if (selectedTime.minute >= 10)
+                                      startTimeTxtCtrl.text =
+                                          startTimeTxtCtrl.text +
+                                              selectedTime.minute.toString();
+                                    else
+                                      startTimeTxtCtrl.text =
+                                          startTimeTxtCtrl.text +
+                                              "0" +
+                                              selectedTime.minute.toString();
                                     showDialog(
                                       context: context,
                                       builder: (BuildContext context) =>
@@ -500,189 +536,312 @@ class CreateCardScreenState extends State<CreateCardScreen> {
                                           style: TextStyle(
                                               fontWeight: FontWeight.bold),
                                         ),
-                                            content: Container(
-                                              height: 120,
-                                              child: Column(
+                                        content: Container(
+                                          height: 120,
+                                          child: Column(
+                                            children: [
+                                              Row(
                                                 children: [
-                                                  Row(
-                                                    children: [
-                                                      Container(
-                                                        width: MediaQuery.of(context)
-                                                            .size
-                                                            .width / 3.7,
-                                                        child: TextField(
-                                                          controller: startDateTxtCtrl,
-                                                          onTap: () {
-                                                            dateTypePicked = 1;
-                                                            _selectDate(context);
-                                                          },
-                                                          decoration: InputDecoration(
-                                                            hintText: "Chọn ngày",
-                                                            contentPadding: const EdgeInsets.only(bottom:0),
-                                                          ),
-                                                        ),
+                                                  Container(
+                                                    width:
+                                                        MediaQuery.of(context)
+                                                                .size
+                                                                .width /
+                                                            3.7,
+                                                    child: TextField(
+                                                      controller:
+                                                          startDateTxtCtrl,
+                                                      onTap: () {
+                                                        dateTypePicked = 1;
+                                                        _selectDate(context);
+                                                      },
+                                                      decoration:
+                                                          InputDecoration(
+                                                        hintText: "Chọn ngày",
+                                                        contentPadding:
+                                                            const EdgeInsets
+                                                                    .only(
+                                                                bottom: 0),
                                                       ),
-                                                      SizedBox(width: 10,),
-                                                      Container(
-                                                        width: MediaQuery.of(context)
-                                                            .size
-                                                            .width / 3.7,
-                                                        child: TextField(
-                                                          controller: startTimeTxtCtrl,
-                                                          onTap: () {
-                                                            timeTypePicked = 1;
-                                                            _selectTime(context);
-                                                          },
-                                                          decoration: InputDecoration(
-                                                            hintText: "Chọn thời gian",
-                                                            contentPadding: const EdgeInsets.only(bottom:0),
-                                                          ),
-                                                        ),
-                                                      ),
-                                                      Container(
-                                                        child: IconButton(
-                                                          icon: Icon(Icons.close),
-                                                          onPressed: () {},
-                                                        ),
-                                                      ),
-                                                    ],
-                                                  ),
-                                                  SizedBox(height: 20,),
-                                                  Row(
-                                                    mainAxisAlignment: MainAxisAlignment.end,
-                                                      children: [
-                                                        Container(
-                                                          child: TextButton(
-                                                            onPressed: () {
-                                                              startDateTxtCtrl.text = "";
-                                                              startTimeTxtCtrl.text = "";
-                                                              Navigator.of(context, rootNavigator: true).pop('dialog');
-                                                            },
-                                                            child: Text("HỦY"),
-                                                          ),
-                                                        ),
-                                                        Container(
-                                                          child: TextButton(
-                                                            onPressed: () {
-                                                              startDateTxtCtrl.text = "";
-                                                              startTimeTxtCtrl.text = "";
-                                                              Navigator.of(context, rootNavigator: true).pop('dialog');
-                                                            },
-                                                            child: Text("HOÀN TẤT"),
-                                                          ),
-                                                        ),
-                                                      ],
                                                     ),
+                                                  ),
+                                                  SizedBox(
+                                                    width: 10,
+                                                  ),
+                                                  Container(
+                                                    width:
+                                                        MediaQuery.of(context)
+                                                                .size
+                                                                .width /
+                                                            3.7,
+                                                    child: TextField(
+                                                      controller:
+                                                          startTimeTxtCtrl,
+                                                      onTap: () {
+                                                        timeTypePicked = 1;
+                                                        _selectTime(context);
+                                                      },
+                                                      decoration:
+                                                          InputDecoration(
+                                                        hintText:
+                                                            "Chọn thời gian",
+                                                        contentPadding:
+                                                            const EdgeInsets
+                                                                    .only(
+                                                                bottom: 0),
+                                                      ),
+                                                    ),
+                                                  ),
+                                                  Container(
+                                                    child: IconButton(
+                                                      icon: Icon(Icons.close),
+                                                      onPressed: () {},
+                                                    ),
+                                                  ),
                                                 ],
                                               ),
-                                            ),
+                                              SizedBox(
+                                                height: 20,
+                                              ),
+                                              Row(
+                                                mainAxisAlignment:
+                                                    MainAxisAlignment.end,
+                                                children: [
+                                                  Container(
+                                                    child: TextButton(
+                                                      onPressed: () {
+                                                        selectedDate =
+                                                            DateTime.now();
+                                                        selectedTime =
+                                                            TimeOfDay(
+                                                                hour: 9,
+                                                                minute: 0);
+                                                        Navigator.of(context,
+                                                                rootNavigator:
+                                                                    true)
+                                                            .pop('dialog');
+                                                      },
+                                                      child: Text("HỦY"),
+                                                    ),
+                                                  ),
+                                                  Container(
+                                                    child: TextButton(
+                                                      onPressed: () {
+                                                        if (startDateTxtCtrl.text == "" && startTimeTxtCtrl.text == "")
+                                                          {
+                                                            setState(() {
+                                                              startDateStr = "";
+                                                            });
+                                                            ///Save null to database
+                                                          }
+                                                        else
+                                                        {
+                                                          setState(() {
+                                                            String selectedDay = selectedDate.day.toString();
+                                                            String selectedMonth = selectedDate.month.toString();
+                                                            String selectedYear = selectedDate.year.toString();
+                                                            String selectedTimeStr = selectedTime.hour.toString() + (selectedTime.minute >= 10 ? selectedTime.minute.toString() : "0" + selectedTime.minute.toString());
+                                                            startDateStr = "Bắt đầu vào ngày $selectedDay tháng $selectedMonth, năm $selectedYear lúc $selectedTimeStr";
+                                                          });
+                                                          ///save selected Date and selected time to database. This condition means:
+                                                          ///date null, time not null => save date now + time value
+                                                          ///date not null, time null => save date value + time default at 9:00
+                                                          ///date, time not null => save normally
+                                                        }
+                                                        Navigator.of(context,
+                                                                rootNavigator:
+                                                                    true)
+                                                            .pop('dialog');
+                                                      },
+                                                      child: Text("HOÀN TẤT"),
+                                                    ),
+                                                  ),
+                                                ],
+                                              ),
+                                            ],
                                           ),
+                                        ),
+                                      ),
                                     );
                                   },
                                 ),
+
+                                ///DateStart TextButton
                                 TextButton(
+                                  child: Container(
+                                    width: 265,
+                                    child: Text(startDateStr == ""
+                                        ? "Ngày bắt đầu..."
+                                        : "$startDateStr",
+                                        style: TextStyle(
+                                            fontSize: 18.0,
+                                            color: Colors.black87)),
+                                  ),
+                                  style: ButtonStyle(
+                                    alignment: Alignment.bottomLeft,
+                                    overlayColor:
+                                    MaterialStateProperty.all<Color>(
+                                        Colors.white),
+                                  ),
+
                                   onPressed: () {
+                                    startDateTxtCtrl.text =
+                                        selectedDate.day.toString() +
+                                            " thg " +
+                                            selectedDate.month.toString();
+                                    startTimeTxtCtrl.text =
+                                        selectedTime.hour.toString() + ":";
+                                    if (selectedTime.minute >= 10)
+                                      startTimeTxtCtrl.text =
+                                          startTimeTxtCtrl.text +
+                                              selectedTime.minute.toString();
+                                    else
+                                      startTimeTxtCtrl.text =
+                                          startTimeTxtCtrl.text +
+                                              "0" +
+                                              selectedTime.minute.toString();
                                     showDialog(
                                       context: context,
                                       builder: (BuildContext context) =>
                                           AlertDialog(
-                                            title: const Text(
-                                              'Ngày bắt đầu',
-                                              style: TextStyle(
-                                                  fontWeight: FontWeight.bold),
-                                            ),
-                                            content: Container(
-                                              height: 120,
-                                              child: Column(
+                                        title: const Text(
+                                          'Ngày bắt đầu',
+                                          style: TextStyle(
+                                              fontWeight: FontWeight.bold),
+                                        ),
+                                        content: Container(
+                                          height: 120,
+                                          child: Column(
+                                            children: [
+                                              Row(
                                                 children: [
-                                                  Row(
-                                                    children: [
-                                                      Container(
-                                                        width: MediaQuery.of(context)
-                                                            .size
-                                                            .width / 3.7,
-                                                        child: TextField(
-                                                          controller: startDateTxtCtrl,
-                                                          onTap: () {
-                                                            dateTypePicked = 1;
-                                                            _selectDate(context);
-                                                          },
-                                                          decoration: InputDecoration(
-                                                            hintText: "Chọn ngày",
-                                                            contentPadding: const EdgeInsets.only(bottom:0),
-                                                          ),
-                                                        ),
+                                                  Container(
+                                                    width:
+                                                        MediaQuery.of(context)
+                                                                .size
+                                                                .width /
+                                                            3.7,
+                                                    child: TextField(
+                                                      controller:
+                                                          startDateTxtCtrl,
+                                                      onTap: () {
+                                                        dateTypePicked = 1;
+                                                        _selectDate(context);
+                                                      },
+                                                      decoration:
+                                                          InputDecoration(
+                                                        hintText: "Chọn ngày",
+                                                        contentPadding:
+                                                            const EdgeInsets
+                                                                    .only(
+                                                                bottom: 0),
                                                       ),
-                                                      SizedBox(width: 10,),
-                                                      Container(
-                                                        width: MediaQuery.of(context)
-                                                            .size
-                                                            .width / 3.7,
-                                                        child: TextField(
-                                                          controller: startTimeTxtCtrl,
-                                                          onTap: () {
-                                                            timeTypePicked = 1;
-                                                            _selectTime(context);
-                                                          },
-                                                          decoration: InputDecoration(
-                                                            hintText: "Chọn thời gian",
-                                                            contentPadding: const EdgeInsets.only(bottom:0),
-                                                          ),
-                                                        ),
-                                                      ),
-                                                      Container(
-                                                        child: IconButton(
-                                                          icon: Icon(Icons.close),
-                                                          onPressed: () {
-                                                            startDateTxtCtrl.text = "";
-                                                            startTimeTxtCtrl.text = "";
-                                                          },
-                                                        ),
-                                                      ),
-                                                    ],
+                                                    ),
                                                   ),
-                                                  SizedBox(height: 20,),
-                                                  Row(
-                                                    mainAxisAlignment: MainAxisAlignment.end,
-                                                    children: [
-                                                      Container(
-                                                        child: TextButton(
-                                                          onPressed: () {
-                                                            startDateTxtCtrl.text = "";
-                                                            startTimeTxtCtrl.text = "";
-                                                            Navigator.of(context, rootNavigator: true).pop('dialog');
-                                                          },
-                                                          child: Text("HỦY"),
-                                                        ),
+                                                  SizedBox(
+                                                    width: 10,
+                                                  ),
+                                                  Container(
+                                                    width:
+                                                        MediaQuery.of(context)
+                                                                .size
+                                                                .width /
+                                                            3.7,
+                                                    child: TextField(
+                                                      controller:
+                                                          startTimeTxtCtrl,
+                                                      onTap: () {
+                                                        timeTypePicked = 1;
+                                                        _selectTime(context);
+                                                      },
+                                                      decoration:
+                                                          InputDecoration(
+                                                        hintText:
+                                                            "Chọn thời gian",
+                                                        contentPadding:
+                                                            const EdgeInsets
+                                                                    .only(
+                                                                bottom: 0),
                                                       ),
-                                                      Container(
-                                                        child: TextButton(
-                                                          onPressed: () {
-                                                            startDateTxtCtrl.text = "";
-                                                            startTimeTxtCtrl.text = "";
-                                                            Navigator.of(context, rootNavigator: true).pop('dialog');
-                                                          },
-                                                          child: Text("HOÀN TẤT"),
-                                                        ),
-                                                      ),
-                                                    ],
+                                                    ),
+                                                  ),
+                                                  Container(
+                                                    child: IconButton(
+                                                      icon: Icon(Icons.close),
+                                                      onPressed: () {
+                                                        startDateTxtCtrl.text =
+                                                            "";
+                                                        startTimeTxtCtrl.text =
+                                                            "";
+                                                      },
+                                                    ),
                                                   ),
                                                 ],
                                               ),
-                                            ),
+                                              SizedBox(
+                                                height: 20,
+                                              ),
+                                              Row(
+                                                mainAxisAlignment:
+                                                    MainAxisAlignment.end,
+                                                children: [
+                                                  Container(
+                                                    child: TextButton(
+                                                      onPressed: () {
+                                                        selectedDate =
+                                                            DateTime.now();
+                                                        selectedTime =
+                                                            TimeOfDay(
+                                                                hour: 9,
+                                                                minute: 0);
+                                                        Navigator.of(context,
+                                                                rootNavigator:
+                                                                    true)
+                                                            .pop('dialog');
+                                                      },
+                                                      child: Text("HỦY"),
+                                                    ),
+                                                  ),
+                                                  Container(
+                                                    child: TextButton(
+                                                      onPressed: () {
+                                                        if (startDateTxtCtrl.text == "" && startTimeTxtCtrl.text == "")
+                                                        {
+                                                          setState(() {
+                                                            startDateStr = "";
+                                                          });
+                                                          ///Save null to database
+                                                        }
+                                                        else
+                                                        {
+                                                          setState(() {
+                                                            String selectedDay = selectedDate.day.toString();
+                                                            String selectedMonth = selectedDate.month.toString();
+                                                            String selectedYear = selectedDate.year.toString();
+                                                            String selectedTimeStr = selectedTime.hour.toString() + (selectedTime.minute >= 10 ? ":0" + selectedTime.minute.toString() : ":0" + selectedTime.minute.toString());
+                                                            startDateStr = "Bắt đầu vào ngày $selectedDay tháng $selectedMonth, năm $selectedYear lúc $selectedTimeStr";
+                                                          });
+                                                          ///save selected Date and selected time to database. This condition means:
+                                                          ///date null, time not null => save date now + time value
+                                                          ///date not null, time null => save date value + time default at 9:00
+                                                          ///date, time not null => save normally
+                                                        }
+                                                        Navigator.of(context,
+                                                                rootNavigator:
+                                                                    true)
+                                                            .pop('dialog');
+                                                      },
+                                                      child: Text("HOÀN TẤT"),
+                                                    ),
+                                                  ),
+                                                ],
+                                              ),
+                                            ],
                                           ),
+                                        ),
+                                      ),
                                     );
                                   },
-                                  child: Text("Ngày bắt đầu...",
-                                      style: TextStyle(
-                                          fontSize: 18.0,
-                                          color: Colors.black87)),
-                                  style: ButtonStyle(
-                                    alignment: Alignment.bottomLeft,
-                                    overlayColor:
-                                        MaterialStateProperty.all<Color>(
-                                            Colors.white),
-                                  ),
                                 ),
                               ],
                             ),
@@ -694,162 +853,241 @@ class CreateCardScreenState extends State<CreateCardScreen> {
                                   width: 48,
                                 ),
                                 TextButton(
+                                  child: Container(
+                                    width: 265,
+                                    child: Text(endDateStr == ""
+                                        ? "Ngày hết hạn..."
+                                        : "$endDateStr",
+                                        style: TextStyle(
+                                            fontSize: 18.0,
+                                            color: Colors.black87)),
+                                  ),
+                                  style: ButtonStyle(
+                                    alignment: Alignment.centerLeft,
+                                    overlayColor:
+                                    MaterialStateProperty.all<Color>(
+                                        Colors.white),
+                                  ),
+
                                   onPressed: () {
+                                    endDateTxtCtrl.text =
+                                        selectedDate.day.toString() +
+                                            " thg " +
+                                            selectedDate.month.toString();
+                                    endTimeTxtCtrl.text =
+                                        selectedTime.hour.toString() + ":";
+                                    if (selectedTime.minute >= 10)
+                                      endTimeTxtCtrl.text =
+                                          endTimeTxtCtrl.text +
+                                              selectedTime.minute.toString();
+                                    else
+                                      endTimeTxtCtrl.text =
+                                          endTimeTxtCtrl.text +
+                                              "0" +
+                                              selectedTime.minute.toString();
                                     showDialog(
                                       context: context,
                                       builder: (BuildContext context) =>
                                           AlertDialog(
-                                            title: const Text(
-                                              'Ngày hết hạn',
-                                              style: TextStyle(
-                                                  fontWeight: FontWeight.bold),
-                                            ),
-                                            content: Container(
-                                              height: 285,
-                                              child: Column(
+                                        title: const Text(
+                                          'Ngày hết hạn',
+                                          style: TextStyle(
+                                              fontWeight: FontWeight.bold),
+                                        ),
+                                        content: Container(
+                                          height: 285,
+                                          child: Column(
+                                            children: [
+                                              Row(
                                                 children: [
-                                                  Row(
-                                                    children: [
-                                                      Container(
-                                                        width: MediaQuery.of(context)
-                                                            .size
-                                                            .width / 3.7,
-                                                        child: TextField(
-                                                          controller: endDateTxtCtrl,
-                                                          onTap: () {
-                                                            dateTypePicked = 2;
-                                                            _selectDate(context);
-                                                          },
-                                                          decoration: InputDecoration(
-                                                            hintText: "Chọn ngày",
-                                                            contentPadding: const EdgeInsets.only(bottom:0),
-                                                          ),
-                                                        ),
-                                                      ),
-                                                      SizedBox(width: 10,),
-                                                      Container(
-                                                        width: MediaQuery.of(context)
-                                                            .size
-                                                            .width / 3.7,
-                                                        child: TextField(
-                                                          controller: endTimeTxtCtrl,
-                                                          onTap: () {
-                                                            timeTypePicked = 2;
-                                                            _selectTime(context);
-                                                          },
-                                                          decoration: InputDecoration(
-                                                            hintText: "Chọn thời gian",
-                                                            contentPadding: const EdgeInsets.only(bottom:0),
-                                                          ),
-                                                        ),
-                                                      ),
-                                                      Container(
-                                                        child: IconButton(
-                                                          icon: Icon(Icons.close),
-                                                          onPressed: () {
-                                                            endDateTxtCtrl.text = "";
-                                                            endTimeTxtCtrl.text = "";
-                                                          },
-                                                        ),
-                                                      ),
-                                                    ],
-                                                  ),
-                                                  SizedBox(height: 20,),
                                                   Container(
-                                                    alignment: Alignment.centerLeft,
-                                                    child: Text("Thiết lập nhắc nhở", style: TextStyle(fontWeight: FontWeight.bold),),
-                                                  ),
-                                                  SizedBox(height: 20,),
-                                                  Row(
-                                                    children: [
-                                                      Container(
-                                                        width: MediaQuery.of(context)
-                                                            .size
-                                                            .width / 3.7 * 2 + 10,
-                                                        child: DropdownButtonFormField<String>(
-                                                          value: selectedNotiTime,
-                                                          decoration: InputDecoration(
-                                                            contentPadding: EdgeInsets.only(bottom: 0),
-                                                          ),
-                                                          onChanged: (value) {
-                                                            setState(() {
-                                                              selectedNotiTime = value;
-                                                            });
-                                                          },
-                                                          selectedItemBuilder: (BuildContext context) {
-                                                            return notificationTimeList.map<Widget>((String item) {
-                                                              return Text(
-                                                                item,
-                                                              );
-                                                            }).toList();
-                                                          },
-                                                          items: notificationTimeList.map((String item) {
-                                                            return DropdownMenuItem<String>(
-                                                                value: item,
-                                                                child: Row(
-                                                                  children: [
-                                                                    Text(item,),
-                                                                  ],
-                                                                ));
-                                                          }).toList(),
-                                                        ),
+                                                    width:
+                                                        MediaQuery.of(context)
+                                                                .size
+                                                                .width /
+                                                            3.7,
+                                                    child: TextField(
+                                                      controller:
+                                                          endDateTxtCtrl,
+                                                      onTap: () {
+                                                        dateTypePicked = 2;
+                                                        _selectDate(context);
+                                                      },
+                                                      decoration:
+                                                          InputDecoration(
+                                                        hintText: "Chọn ngày",
+                                                        contentPadding:
+                                                            const EdgeInsets
+                                                                    .only(
+                                                                bottom: 0),
                                                       ),
-
-                                                      Container(
-                                                        child: IconButton(
-                                                          icon: Icon(Icons.close),
-                                                          onPressed: () {},
-                                                        ),
-                                                      ),
-                                                    ],
+                                                    ),
                                                   ),
-                                                  SizedBox(height: 20,),
+                                                  SizedBox(
+                                                    width: 10,
+                                                  ),
                                                   Container(
-                                                    alignment: Alignment.centerLeft,
-                                                    child: Text("Nhắc nhở chỉ được gửi đến các thành viên và người theo dõi thẻ."),
+                                                    width:
+                                                        MediaQuery.of(context)
+                                                                .size
+                                                                .width /
+                                                            3.7,
+                                                    child: TextField(
+                                                      controller:
+                                                          endTimeTxtCtrl,
+                                                      onTap: () {
+                                                        timeTypePicked = 2;
+                                                        _selectTime(context);
+                                                      },
+                                                      decoration:
+                                                          InputDecoration(
+                                                        hintText:
+                                                            "Chọn thời gian",
+                                                        contentPadding:
+                                                            const EdgeInsets
+                                                                    .only(
+                                                                bottom: 0),
+                                                      ),
+                                                    ),
                                                   ),
-                                                  SizedBox(height: 20,),
-                                                  Row(
-                                                    mainAxisAlignment: MainAxisAlignment.end,
-                                                    children: [
-                                                      Container(
-                                                        child: TextButton(
-                                                          onPressed: () {
-                                                            endTimeTxtCtrl.text = "";
-                                                            endDateTxtCtrl.text = "";
-                                                            Navigator.of(context, rootNavigator: true).pop('dialog');
-                                                          },
-                                                          child: Text("HỦY"),
-                                                        ),
-                                                      ),
-                                                      Container(
-                                                        child: TextButton(
-                                                          onPressed: () {
-                                                            endTimeTxtCtrl.text = "";
-                                                            endDateTxtCtrl.text = "";
-                                                            Navigator.of(context, rootNavigator: true).pop('dialog');
-                                                          },
-                                                          child: Text("HOÀN TẤT"),
-                                                        ),
-                                                      ),
-                                                    ],
+                                                  Container(
+                                                    child: IconButton(
+                                                      icon: Icon(Icons.close),
+                                                      onPressed: () {
+                                                        endDateTxtCtrl.text =
+                                                            "";
+                                                        endTimeTxtCtrl.text =
+                                                            "";
+                                                      },
+                                                    ),
                                                   ),
                                                 ],
                                               ),
-                                            ),
+                                              SizedBox(
+                                                height: 20,
+                                              ),
+                                              Container(
+                                                alignment: Alignment.centerLeft,
+                                                child: Text(
+                                                  "Thiết lập nhắc nhở",
+                                                  style: TextStyle(
+                                                      fontWeight:
+                                                          FontWeight.bold),
+                                                ),
+                                              ),
+                                              SizedBox(
+                                                height: 20,
+                                              ),
+                                              Container(
+                                                width:
+                                                MediaQuery.of(context)
+                                                    .size
+                                                    .width,
+                                                child:
+                                                DropdownButtonFormField<
+                                                    String>(
+                                                  value: selectedNotiTime,
+                                                  decoration:
+                                                  InputDecoration(
+                                                    contentPadding:
+                                                    EdgeInsets.only(
+                                                        bottom: 0),
+                                                  ),
+                                                  onChanged: (value) {
+                                                    setState(() {
+                                                      selectedNotiTime =
+                                                          value;
+                                                    });
+                                                  },
+                                                  items:
+                                                  notificationTimeList
+                                                      .map((String
+                                                  item) {
+                                                    return DropdownMenuItem<
+                                                        String>(
+                                                        value: item,
+                                                        child: Row(
+                                                          children: [
+                                                            Text(
+                                                              item,
+                                                            ),
+                                                          ],
+                                                        ));
+                                                  }).toList(),
+                                                ),
+                                              ),
+                                              SizedBox(
+                                                height: 20,
+                                              ),
+                                              Container(
+                                                alignment: Alignment.centerLeft,
+                                                child: Text(
+                                                    "Nhắc nhở chỉ được gửi đến các thành viên và người theo dõi thẻ."),
+                                              ),
+                                              SizedBox(
+                                                height: 20,
+                                              ),
+                                              Row(
+                                                mainAxisAlignment:
+                                                    MainAxisAlignment.end,
+                                                children: [
+                                                  Container(
+                                                    child: TextButton(
+                                                      onPressed: () {
+                                                        selectedDate =
+                                                            DateTime.now();
+                                                        selectedTime =
+                                                            TimeOfDay(
+                                                                hour: 9,
+                                                                minute: 0);
+                                                        Navigator.of(context,
+                                                                rootNavigator:
+                                                                    true)
+                                                            .pop('dialog');
+                                                      },
+                                                      child: Text("HỦY"),
+                                                    ),
+                                                  ),
+                                                  Container(
+                                                    child: TextButton(
+                                                      onPressed: () {
+                                                        if (endDateTxtCtrl.text == "" && endDateTxtCtrl.text == "")
+                                                        {
+                                                          setState(() {
+                                                            endDateStr = "";
+                                                          });
+                                                          ///Save null to database
+                                                        }
+                                                        else
+                                                        {
+                                                          setState(() {
+                                                            String selectedDay = selectedDate.day.toString();
+                                                            String selectedMonth = selectedDate.month.toString();
+                                                            String selectedYear = selectedDate.year.toString();
+                                                            String selectedTimeStr = selectedTime.hour.toString() + (selectedTime.minute >= 10 ? ":0" + selectedTime.minute.toString() : ":0" + selectedTime.minute.toString());
+                                                            endDateStr = "Hết hạn vào ngày $selectedDay tháng $selectedMonth, năm $selectedYear lúc $selectedTimeStr";
+                                                          });
+                                                          ///save selected Date and selected time to database. This condition means:
+                                                          ///date null, time not null => save date now + time value
+                                                          ///date not null, time null => save date value + time default at 9:00
+                                                          ///date, time not null => save normally
+                                                        }
+                                                        Navigator.of(context,
+                                                                rootNavigator:
+                                                                    true)
+                                                            .pop('dialog');
+                                                      },
+                                                      child: Text("HOÀN TẤT"),
+                                                    ),
+                                                  ),
+                                                ],
+                                              ),
+                                            ],
                                           ),
+                                        ),
+                                      ),
                                     );
                                   },
-                                  child: Text("Ngày hết hạn...",
-                                      style: TextStyle(
-                                          fontSize: 18.0,
-                                          color: Colors.black87)),
-                                  style: ButtonStyle(
-                                    alignment: Alignment.centerLeft,
-                                    overlayColor:
-                                        MaterialStateProperty.all<Color>(
-                                            Colors.white),
-                                  ),
                                 ),
                               ],
                             ),
