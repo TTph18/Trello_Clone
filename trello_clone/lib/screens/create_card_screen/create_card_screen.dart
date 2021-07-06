@@ -109,6 +109,8 @@ class CreateCardScreenState extends State<CreateCardScreen> {
             SizedBox(
               height: 20,
             ),
+
+            ///Board selection
             SizedBox(
               width: MediaQuery.of(context).size.width * 0.9,
               child: ButtonTheme(
@@ -133,8 +135,8 @@ class CreateCardScreenState extends State<CreateCardScreen> {
                     else
                       print("NOT VALUE");
                     if (boardItems[boardItems
-                        .indexWhere((element) => element.name == value)]
-                        .type ==
+                                .indexWhere((element) => element.name == value)]
+                            .type ==
                         "sep") {
                       return;
                     }
@@ -158,56 +160,58 @@ class CreateCardScreenState extends State<CreateCardScreen> {
                       onTap: item.type == "data" ? () {} : null,
                       child: item.type == "data"
                           ? Container(
-                        padding: EdgeInsets.fromLTRB(15, 7, 15, 7),
-                        child: Row(
-                          children: [
-                            Container(
-                              padding: EdgeInsets.fromLTRB(0, 0, 15, 0),
-                              child: ClipRRect(
-                                borderRadius: BorderRadius.circular(3.0),
-                                child: Image(
-                                  image: AssetImage(
-                                      "assets/images/BlueBG.png"),
-                                  width: 50,
-                                  height: 50,
+                              padding: EdgeInsets.fromLTRB(15, 7, 15, 7),
+                              child: Row(
+                                children: [
+                                  Container(
+                                    padding: EdgeInsets.fromLTRB(0, 0, 15, 0),
+                                    child: ClipRRect(
+                                      borderRadius: BorderRadius.circular(3.0),
+                                      child: Image(
+                                        image: AssetImage(
+                                            "assets/images/BlueBG.png"),
+                                        width: 50,
+                                        height: 50,
+                                      ),
+                                    ),
+                                  ),
+                                  Text(
+                                    item.name,
+                                    style: TextStyle(fontSize: 20),
+                                  ),
+                                ],
+                              ),
+                            )
+                          : Container(
+                              height: 50,
+                              decoration: BoxDecoration(
+                                color: Colors.white,
+                                border: Border(
+                                  top: BorderSide(
+                                      width: 1.0, color: Colors.black),
+                                  bottom: BorderSide(
+                                      width: 1.0, color: Colors.black),
+                                ),
+                              ),
+                              child: Align(
+                                alignment: Alignment.centerLeft,
+                                child: Text(
+                                  item.name,
+                                  style: TextStyle(
+                                    color: Colors.black,
+                                    fontWeight: FontWeight.normal,
+                                    fontSize: 16,
+                                  ),
                                 ),
                               ),
                             ),
-                            Text(
-                              item.name,
-                              style: TextStyle(fontSize: 20),
-                            ),
-                          ],
-                        ),
-                      )
-                          : Container(
-                        height: 50,
-                        decoration: BoxDecoration(
-                          color: Colors.white,
-                          border: Border(
-                            top: BorderSide(
-                                width: 1.0, color: Colors.black),
-                            bottom: BorderSide(
-                                width: 1.0, color: Colors.black),
-                          ),
-                        ),
-                        child: Align(
-                          alignment: Alignment.centerLeft,
-                          child: Text(
-                            item.name,
-                            style: TextStyle(
-                              color: Colors.black,
-                              fontWeight: FontWeight.normal,
-                              fontSize: 16,
-                            ),
-                          ),
-                        ),
-                      ),
                     );
                   }).toList(),
                 ),
               ),
             ),
+
+            ///Card list selection
             Padding(
               padding: const EdgeInsets.only(left: 20, right: 20, top: 20),
               child: DropdownButtonFormField<String>(
@@ -228,10 +232,10 @@ class CreateCardScreenState extends State<CreateCardScreen> {
                 onChanged: selectedBoard == ""
                     ? null
                     : (value) {
-                  setState(() {
-                    selectedList = value;
-                  });
-                },
+                        setState(() {
+                          selectedList = value;
+                        });
+                      },
                 selectedItemBuilder: (BuildContext context) {
                   return listList.map<Widget>((String item) {
                     return Text(
@@ -253,6 +257,7 @@ class CreateCardScreenState extends State<CreateCardScreen> {
                 }).toList(),
               ),
             ),
+
             Padding(
               padding: const EdgeInsets.only(top: 20),
               child: Container(
@@ -268,6 +273,7 @@ class CreateCardScreenState extends State<CreateCardScreen> {
                   color: Colors.white,
                   child: Column(
                     children: [
+                      ///Card name
                       TextFormField(
                         controller: cardNameTxtCtrl,
                         decoration: InputDecoration(
@@ -289,6 +295,8 @@ class CreateCardScreenState extends State<CreateCardScreen> {
                           return null;
                         },
                       ),
+
+                      ///Description
                       TextFormField(
                         controller: descriptionTxtCtrl,
                         decoration: InputDecoration(
@@ -313,74 +321,81 @@ class CreateCardScreenState extends State<CreateCardScreen> {
                             selectedBoard == ""
                                 ? SizedBox()
                                 : Row(
-                              children: [
-                                IconButton(
-                                  icon: Icon(MyFlutterApp.person_outline),
-                                  alignment: Alignment.centerLeft,
-                                  onPressed: () {},
-                                ),
-                                Container(
-                                  alignment: Alignment.centerLeft,
-                                  child: CircleAvatar(
-                                      radius: 25,
-                                      backgroundColor: Colors.green,
-                                      child: PopupMenuButton<Users>(
-                                        itemBuilder: (context) =>
-                                            List.generate(
-                                              users.length,
-                                                  (index) => PopupMenuItem<Users>(
-                                                value: users[index],
-                                                child: ListTile(
-                                                  leading: CircleAvatar(
-                                                    backgroundImage:
-                                                    AssetImage(
-                                                        users[index]
-                                                            .avatar),
+                                    children: [
+                                      IconButton(
+                                        icon: Icon(MyFlutterApp.person_outline),
+                                        alignment: Alignment.centerLeft,
+                                        onPressed: () {},
+                                      ),
+                                      Container(
+                                        alignment: Alignment.centerLeft,
+                                        child: CircleAvatar(
+                                            radius: 25,
+                                            backgroundColor: Colors.green,
+                                            child: PopupMenuButton<Users>(
+                                              itemBuilder: (context) =>
+                                                  List.generate(
+                                                users.length,
+                                                (index) => PopupMenuItem<Users>(
+                                                  value: users[index],
+                                                  child: ListTile(
+                                                    leading: CircleAvatar(
+                                                      radius: 25,
+                                                      backgroundImage:
+                                                          AssetImage(
+                                                              users[index]
+                                                                  .avatar),
+                                                    ),
+                                                    title: Text(
+                                                        '${users[index].userName}'),
                                                   ),
-                                                  title: Text(
-                                                      '${users[index].userName}'),
                                                 ),
                                               ),
+                                              onSelected: (value) {
+                                                setState(() {
+                                                  pickedUsers.add(value);
+                                                  print("Length = " +
+                                                      pickedUsers.length
+                                                          .toString());
+                                                });
+                                              },
+                                              icon: Icon(
+                                                Icons.add,
+                                                color: Colors.white,
+                                                size: 18,
+                                              ),
+                                            )),
+                                      ),
+                                      pickedUsers.length < 1
+                                          ? SizedBox()
+                                          : Container(
+                                              height: 50,
+                                              child: SizedBox(
+                                                width: MediaQuery.of(context)
+                                                        .size
+                                                        .width *
+                                                    0.5,
+                                                child: ListView.builder(
+                                                    shrinkWrap: true,
+                                                    scrollDirection:
+                                                        Axis.horizontal,
+                                                    itemCount:
+                                                        pickedUsers.length,
+                                                    itemBuilder:
+                                                        (context, index) {
+                                                      return CircleAvatar(
+                                                        radius: 25,
+                                                        backgroundImage:
+                                                            AssetImage(
+                                                                pickedUsers[
+                                                                        index]
+                                                                    .avatar),
+                                                      );
+                                                    }),
+                                              ),
                                             ),
-                                        onSelected: (value) {
-                                          setState(() {
-                                            pickedUsers.add(value);
-                                            print("Length = " +
-                                                pickedUsers.length
-                                                    .toString());
-                                          });
-                                        },
-                                        icon: Icon(
-                                          Icons.add,
-                                          color: Colors.white,
-                                          size: 18,
-                                        ),
-                                      )),
-                                ),
-                                pickedUsers.length < 1
-                                    ? SizedBox()
-                                    : Container(
-                                  width: MediaQuery.of(context)
-                                      .size
-                                      .width *
-                                      0.5,
-                                  child: ListView.builder(
-                                      shrinkWrap: true,
-                                      scrollDirection:
-                                      Axis.horizontal,
-                                      itemCount: pickedUsers.length,
-                                      itemBuilder:
-                                          (context, index) {
-                                        return CircleAvatar(
-                                          backgroundImage:
-                                          AssetImage(
-                                              pickedUsers[index]
-                                                  .avatar),
-                                        );
-                                      }),
-                                ),
-                              ],
-                            ),
+                                    ],
+                                  ),
 
                             ///DateStart
                             Row(
@@ -399,8 +414,8 @@ class CreateCardScreenState extends State<CreateCardScreen> {
                                   style: ButtonStyle(
                                     alignment: Alignment.bottomLeft,
                                     overlayColor:
-                                    MaterialStateProperty.all<Color>(
-                                        Colors.white),
+                                        MaterialStateProperty.all<Color>(
+                                            Colors.white),
                                   ),
                                 ),
                               ],
@@ -421,8 +436,8 @@ class CreateCardScreenState extends State<CreateCardScreen> {
                                   style: ButtonStyle(
                                     alignment: Alignment.centerLeft,
                                     overlayColor:
-                                    MaterialStateProperty.all<Color>(
-                                        Colors.white),
+                                        MaterialStateProperty.all<Color>(
+                                            Colors.white),
                                   ),
                                 ),
                               ],
