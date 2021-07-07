@@ -164,6 +164,7 @@ class CardScreenState extends State<CardScreen> {
   ///TODO: if endDate (timestamp type) from database = null, then string = null
   ///TODO: else endDateStr = "Hết hạn vào ngày $selectedDay tháng $selectedMonth, năm $selectedYear lúc $selectedTimeStr";
   String endDateStr = "";
+  bool? status = false; ///TODO: Load status from database
 
   bool isHaveTaskList = true;
   List<String> taskListNames = [
@@ -693,7 +694,10 @@ class CardScreenState extends State<CardScreen> {
                 ),
                 child: Row(
                   children: [
-                    Icon(MyFlutterApp.clock),
+                    Icon(MyFlutterApp.clock, color: endDateStr == "" ? Colors.black : (DateTime.now().isBefore(DateTime(selectedEndDate.year, selectedEndDate.month, selectedEndDate.day, selectedEndTime.hour, selectedEndTime.minute))) ? status == true ? Colors.blue : Colors.black : status == true ? Colors.blue : Colors.red
+
+
+                    ),
                     SizedBox(
                       width: 20,
                     ),
@@ -858,11 +862,29 @@ class CardScreenState extends State<CardScreen> {
                     SizedBox(
                       width: 44,
                     ),
-                    Container(
-                      width: MediaQuery.of(context).size.width - 94,
-                      child: Text(
-                        endDateStr == "" ? "Ngày hết hạn..." : "$endDateStr",
+                     endDateStr == "" ?
+                      Text(
+                        "Ngày hết hạn...",
                         style: TextStyle(fontSize: 20),
+                      )
+                      :
+                     Container(
+                       width: MediaQuery.of(context).size.width - 94,
+                       child:
+                      Row(
+                        children: [
+                          Container(
+                            width: MediaQuery.of(context).size.width - 142,
+                            child: Text(endDateStr, style: TextStyle(fontSize: 20),),
+                          ),
+                          Checkbox(
+                            value: status,
+                            onChanged: (value) {
+                              setState(() {
+                                status = value;
+                              });
+                            }),
+                        ],
                       ),
                     ),
                   ],
