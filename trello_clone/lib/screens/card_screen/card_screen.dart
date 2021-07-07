@@ -212,7 +212,51 @@ class CardScreenState extends State<CardScreen> {
                       Navigator.push(context, route);
                       break;
                     case "Xóa thẻ":
-                      // do something else
+                      showDialog<String>(
+                        context: context,
+                        builder: (BuildContext context) => AlertDialog(
+                          title: const Text(
+                            'Tên',
+                            style: TextStyle(fontWeight: FontWeight.bold),
+                          ),
+                          content: Container(
+                            width: MediaQuery.of(context).size.width * 0.8,
+                            child: Column(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Text("Tất cả các thao tác sẽ bị xóa khỏi thông báo hoạt động. Không thể hoàn tác."),
+                                Row(
+                                  mainAxisAlignment: MainAxisAlignment.end,
+                                  children: [
+                                    TextButton(
+                                      child: Text(
+                                        'HỦY',
+                                        style: TextStyle(fontWeight: FontWeight.bold),
+                                      ),
+                                      onPressed: () {
+                                        Navigator.of(context).pop();
+                                      },
+                                    ),
+                                    TextButton(
+                                      child: Text(
+                                        'XÓA',
+                                        style: TextStyle(fontWeight: FontWeight.bold),
+                                      ),
+                                      onPressed: () {
+                                        setState(() {
+                                          ///TODO: delete card
+                                        });
+                                        Navigator.of(context).pop();
+                                        Navigator.of(context).pop();
+                                      },
+                                    )
+                                  ],
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                      );
                       break;
                   }
                 },
