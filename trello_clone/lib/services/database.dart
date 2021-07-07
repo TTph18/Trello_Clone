@@ -98,8 +98,6 @@ class DatabaseService {
         .doc(boardID)
         .update({"listNumber": listNumber + 1});
     });
-
-
   }
 
   // get lists in board
@@ -113,25 +111,54 @@ class DatabaseService {
     return snapshot.docs;
   }
 
-  // get lists in board
-  static Future getBoardData(String boardID) async {
-    var snapshot = await FirebaseFirestore.instance
+  static Future<void> deleteList(String boardID, String listID) async {
+    await FirebaseFirestore.instance.collection('boards')
+        .doc(boardID)
+        .collection('lists')
+        .doc(listID)
+        .get().then((value) async {
+      int deletePos = value['position'];
+      await FirebaseFirestore.instance
+          .collection('boards')
+          .doc(boardID)
+          .get()
+          .then((value) async {
+        int listNumber = value['listNumber'];
+        for (int i = deletePos; i <= listNumber - 1; i++){
+          var doc = await FirebaseFirestore.instance.collection('boards')
+              .doc(boardID)
+              .collection('lists')
+              .where('position', isEqualTo : i + 1)
+              .get()
+              .then((value) =>
+                value.docs.forEach((element) {
+                  String id = element['listID'];
+                  FirebaseFirestore.instance
+                      .collection('lists')
+                      .doc(id)
+                      .update({"position": i});
+                })
+          );
+        }
+        FirebaseFirestore.instance.collection('boards')
+            .doc(boardID)
+            .update({'listNumber': listNumber - 1});
+          }
+          );
+
+    });
+    await FirebaseFirestore.instance
         .collection('boards')
         .doc(boardID)
-        .get();
-    return snapshot;
+        .collection('lists')
+        .doc(listID)
+        .delete();
+
   }
 
-  // get lists in board
-  static Future getAllBoards() async {
-    var snapshot = await FirebaseFirestore.instance
-        .collection('boards')
-        .get();
-    return snapshot.docs;
-  }
 
   //move a list to other position
-  static Future<void> moveList(String boardID, String newWorkspaceID) async {
+  static Future<void> moveList(String boardID, String listID, int oldPosition, int newPosition) async {
     var oldWorkspaceID;
     //get old wp id
     await FirebaseFirestore.instance
@@ -152,16 +179,23 @@ class DatabaseService {
           .collection('workspaces')
           .doc(oldWorkspaceID).update({"boardList": boardList});
     });
-    //update board id in new wp
-    await FirebaseFirestore.instance
-        .collection('workspaces')
-        .doc(newWorkspaceID)
-        .update({"boardList": FieldValue.arrayUnion([boardID])});
-    //update new wp id in board
-    await FirebaseFirestore.instance
+  }
+
+  // get lists in board
+  static Future getBoardData(String boardID) async {
+    var snapshot = await FirebaseFirestore.instance
         .collection('boards')
         .doc(boardID)
-        .update({"workspaceID": newWorkspaceID});
+        .get();
+    return snapshot;
+  }
+
+  // get lists in board
+  static Future getAllBoards() async {
+    var snapshot = await FirebaseFirestore.instance
+        .collection('boards')
+        .get();
+    return snapshot.docs;
   }
 
   //add a board

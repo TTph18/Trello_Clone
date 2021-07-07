@@ -279,11 +279,12 @@ class NewCard extends StatelessWidget {
 }
 
 class ListCard {
+  final Lists list;
   final String name;
   List<_card> children;
   bool isLast;
 
-  ListCard({required this.name, required this.children, required this.isLast});
+  ListCard({required this.list, required this.name, required this.children, required this.isLast});
 }
 
 Widget CreateDateString(DateTime dateStart, DateTime dateEnd, bool isFinish) {
@@ -381,6 +382,7 @@ class BoardScreenState extends State<BoardScreen> {
   late Future<Boards> futureBoards;
   late Future<Users> futureUsers;
   late Future<List<Lists>> futureLists;
+  late List<Lists> listList=[];
   late Boards boards;
   late bool isShowDrawer;
   late List<String> listName=[];
@@ -431,6 +433,7 @@ class BoardScreenState extends State<BoardScreen> {
 
     for(int i = 0; i < boards.listNumber; i++) {
         listName.add("");
+        listList.add(new Lists(listID: "", listName: "", position: 0, cardList: [], cardNumber: 0));
     }
     for (int i = 0; i < listName.length + 1; i++)
       controllers.add(new ScrollController());
@@ -447,6 +450,7 @@ class BoardScreenState extends State<BoardScreen> {
     _lists = List.generate(listName.length + 1, (outerIndex) {
       if (outerIndex < listName.length)
         return ListCard(
+          list: listList[outerIndex],
           name: listName[outerIndex],
           children:
               List.generate(cards.length, (innerIndex) => cards[innerIndex]),
@@ -454,6 +458,7 @@ class BoardScreenState extends State<BoardScreen> {
         );
       else
         return ListCard(
+          list: new Lists(listID: "", listName: "", position: 0, cardList: [], cardNumber: 0),
           name: "Add List",
           children: [],
           isLast: true,
@@ -621,7 +626,9 @@ class BoardScreenState extends State<BoardScreen> {
                         controllers.clear();
                         _lists.clear();
                         listName.clear();
+                        listList.clear();
                         for (var item in snapshot.data) {
+                          listList.add(item);
                           listName.add(item.listName);
                         }
                       }
@@ -632,6 +639,7 @@ class BoardScreenState extends State<BoardScreen> {
                         (outerIndex) {
                           if (outerIndex < listName.length)
                             return ListCard(
+                              list: listList[outerIndex],
                               name: listName[outerIndex],
                               children: List.generate(cards.length,
                                   (innerIndex) => cards[innerIndex]),
@@ -639,6 +647,7 @@ class BoardScreenState extends State<BoardScreen> {
                             );
                           else
                             return ListCard(
+                              list: new Lists(listID: "", listName: "", position: 0, cardList: [], cardNumber: 0),
                               name: "Add List",
                               children: [],
                               isLast: true,
@@ -792,7 +801,8 @@ class BoardScreenState extends State<BoardScreen> {
                                             ),
                                             onPressed: () {
                                               setState(() {
-                                                ///TODO: delete card
+                                                ///TODO: Cant update widget
+                                                DatabaseService.deleteList(boards.boardID, innerList.list.listID);
                                               });
                                               Navigator.of(context).pop();
                                             },
