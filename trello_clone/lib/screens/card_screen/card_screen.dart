@@ -68,21 +68,6 @@ class CardScreenState extends State<CardScreen> {
   ///TODO: Load users from database to pickedUsers
   List<bool> flagPickedUsers = [];
 
-  ///Use for showing check iconbutton in popup member
-
-  @override
-  void initState() {
-    for (Users user in users) {
-      var foundUser =
-          pickedUsers.where((element) => element.userID == user.userID);
-      if (foundUser.isNotEmpty)
-        flagPickedUsers.add(true);
-      else
-        flagPickedUsers.add(false);
-    }
-    super.initState();
-  }
-
   ///StartDate picker
   ///TODO: Load selectedStartDate from database, if = null, assign Datetime now to it
   var startDateTxtCtrl = TextEditingController();
@@ -250,17 +235,46 @@ class CardScreenState extends State<CardScreen> {
 
   ///For comment
   ///TODO: Load currentUser data
-  Users currentUser = Users(
-    userID: "123456",
-    userName: "User123456",
-    profileName: "Test",
-    email: '123456@gmail.com',
-    avatar: 'assets/images/BlueBG.png',
-    workspaceList: [],
-  );
+  ///Users currentUser = ...;
+  ///TODO: Delete this when load current data
+  String currentUserID = "12345";
+  String currentUserName = "Test4";
+  String currentUserAvatar = "assets/images/BlueBG.png";
 
   ///TODO: Load comment list
   List<Comments> commentList = [];
+  ///TODO: Delete these when comment list is loaded
+  ///TODO: in UI, change the commentUserIDList to commentList and match suitable values
+  List<String> commentUserIDList = ["12345", "1234", "1234"];
+  List<String> commentUserNameList = ["Test4", "name1", "name1"];
+  List<String> commentUserAvatarList = ["assets/images/BlueBG.png", "assets/images/BlueBG.png", "assets/images/BlueBG.png"];
+  List<String> commentContentList = ["Test comment for Test4", "Test comment for name1", "Test test test test test comment 2 for name1"];
+  List<DateTime> commentDateList = [
+    DateTime(2021, 7, 7, 8, 30),
+    DateTime(2021, 7, 4, 9, 30),
+    DateTime(2021, 6, 30, 10, 30)
+  ];
+
+  List<TextEditingController> commentContentTxtCtrlList = [];
+
+  @override
+  void initState() {
+    super.initState();
+
+    for (Users user in users) {
+      var foundUser =
+      pickedUsers.where((element) => element.userID == user.userID);
+      if (foundUser.isNotEmpty)
+        flagPickedUsers.add(true);
+      else
+        flagPickedUsers.add(false);
+    }
+
+    for (int index = 0; index < commentUserIDList.length; index++) {
+      commentContentTxtCtrlList.add(TextEditingController());
+      commentContentTxtCtrlList[index].text = commentContentList[index];
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -1381,69 +1395,95 @@ class CardScreenState extends State<CardScreen> {
                   ),
 
             ///Comment display here
-            Padding(
-              padding: const EdgeInsets.only(left: 25, right: 20, top: 20),
-              child: Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Padding(
-                    padding: const EdgeInsets.only(top: 20),
-                    child: CircleAvatar(
-                      radius: 25,
-                      backgroundImage: AssetImage(currentUser.avatar),
-                    ),
-                  ),
-                  SizedBox(width: 20),
-                  Column(
+            Column(
+                children: List.generate(commentUserIDList.length, (index) => Padding(
+                  padding: const EdgeInsets.only(left: 25, right: 20, top: 20),
+                  child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      ///User Name
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          ///TODO: Load User Name who comments this
-                          Text(
-                            "User Name",
-                            style: TextStyle(
-                                fontWeight: FontWeight.bold, fontSize: 18),
-                          ),
-
-                          IconButton(
-                            icon: Icon(Icons.more_horiz),
-                            onPressed: () {},
-                          ),
-                        ],
-                      ),
-
-                      ///Comment content
-                      Container(
-                        width: MediaQuery.of(context).size.width - 115,
-                        height: 50,
-                        decoration: BoxDecoration(
-                          color: Colors.white,
-                          borderRadius: BorderRadius.all(Radius.circular(10)),
-                        ),
-                        child: TextField(
-                          readOnly: true,
+                      Padding(
+                        padding: const EdgeInsets.only(top: 20),
+                        child: CircleAvatar(
+                          radius: 25,
+                          ///TODO: Load Avatar
+                          backgroundImage: AssetImage(commentUserAvatarList[index]),
                         ),
                       ),
 
-                      SizedBox(height: 10),
+                      SizedBox(width: 20),
 
-                      ///Load date comment
-                      ///TODO: Format hh:mm dd/mm/yyyy if year is different from current year
-                      ///TODO: Format hh:mm dd/mm if year is equal to current year
-                      Row(
+                      Column(
                         mainAxisAlignment: MainAxisAlignment.start,
                         children: [
-                          Text("hh:mm dd/mm/yyyy"),
+                          ///User Name
+                          Container(
+                            width: MediaQuery. of(context).size.width - 115,
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                ///TODO: Load User Name who comments this
+                                Text(commentUserNameList[index], style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),),
+
+                                PopupMenuButton(
+                                    icon: Icon(Icons.more_horiz),
+                                    itemBuilder: (BuildContext context) => <PopupMenuEntry<String>>[
+                                      const PopupMenuItem<String>(
+                                        value: "Chỉnh sửa",
+                                        child: Text('Chỉnh sửa'),
+                                      ),
+                                      const PopupMenuItem<String>(
+                                        value: "Xóa",
+                                        child: Text('Xóa'),
+                                      ),
+                                    ]
+                                ),
+                              ],
+                            ),
+                          ),
+
+                          ///Comment content
+                          Container(
+                            width: MediaQuery. of(context).size.width - 115,
+                            decoration: BoxDecoration(
+                              color: Colors.white,
+                              borderRadius: BorderRadius.all(
+                                  Radius.circular(10)
+                              ),
+                            ),
+                            child: TextField(
+                              controller: commentContentTxtCtrlList[index],
+                              readOnly: true,
+                              keyboardType: TextInputType.multiline,
+                              maxLines: null,
+                              decoration: InputDecoration(
+                                contentPadding: const EdgeInsets.all(5),
+                                border: InputBorder.none,
+                                focusedBorder: InputBorder.none,
+                                enabledBorder: InputBorder.none,
+                                errorBorder: InputBorder.none,
+                                disabledBorder: InputBorder.none,
+                              ),
+                            ),
+                          ),
+
+                          SizedBox(height: 10),
+
+                          ///Load date comment
+                          ///TODO: change suitable variable to the
+                          ///Format hh:mm dd/mm/yyyy if year is different from current year
+                          ///Format hh:mm dd/mm if year is equal to current year
+                          Container(
+                            alignment: Alignment.centerLeft,
+                            width: MediaQuery. of(context).size.width - 115,
+                            child: commentDateList[index].year == DateTime.now().year ? Text(commentDateList[index].hour.toString() + ":" + (commentDateList[index].minute >= 10 ? commentDateList[index].minute.toString() : "0" + commentDateList[index].minute.toString()) + " " + commentDateList[index].day.toString() + "/" + commentDateList[index].month.toString()) : Text(commentDateList[index].hour.toString() + ":" + (commentDateList[index].minute >= 10 ? commentDateList[index].minute.toString() : "0" + commentDateList[index].minute.toString()) + " " + commentDateList[index].day.toString() + "/" + commentDateList[index].month.toString() + "/" + commentDateList[index].year.toString()),
+                          ),
+
+                          SizedBox(height: 20),
                         ],
                       ),
-
-                      SizedBox(height: 20),
                     ],
                   ),
-                ],
-              ),
+                ),)
             ),
 
             ///for bottom sheet not cover last element
