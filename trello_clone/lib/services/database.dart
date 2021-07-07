@@ -348,17 +348,20 @@ class DatabaseService {
   }
 
   //add a card
-  static Future<void> addCard(String boardID, String listID, String cardName, String userID, DateTime startDate, DateTime dueDate) async {
+  static Future<void> addCard(String boardID, String listID, String cardName, String description, String userID, List<String> assignedUser, String startDate, String dueDate, String startTime, String dueTime) async {
     String uid = FirebaseAuth.instance.currentUser!.uid;
-    final docRef = await FirebaseFirestore.instance.collection('card').add({
+    final docRef = await FirebaseFirestore.instance.collection('cards').add({
       'cardName': cardName,
       'createdBy': uid,
-      'description' : "",
-      'assignedUser': FieldValue.arrayUnion([uid]),
-      'labelList' : FieldValue.arrayUnion([]),
+      'description' : description,
+      'assignedUser': assignedUser,
+      'listID': listID,
+      'labelList' : [],
       'status' : true,
-      'startDate': Timestamp.fromDate(startDate),
-      'dueDate': Timestamp.fromDate(dueDate)
+      'startDate': startDate,
+      'dueDate': dueDate,
+      'startTime': startTime,
+      'dueTime': dueTime
     });
     //add card uid to list
     await FirebaseFirestore.instance
