@@ -502,7 +502,10 @@ class CreateCardScreenState extends State<CreateCardScreen> {
                           children: [
                             ///Members here
 
-                            Row(
+                            ///Members here
+                            selectedBoard == nullBr
+                                ? SizedBox()
+                                :Row(
                               children: [
                                 IconButton(
                                   icon: Icon(MyFlutterApp.person_outline),
@@ -617,6 +620,8 @@ class CreateCardScreenState extends State<CreateCardScreen> {
                                                     child: TextField(
                                                       controller:
                                                           startDateTxtCtrl,
+                                                      readOnly: true,
+                                                      showCursor: true,
                                                       onTap: () {
                                                         dateTypePicked = 1;
                                                         _selectDate(context);
@@ -643,6 +648,8 @@ class CreateCardScreenState extends State<CreateCardScreen> {
                                                     child: TextField(
                                                       controller:
                                                           startTimeTxtCtrl,
+                                                      readOnly: true,
+                                                      showCursor: true,
                                                       onTap: () {
                                                         timeTypePicked = 1;
                                                         _selectTime(context);
@@ -817,6 +824,8 @@ class CreateCardScreenState extends State<CreateCardScreen> {
                                                     child: TextField(
                                                       controller:
                                                           startDateTxtCtrl,
+                                                      readOnly: true,
+                                                      showCursor: true,
                                                       onTap: () {
                                                         dateTypePicked = 1;
                                                         _selectDate(context);
@@ -843,6 +852,8 @@ class CreateCardScreenState extends State<CreateCardScreen> {
                                                     child: TextField(
                                                       controller:
                                                           startTimeTxtCtrl,
+                                                      readOnly: true,
+                                                      showCursor: true,
                                                       onTap: () {
                                                         timeTypePicked = 1;
                                                         _selectTime(context);
@@ -1030,6 +1041,8 @@ class CreateCardScreenState extends State<CreateCardScreen> {
                                                     child: TextField(
                                                       controller:
                                                           endDateTxtCtrl,
+                                                      readOnly: true,
+                                                      showCursor: true,
                                                       onTap: () {
                                                         dateTypePicked = 2;
                                                         _selectDate(context);
@@ -1056,6 +1069,8 @@ class CreateCardScreenState extends State<CreateCardScreen> {
                                                     child: TextField(
                                                       controller:
                                                           endTimeTxtCtrl,
+                                                      readOnly: true,
+                                                      showCursor: true,
                                                       onTap: () {
                                                         timeTypePicked = 2;
                                                         _selectTime(context);

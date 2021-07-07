@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:trello_clone/icons/app_icons.dart';
 import 'package:trello_clone/icons/my_flutter_app2_icons.dart';
 import 'package:trello_clone/models/boards.dart';
+import 'package:trello_clone/models/user.dart';
 import 'package:trello_clone/screens/card_screen/move_card_screen.dart';
 import 'dart:math' as math;
 
@@ -20,10 +21,50 @@ class CardScreen extends StatefulWidget {
 class CardScreenState extends State<CardScreen> {
   late String cardName;
   late Boards boards;
+
   CardScreenState(this.cardName);
 
+  var descriptionTxtCtrl = TextEditingController();
+
+  List<Users> users = [
+    Users(
+      userID: "12345",
+      userName: "name1",
+      profileName: "Name 1",
+      email: '123456@gmail.com',
+      avatar: 'assets/images/BlueBG.png',
+      workspaceList: [],
+    ),
+    Users(
+      userID: "12345",
+      userName: "name2",
+      profileName: "Name 2",
+      email: '123456@gmail.com',
+      avatar: 'assets/images/BlueBG.png',
+      workspaceList: [],
+    ),
+    Users(
+      userID: "12345",
+      userName: "name3",
+      profileName: "Name 3",
+      email: '123456@gmail.com',
+      avatar: 'assets/images/BlueBG.png',
+      workspaceList: [],
+    ),
+    Users(
+      userID: "12345",
+      userName: "Test4",
+      profileName: "Cun cun cute",
+      email: '123456@gmail.com',
+      avatar: 'assets/images/BlueBG.png',
+      workspaceList: [],
+    ),
+  ];
+  List<Users> pickedUsers = [];
+  List<int> pickedUsersIndex = [];
+
   ///StartDate picker
-  ///Load this from database, if = null, assaign Datetime now to it
+  ///TODO: Load selectedStartDate from database, if = null, assign Datetime now to it
   var startDateTxtCtrl = TextEditingController();
   DateTime selectedStartDate = DateTime.now();
 
@@ -50,7 +91,7 @@ class CardScreenState extends State<CardScreen> {
   }
 
   ///EndDate picker
-  ///Load this from database, if = null, assaign Datetime now to it
+  ///TODO: Load selectedEndDate from database, if = null, assign Datetime now to it
   var endDateTxtCtrl = TextEditingController();
   DateTime selectedEndDate = DateTime.now();
 
@@ -77,7 +118,7 @@ class CardScreenState extends State<CardScreen> {
   }
 
   ///StartTime Picker
-  ///Load this from database, if = null, assaign Datetime now to it
+  ///TODO: Load selectedStartTime from database, if = null, assign TimeOfDay(hour: 9, minute: 0) to it
   TimeOfDay selectedStartTime = TimeOfDay(hour: 9, minute: 0);
   var startTimeTxtCtrl = TextEditingController();
 
@@ -99,7 +140,7 @@ class CardScreenState extends State<CardScreen> {
   }
 
   ///EndTime Picker
-  ///Load this from database, if = null, assaign Datetime now to it
+  ///TODO: Load selectedEndTime from database, if = null, assign TimeOfDay(hour: 9, minute: 0) to it
   TimeOfDay selectedEndTime = TimeOfDay(hour: 9, minute: 0);
   var endTimeTxtCtrl = TextEditingController();
 
@@ -134,12 +175,12 @@ class CardScreenState extends State<CardScreen> {
   ];
 
   ///String value to set for startDate, endDate TextButton
-  ///if startDate (timestamp type) from database = null, then = null
-  ///else endDateStr = "Bắt đầu vào ngày $selectedDay tháng $selectedMonth, năm $selectedYear lúc $selectedTimeStr";
+  ///TODO: if startDate (timestamp type) from database = null, then string = null
+  ///TODO: else startDateStr = "Bắt đầu vào ngày $selectedDay tháng $selectedMonth, năm $selectedYear lúc $selectedTimeStr"
   String startDateStr = "";
 
-  ///if startDate (timestamp type) from database = null, then = null
-  ///else endDateStr = "Hết hạn vào ngày $selectedDay tháng $selectedMonth, năm $selectedYear lúc $selectedTimeStr";
+  ///TODO: if endDate (timestamp type) from database = null, then string = null
+  ///TODO: else endDateStr = "Hết hạn vào ngày $selectedDay tháng $selectedMonth, năm $selectedYear lúc $selectedTimeStr";
   String endDateStr = "";
 
   @override
@@ -195,9 +236,9 @@ class CardScreenState extends State<CardScreen> {
               color: Colors.white,
               child: Padding(
                 padding: const EdgeInsets.only(left: 25.0, top: 30.0),
-                child: Text("Tên thẻ", style: TextStyle(fontSize: 30)),
 
-                /// Change card name to $cardName when data is loaded
+                ///TODO: Change Tên thẻ to $cardName when data is loaded
+                child: Text("Tên thẻ", style: TextStyle(fontSize: 30)),
               ),
             ),
 
@@ -208,10 +249,10 @@ class CardScreenState extends State<CardScreen> {
               child: Padding(
                 padding:
                     const EdgeInsets.only(left: 25.0, top: 15.0, bottom: 20.0),
-                child: Text("Danh sách Tên danh sách trong Tên bảng",
 
-                    ///Change card list name to $cardlistName
-                    ///Change board name to $boardName
+                ///TODO: Change Tên danh sách to $cardlistName
+                ///TODO: Change Tên bảng to $boardName
+                child: Text("Danh sách Tên danh sách trong Tên bảng",
                     style: TextStyle(fontSize: 20)),
               ),
             ),
@@ -232,6 +273,8 @@ class CardScreenState extends State<CardScreen> {
                     bottom: BorderSide(color: Colors.grey.shade400)),
               ),
               child: TextField(
+                ///TODO: load data from database to descriptionTxtCtrl.text
+                controller: descriptionTxtCtrl,
                 style: TextStyle(fontSize: 20),
                 keyboardType: TextInputType.multiline,
                 maxLines: null,
@@ -252,32 +295,38 @@ class CardScreenState extends State<CardScreen> {
             ),
 
             ///Label
-            Container(
-              width: MediaQuery.of(context).size.width,
-              padding: const EdgeInsets.only(
-                left: 25,
-                right: 25,
-                top: 20.0,
-                bottom: 20.0,
+            InkWell(
+              ///TODO: Add Label list to show
+              child: Container(
+                width: MediaQuery.of(context).size.width,
+                padding: const EdgeInsets.only(
+                  left: 25,
+                  right: 25,
+                  top: 20.0,
+                  bottom: 20.0,
+                ),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  border: Border(
+                      top: BorderSide(color: Colors.grey.shade400),
+                      bottom: BorderSide(color: Colors.grey.shade400)),
+                ),
+                child: Row(
+                  children: [
+                    Icon(MyFlutterApp2.tag),
+                    SizedBox(
+                      width: 20,
+                    ),
+                    Text(
+                      "Nhãn...",
+                      style: TextStyle(fontSize: 20),
+                    )
+                  ],
+                ),
               ),
-              decoration: BoxDecoration(
-                color: Colors.white,
-                border: Border(
-                    top: BorderSide(color: Colors.grey.shade400),
-                    bottom: BorderSide(color: Colors.grey.shade400)),
-              ),
-              child: Row(
-                children: [
-                  Icon(MyFlutterApp2.tag),
-                  SizedBox(
-                    width: 20,
-                  ),
-                  Text(
-                    "Nhãn...",
-                    style: TextStyle(fontSize: 20),
-                  )
-                ],
-              ),
+              onTap: () {
+                ///TODO: Event to open Label list here
+              },
             ),
 
             SizedBox(
@@ -285,33 +334,87 @@ class CardScreenState extends State<CardScreen> {
             ),
 
             ///Member
-            Container(
-              width: MediaQuery.of(context).size.width,
-              padding: const EdgeInsets.only(
-                left: 25,
-                right: 25,
-                top: 20.0,
-                bottom: 20.0,
+            InkWell(
+              child: Container(
+                width: MediaQuery.of(context).size.width,
+                padding: const EdgeInsets.only(
+                  left: 25,
+                  right: 25,
+                  top: 20.0,
+                  bottom: 20.0,
+                ),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  border: Border(
+                      top: BorderSide(color: Colors.grey.shade400),
+                      bottom: BorderSide(color: Colors.grey.shade400)),
+                ),
+                child: Row(
+                  children: [
+                    Icon(MyFlutterApp.person_outline),
+                    SizedBox(
+                      width: 20,
+                    ),
+                    Text(
+                      "Thành viên...",
+                      style: TextStyle(fontSize: 20),
+                    ),
+                  ],
+                ),
               ),
-              decoration: BoxDecoration(
-                color: Colors.white,
-                border: Border(
-                    top: BorderSide(color: Colors.grey.shade400),
-                    bottom: BorderSide(color: Colors.grey.shade400)),
-              ),
-              child: Row(
-                children: [
-                  Icon(MyFlutterApp.person_outline),
-                  SizedBox(
-                    width: 20,
-                  ),
-                  Text(
-                    "Thành viên...",
-                    style: TextStyle(fontSize: 20),
-                  ),
-                ],
-              ),
+              onTap: () {
+                showDialog(
+                    context: context,
+                    builder: (BuildContext context) => AlertDialog(
+                          title: const Text(
+                            'Thành viên của thẻ',
+                            style: TextStyle(fontWeight: FontWeight.bold),
+                          ),
+                          content: Container(
+                            width: MediaQuery.of(context).size.width,
+                            child: Column(
+                              children: [
+                                ///TODO: Load memberList to select here
+
+
+                                SizedBox(
+                                  height: 20,
+                                ),
+
+                                Row(
+                                  mainAxisAlignment: MainAxisAlignment.end,
+                                  children: [
+                                    Container(
+                                      child: TextButton(
+                                        onPressed: () {
+                                          ///TODO: Reset to original value
+                                          Navigator.of(context,
+                                              rootNavigator: true)
+                                              .pop('dialog');
+                                        },
+                                        child: Text("HỦY"),
+                                      ),
+                                    ),
+                                    Container(
+                                      child: TextButton(
+                                        onPressed: () {
+                                          ///TODO: Save picked users to a variable
+                                          Navigator.of(context,
+                                                  rootNavigator: true)
+                                              .pop('dialog');
+                                        },
+                                        child: Text("HOÀN TẤT"),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ],
+                            ),
+                          ),
+                        ));
+              },
             ),
+
             SizedBox(
               height: 10,
             ),
@@ -379,6 +482,8 @@ class CardScreenState extends State<CardScreen> {
                                 width: MediaQuery.of(context).size.width / 3.7,
                                 child: TextField(
                                   controller: startDateTxtCtrl,
+                                  readOnly: true,
+                                  showCursor: true,
                                   onTap: () {
                                     _selectedStartDate(context);
                                   },
@@ -396,6 +501,8 @@ class CardScreenState extends State<CardScreen> {
                                 width: MediaQuery.of(context).size.width / 3.7,
                                 child: TextField(
                                   controller: startTimeTxtCtrl,
+                                  readOnly: true,
+                                  showCursor: true,
                                   onTap: () {
                                     _selectedStartTime(context);
                                   },
@@ -516,10 +623,7 @@ class CardScreenState extends State<CardScreen> {
                 child: Row(
                   children: [
                     SizedBox(
-                      width: 24,
-                    ),
-                    SizedBox(
-                      width: 20,
+                      width: 44,
                     ),
                     Container(
                       width: MediaQuery.of(context).size.width - 94,
@@ -560,6 +664,8 @@ class CardScreenState extends State<CardScreen> {
                                 width: MediaQuery.of(context).size.width / 3.7,
                                 child: TextField(
                                   controller: endDateTxtCtrl,
+                                  readOnly: true,
+                                  showCursor: true,
                                   onTap: () {
                                     _selectedEndDate(context);
                                   },
@@ -577,6 +683,8 @@ class CardScreenState extends State<CardScreen> {
                                 width: MediaQuery.of(context).size.width / 3.7,
                                 child: TextField(
                                   controller: endTimeTxtCtrl,
+                                  readOnly: true,
+                                  showCursor: true,
                                   onTap: () {
                                     _selectedEndTime(context);
                                   },
