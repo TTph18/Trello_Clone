@@ -12,6 +12,8 @@ import 'package:trello_clone/screens/card_screen/move_card_screen.dart';
 import 'package:trello_clone/widgets/reuse_widget/avatar.dart';
 
 class CheckList extends StatefulWidget {
+  final Function(int) notifyParent;
+  CheckList({required this.notifyParent});
   @override
   CheckListState createState() => CheckListState();
 }
@@ -21,6 +23,7 @@ class CheckListState extends State<CheckList> {
   List<bool> isTaskDone = [];
   String name = "";
   bool isShow = true;
+
 
   @override
   void initState() {
@@ -103,47 +106,91 @@ class CheckListState extends State<CheckList> {
           child: Row(),
         ),
         isShow
-            ? Column(
-                children: List.generate(
-                    tasks.length,
-                    (index) => Container(
-                          decoration: BoxDecoration(
-                            color: Colors.white,
-                          ),
-                          child: Column(
-                            children: [
-                              Row(
-                                children: [
-                                  Transform.scale(
-                                    scale: 1.2,
-                                    child: Checkbox(
-                                      value: isTaskDone[index],
-                                      onChanged: (value) {
-                                        setState(() {
-                                          isTaskDone[index] =
-                                              !isTaskDone[index];
-                                          ///TODO: Change state of task
-                                        });
-                                      },
-                                    ),
+            ? Container(
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                ),
+                child: Column(
+                  children: [
+                    Column(
+                      children: List.generate(
+                        tasks.length,
+                        (index) => Column(
+                          children: [
+                            Row(
+                              children: [
+                                Transform.scale(
+                                  scale: 1.2,
+                                  child: Checkbox(
+                                    value: isTaskDone[index],
+                                    onChanged: (value) {
+                                      setState(() {
+                                        isTaskDone[index] = !isTaskDone[index];
+
+                                        ///TODO: Change state of task
+                                      });
+                                    },
                                   ),
-                                  Text(
-                                    tasks[index],
-                                    style: TextStyle(fontSize: 20),
-                                  ),
-                                ],
-                              ),
-                              Padding(
-                                padding: const EdgeInsets.fromLTRB(50, 0, 0, 0),
-                                child: Divider(),
-                              ),
-                            ],
+                                ),
+                                Text(
+                                  tasks[index],
+                                  style: TextStyle(fontSize: 20),
+                                ),
+                              ],
+                            ),
+                            Padding(
+                              padding: const EdgeInsets.fromLTRB(50, 0, 0, 0),
+                              child: Divider(),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.fromLTRB(0, 2, 0, 8),
+                      child: Row(
+                        children: [
+                          SizedBox(
+                            width: 50,
                           ),
-                        )),
+                          Container(
+                            width: MediaQuery.of(context).size.width - 70,
+                            child: Focus(
+                              child: TextField(
+                                style: TextStyle(fontSize: 20),
+                                cursorColor: Colors.blue,
+                                decoration: InputDecoration(
+                                  border: InputBorder.none,
+                                  focusedBorder: InputBorder.none,
+                                  enabledBorder: InputBorder.none,
+                                  errorBorder: InputBorder.none,
+                                  disabledBorder: InputBorder.none,
+                                  hintText: "Thêm mục…",
+                                  hintStyle: TextStyle(fontSize: 20),
+                                ),
+                              ),
+                              onFocusChange: (hasFocus) {
+                                if (hasFocus) {
+                                  setState(() {
+                                    widget.notifyParent(1);
+                                  });
+                                } else {
+                                  setState(() {
+                                    widget.notifyParent(0);
+                                  });
+                                }
+                              },
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
               )
             : SizedBox(
                 height: 0,
-              )
+              ),
       ],
     );
   }
@@ -342,6 +389,7 @@ class CardScreenState extends State<CardScreen> {
 
   bool isHaveTaskList = true;
   List<String> taskListNames = ["Name 1", "Name 2", "Name 3"];
+  bool isAddTask = false;
 
   @override
   Widget build(BuildContext context) {
@@ -355,7 +403,13 @@ class CardScreenState extends State<CardScreen> {
               Icons.close,
               color: Colors.black,
             ),
-            onPressed: () => Navigator.of(context).pop(),
+            onPressed: () {
+              if (isAddTask) {
+
+              }
+              else
+                Navigator.of(context).pop();
+            },
           ),
           elevation: 0.0,
           actions: [
@@ -1248,7 +1302,8 @@ class CardScreenState extends State<CardScreen> {
                         ),
                       ),
                       Column(
-                        children: List.generate(taskListNames.length, (index) => CheckList()),
+                        children: List.generate(
+                            taskListNames.length, (index) => CheckList(notifyParent: refresh)),
                       ),
                     ],
                   )
@@ -1312,5 +1367,18 @@ class CardScreenState extends State<CardScreen> {
         ),
       ),
     );
+  }
+
+  refresh(int state) {
+    setState(() {
+      switch(state) {
+        case 0: ///normal
+          isAddTask = false;
+          break;
+        case 1: ///Add task
+          isAddTask = true;
+          break;
+      }
+    });
   }
 }
