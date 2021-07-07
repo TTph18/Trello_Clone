@@ -67,8 +67,6 @@ class CardScreenState extends State<CardScreen> {
   ///TODO: Load users from database to pickedUsers
   List<bool> flagPickedUsers = [];
 
-  ///Use for showing check iconbutton in popup member
-
   ///StartDate picker
   ///TODO: Load selectedStartDate from database, if = null, assign Datetime now to it
   var startDateTxtCtrl = TextEditingController();
@@ -635,12 +633,12 @@ class CardScreenState extends State<CardScreen> {
                                     Container(
                                       child: TextButton(
                                         onPressed: () {
-                                          for (Users user in users) {
-                                            var foundUser = pickedUsers.where((element) => element.userID == user.userID);
+                                          for (int index = 0; index < users.length; index++) {
+                                            var foundUser = pickedUsers.where((element) => element.userID == users[index].userID);
                                             if (foundUser.isNotEmpty)
-                                              flagPickedUsers.add(true);
+                                              flagPickedUsers[index] = true;
                                             else
-                                              flagPickedUsers.add(false);
+                                              flagPickedUsers[index] = false;
                                           }
                                           Navigator.of(context, rootNavigator: true).pop('dialog');
                                         },
@@ -652,7 +650,6 @@ class CardScreenState extends State<CardScreen> {
                                         onPressed: () {
                                           setState(() {
                                             pickedUsers = [];
-
                                             ///Save new picked users
                                             for (int index = 0; index < flagPickedUsers.length; index++) {
                                               if (flagPickedUsers[index]) pickedUsers.add(users[index]);
