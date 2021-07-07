@@ -216,7 +216,7 @@ class CardScreenState extends State<CardScreen> {
                         context: context,
                         builder: (BuildContext context) => AlertDialog(
                           title: const Text(
-                            'Tên',
+                            'Xóa thẻ',
                             style: TextStyle(fontWeight: FontWeight.bold),
                           ),
                           content: Container(

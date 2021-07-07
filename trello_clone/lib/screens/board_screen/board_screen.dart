@@ -15,6 +15,7 @@ import 'package:trello_clone/models/boards.dart';
 import 'package:trello_clone/models/lists.dart';
 import 'package:trello_clone/models/user.dart';
 import 'package:trello_clone/screens/board_screen/end_drawer.dart';
+import 'package:trello_clone/screens/board_screen/move_board_screen.dart';
 import 'package:trello_clone/screens/card_screen/card_screen.dart';
 import 'package:trello_clone/services/database.dart';
 import 'package:trello_clone/widgets/reuse_widget/avatar.dart';
@@ -403,11 +404,13 @@ class BoardScreenState extends State<BoardScreen> {
     Boards temp = Boards.fromDocument(doc);
     return temp;
   }
+
   Future<Users> getBoardUser() async {
     var doc = await DatabaseService.getUserData(boards.createdBy);
     Users temp = Users.fromDocument(doc);
     return temp;
   }
+
   @override
   void initState() {
     super.initState();
@@ -729,6 +732,60 @@ class BoardScreenState extends State<BoardScreen> {
                                   5,
                               curve: Curves.easeOut,
                               duration: const Duration(milliseconds: 300),
+                            );
+                          } else if (value == 2) {
+                            Route route = MaterialPageRoute(
+                                builder: (context) => MoveBoardScreen());
+                            Navigator.push(context, route);
+                          } else {
+                            showDialog<String>(
+                              context: context,
+                              builder: (BuildContext context) => AlertDialog(
+                                title: const Text(
+                                  'Xóa danh sách',
+                                  style: TextStyle(fontWeight: FontWeight.bold),
+                                ),
+                                content: Container(
+                                  width:
+                                      MediaQuery.of(context).size.width * 0.8,
+                                  child: Column(
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: [
+                                      Text(
+                                          "Tất cả các thao tác sẽ bị xóa khỏi thông báo hoạt động. Không thể hoàn tác."),
+                                      Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.end,
+                                        children: [
+                                          TextButton(
+                                            child: Text(
+                                              'HỦY',
+                                              style: TextStyle(
+                                                  fontWeight: FontWeight.bold),
+                                            ),
+                                            onPressed: () {
+                                              Navigator.of(context).pop();
+                                            },
+                                          ),
+                                          TextButton(
+                                            child: Text(
+                                              'XÓA',
+                                              style: TextStyle(
+                                                  fontWeight: FontWeight.bold),
+                                            ),
+                                            onPressed: () {
+                                              setState(() {
+                                                ///TODO: delete card
+                                              });
+                                              Navigator.of(context).pop();
+                                            },
+                                          )
+                                        ],
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ),
                             );
                           }
                         },
