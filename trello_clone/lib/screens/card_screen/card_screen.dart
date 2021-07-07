@@ -12,191 +12,6 @@ import 'package:trello_clone/screens/card_screen/move_card_screen.dart';
 
 import 'package:trello_clone/widgets/reuse_widget/avatar.dart';
 
-class CheckList extends StatefulWidget {
-  final Function(int) notifyParent;
-  CheckList({required this.notifyParent});
-  @override
-  CheckListState createState() => CheckListState();
-}
-
-class CheckListState extends State<CheckList> {
-  List<String> tasks = [];
-  List<bool> isTaskDone = [];
-  String name = "";
-  bool isShow = true;
-
-
-  @override
-  void initState() {
-    super.initState();
-    tasks = List.filled(5, "Task");
-    isTaskDone = List.filled(5, false);
-    name = "Name";
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      children: [
-        ///Header
-        Container(
-          padding: const EdgeInsets.fromLTRB(20, 8, 20, 8),
-          decoration: BoxDecoration(
-              color: Colors.white,
-              border: Border(
-                top: BorderSide(color: Colors.grey.shade400),
-                bottom: BorderSide(color: Colors.grey.shade400),
-              )),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Text(
-                name,
-                style: TextStyle(
-                  fontSize: 20,
-                ),
-              ),
-              Row(
-                children: [
-                  AnimatedIconButton(
-                      size: 25,
-                      onPressed: () => {
-                            setState(() {
-                              isShow = !isShow;
-                            })
-                          },
-                      icons: [
-                        AnimatedIconItem(
-                          icon: Icon(
-                            Icons.keyboard_arrow_down,
-                            color: Colors.black,
-                          ),
-                        ),
-                        AnimatedIconItem(
-                          icon: Icon(
-                            Icons.keyboard_arrow_up,
-                            color: Colors.black,
-                          ),
-                        ),
-                      ]),
-                  PopupMenuButton(
-                    iconSize: 30,
-                    padding: EdgeInsets.zero,
-                    icon: Icon(Icons.more_horiz),
-                    onSelected: (value) {},
-                    itemBuilder: (context) => [
-                      PopupMenuItem(
-                        value: 1,
-                        child: Text(
-                          'Xóa',
-                          style: TextStyle(
-                            fontSize: 20,
-                          ),
-                        ),
-                      ),
-                    ],
-                  )
-                ],
-              )
-            ],
-          ),
-        ),
-        Container(
-          height: 5,
-          decoration: BoxDecoration(color: Color.fromRGBO(188, 217, 234, 1)),
-          child: Row(),
-        ),
-        isShow
-            ? Container(
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                ),
-                child: Column(
-                  children: [
-                    Column(
-                      children: List.generate(
-                        tasks.length,
-                        (index) => Column(
-                          children: [
-                            Row(
-                              children: [
-                                Transform.scale(
-                                  scale: 1.2,
-                                  child: Checkbox(
-                                    value: isTaskDone[index],
-                                    onChanged: (value) {
-                                      setState(() {
-                                        isTaskDone[index] = !isTaskDone[index];
-
-                                        ///TODO: Change state of task
-                                      });
-                                    },
-                                  ),
-                                ),
-                                Text(
-                                  tasks[index],
-                                  style: TextStyle(fontSize: 20),
-                                ),
-                              ],
-                            ),
-                            Padding(
-                              padding: const EdgeInsets.fromLTRB(50, 0, 0, 0),
-                              child: Divider(),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.fromLTRB(0, 2, 0, 8),
-                      child: Row(
-                        children: [
-                          SizedBox(
-                            width: 50,
-                          ),
-                          Container(
-                            width: MediaQuery.of(context).size.width - 70,
-                            child: Focus(
-                              child: TextField(
-                                style: TextStyle(fontSize: 20),
-                                cursorColor: Colors.blue,
-                                decoration: InputDecoration(
-                                  border: InputBorder.none,
-                                  focusedBorder: InputBorder.none,
-                                  enabledBorder: InputBorder.none,
-                                  errorBorder: InputBorder.none,
-                                  disabledBorder: InputBorder.none,
-                                  hintText: "Thêm mục…",
-                                  hintStyle: TextStyle(fontSize: 20),
-                                ),
-                              ),
-                              onFocusChange: (hasFocus) {
-                                if (hasFocus) {
-                                  setState(() {
-                                    widget.notifyParent(1);
-                                  });
-                                } else {
-                                  setState(() {
-                                    widget.notifyParent(0);
-                                  });
-                                }
-                              },
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ],
-                ),
-              )
-            : SizedBox(
-                height: 0,
-              ),
-      ],
-    );
-  }
-}
-
 class CardScreen extends StatefulWidget {
   late String cardName;
 
@@ -389,8 +204,49 @@ class CardScreenState extends State<CardScreen> {
   String endDateStr = "";
 
   bool isHaveTaskList = true;
-  List<String> taskListNames = ["Name 1", "Name 2", "Name 3"];
+  List<String> taskListNames = [
+    "Name 1",
+    "Name 2",
+    "Name 3",
+  ];
   bool isAddTask = false;
+  List<List<String>> tasks = [
+    [
+      "Name 11",
+      "Name 12",
+      "Name 13",
+    ],
+    [
+      "Name 21",
+      "Name 22",
+    ],
+    [
+      "Name 31",
+      "Name 32",
+      "Name 33",
+    ],
+  ];
+  List<List<bool>> isTaskDone = [
+    [
+      true,
+      true,
+      true,
+    ],
+    [
+      true,
+      true,
+    ],
+    [
+      true,
+      false,
+      true,
+    ],
+  ];
+  List<bool> isShow = [
+    true,
+    true,
+    true,
+  ];
 
   ///For comment
   ///TODO: Load currentUser data
@@ -402,6 +258,7 @@ class CardScreenState extends State<CardScreen> {
     avatar: 'assets/images/BlueBG.png',
     workspaceList: [],
   );
+
   ///TODO: Load comment list
   List<Comments> commentList = [];
 
@@ -419,9 +276,7 @@ class CardScreenState extends State<CardScreen> {
             ),
             onPressed: () {
               if (isAddTask) {
-
-              }
-              else
+              } else
                 Navigator.of(context).pop();
             },
           ),
@@ -1317,7 +1172,207 @@ class CardScreenState extends State<CardScreen> {
                       ),
                       Column(
                         children: List.generate(
-                            taskListNames.length, (index) => CheckList(notifyParent: refresh)),
+                            taskListNames.length,
+                            (index) => Column(
+                                  children: [
+                                    ///Header
+                                    Container(
+                                      padding: const EdgeInsets.fromLTRB(
+                                          20, 8, 20, 8),
+                                      decoration: BoxDecoration(
+                                          color: Colors.white,
+                                          border: Border(
+                                            top: BorderSide(
+                                                color: Colors.grey.shade400),
+                                            bottom: BorderSide(
+                                                color: Colors.grey.shade400),
+                                          )),
+                                      child: Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.spaceBetween,
+                                        children: [
+                                          Text(
+                                            taskListNames[index],
+                                            style: TextStyle(
+                                              fontSize: 20,
+                                            ),
+                                          ),
+                                          Row(
+                                            children: [
+                                              AnimatedIconButton(
+                                                  size: 25,
+                                                  onPressed: () => {
+                                                        setState(() {
+                                                          isShow[index] =
+                                                              !isShow[index];
+                                                        })
+                                                      },
+                                                  icons: [
+                                                    AnimatedIconItem(
+                                                      icon: Icon(
+                                                        Icons
+                                                            .keyboard_arrow_down,
+                                                        color: Colors.black,
+                                                      ),
+                                                    ),
+                                                    AnimatedIconItem(
+                                                      icon: Icon(
+                                                        Icons.keyboard_arrow_up,
+                                                        color: Colors.black,
+                                                      ),
+                                                    ),
+                                                  ]),
+                                              PopupMenuButton(
+                                                iconSize: 30,
+                                                padding: EdgeInsets.zero,
+                                                icon: Icon(Icons.more_horiz),
+                                                onSelected: (value) {},
+                                                itemBuilder: (context) => [
+                                                  PopupMenuItem(
+                                                    value: 1,
+                                                    child: Text(
+                                                      'Xóa',
+                                                      style: TextStyle(
+                                                        fontSize: 20,
+                                                      ),
+                                                    ),
+                                                  ),
+                                                ],
+                                              )
+                                            ],
+                                          )
+                                        ],
+                                      ),
+                                    ),
+                                    Container(
+                                      height: 5,
+                                      decoration: BoxDecoration(
+                                          color:
+                                              Color.fromRGBO(188, 217, 234, 1)),
+                                      child: Row(),
+                                    ),
+                                    isShow[index]
+                                        ? Container(
+                                            decoration: BoxDecoration(
+                                              color: Colors.white,
+                                            ),
+                                            child: Column(
+                                              children: [
+                                                Column(
+                                                  children: List.generate(
+                                                    tasks[index].length,
+                                                    (innerIndex) => Column(
+                                                      children: [
+                                                        Row(
+                                                          children: [
+                                                            Transform.scale(
+                                                              scale: 1.2,
+                                                              child: Checkbox(
+                                                                value: isTaskDone[
+                                                                        index][
+                                                                    innerIndex],
+                                                                onChanged:
+                                                                    (value) {
+                                                                  setState(() {
+                                                                    isTaskDone[
+                                                                            index]
+                                                                        [
+                                                                        innerIndex] = !isTaskDone[
+                                                                            index]
+                                                                        [
+                                                                        innerIndex];
+
+                                                                    ///TODO: Change state of task
+                                                                  });
+                                                                },
+                                                              ),
+                                                            ),
+                                                            Text(
+                                                              tasks[index]
+                                                                  [innerIndex],
+                                                              style: TextStyle(
+                                                                  fontSize: 20),
+                                                            ),
+                                                          ],
+                                                        ),
+                                                        Padding(
+                                                          padding:
+                                                              const EdgeInsets
+                                                                      .fromLTRB(
+                                                                  50, 0, 0, 0),
+                                                          child: Divider(),
+                                                        ),
+                                                      ],
+                                                    ),
+                                                  ),
+                                                ),
+                                                Padding(
+                                                  padding:
+                                                      const EdgeInsets.fromLTRB(
+                                                          0, 2, 0, 8),
+                                                  child: Row(
+                                                    children: [
+                                                      SizedBox(
+                                                        width: 50,
+                                                      ),
+                                                      Container(
+                                                        width: MediaQuery.of(
+                                                                    context)
+                                                                .size
+                                                                .width -
+                                                            70,
+                                                        child: Focus(
+                                                          child: TextField(
+                                                            style: TextStyle(
+                                                                fontSize: 20),
+                                                            cursorColor:
+                                                                Colors.blue,
+                                                            decoration:
+                                                                InputDecoration(
+                                                              border:
+                                                                  InputBorder
+                                                                      .none,
+                                                              focusedBorder:
+                                                                  InputBorder
+                                                                      .none,
+                                                              enabledBorder:
+                                                                  InputBorder
+                                                                      .none,
+                                                              errorBorder:
+                                                                  InputBorder
+                                                                      .none,
+                                                              disabledBorder:
+                                                                  InputBorder
+                                                                      .none,
+                                                              hintText:
+                                                                  "Thêm mục…",
+                                                              hintStyle:
+                                                                  TextStyle(
+                                                                      fontSize:
+                                                                          20),
+                                                            ),
+                                                          ),
+                                                          onFocusChange:
+                                                              (hasFocus) {
+                                                            if (hasFocus) {
+                                                              setState(() {});
+                                                            } else {
+                                                              setState(() {});
+                                                            }
+                                                          },
+                                                        ),
+                                                      ),
+                                                    ],
+                                                  ),
+                                                ),
+                                              ],
+                                            ),
+                                          )
+                                        : SizedBox(
+                                            height: 0,
+                                          ),
+                                  ],
+                                )),
                       ),
                     ],
                   )
@@ -1338,9 +1393,7 @@ class CardScreenState extends State<CardScreen> {
                       backgroundImage: AssetImage(currentUser.avatar),
                     ),
                   ),
-
                   SizedBox(width: 20),
-
                   Column(
                     children: [
                       ///User Name
@@ -1348,7 +1401,11 @@ class CardScreenState extends State<CardScreen> {
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
                           ///TODO: Load User Name who comments this
-                          Text("User Name", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),),
+                          Text(
+                            "User Name",
+                            style: TextStyle(
+                                fontWeight: FontWeight.bold, fontSize: 18),
+                          ),
 
                           IconButton(
                             icon: Icon(Icons.more_horiz),
@@ -1359,13 +1416,11 @@ class CardScreenState extends State<CardScreen> {
 
                       ///Comment content
                       Container(
-                        width: MediaQuery. of(context).size.width - 115,
+                        width: MediaQuery.of(context).size.width - 115,
                         height: 50,
                         decoration: BoxDecoration(
-                            color: Colors.white,
-                            borderRadius: BorderRadius.all(
-                                Radius.circular(10)
-                            ),
+                          color: Colors.white,
+                          borderRadius: BorderRadius.all(Radius.circular(10)),
                         ),
                         child: TextField(
                           readOnly: true,
@@ -1445,18 +1500,5 @@ class CardScreenState extends State<CardScreen> {
         ),
       ),
     );
-  }
-
-  refresh(int state) {
-    setState(() {
-      switch(state) {
-        case 0: ///normal
-          isAddTask = false;
-          break;
-        case 1: ///Add task
-          isAddTask = true;
-          break;
-      }
-    });
   }
 }
