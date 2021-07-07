@@ -1,3 +1,6 @@
+import 'dart:ui';
+
+import 'package:animated_icon_button/animated_icon_button.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:trello_clone/icons/app_icons.dart';
@@ -8,6 +11,128 @@ import 'package:trello_clone/screens/card_screen/move_card_screen.dart';
 import 'dart:math' as math;
 
 import 'package:trello_clone/widgets/reuse_widget/avatar.dart';
+
+class CheckList extends StatefulWidget {
+  @override
+  CheckListState createState() => CheckListState();
+}
+
+class CheckListState extends State<CheckList> {
+  List<String> tasks = [];
+  List<bool> isTaskDone = [];
+  String name = "";
+  bool isShow = true;
+  @override
+  void initState() {
+    super.initState();
+    tasks = List.filled(5, "Task");
+    isTaskDone = List.filled(5, false);
+    name = "Name";
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      children: [
+        ///Header
+        Container(
+          padding: const EdgeInsets.fromLTRB(20, 8, 20, 8),
+          decoration: BoxDecoration(
+              color: Colors.white,
+              border: Border(
+                top: BorderSide(color: Colors.grey.shade400),
+                bottom: BorderSide(color: Colors.grey.shade400),
+              )),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(
+                name,
+                style: TextStyle(
+                  fontSize: 20,
+                ),
+              ),
+              Row(
+                children: [
+                  AnimatedIconButton(
+                      size: 25,
+                      onPressed: () => {
+                            setState(() {
+                              isShow = !isShow;
+                            })
+                          },
+                      icons: [
+                        AnimatedIconItem(
+                          icon: Icon(
+                            Icons.keyboard_arrow_down,
+                            color: Colors.black,
+                          ),
+                        ),
+                        AnimatedIconItem(
+                          icon: Icon(
+                            Icons.keyboard_arrow_up,
+                            color: Colors.black,
+                          ),
+                        ),
+                      ]),
+                  PopupMenuButton(
+                    iconSize: 30,
+                    padding: EdgeInsets.zero,
+                    icon: Icon(Icons.more_horiz),
+                    onSelected: (value) {},
+                    itemBuilder: (context) => [
+                      PopupMenuItem(
+                        value: 1,
+                        child: Text(
+                          'Xóa',
+                          style: TextStyle(
+                            fontSize: 20,
+                          ),
+                        ),
+                      ),
+                    ],
+                  )
+                ],
+              )
+            ],
+          ),
+        ),
+        Container(
+          height: 5,
+          decoration: BoxDecoration(color: Color.fromRGBO(188, 217, 234, 1)),
+          child: Row(),
+        ),
+        isShow ? Column(
+          children: List.generate(
+              tasks.length,
+              (index) => Container(
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                ),
+                child: Column(
+                      children: [
+                        Row(
+                          children: [
+                            Checkbox(value: isTaskDone[index], onChanged: (value) {
+                              setState(() {
+                                isTaskDone[index] = !isTaskDone[index];
+                              });
+                            }, ),
+                            Text(tasks[index], style: TextStyle(fontSize: 20),),
+                          ],
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.fromLTRB(50, 0, 0, 0),
+                          child: Divider(),
+                        ),
+                      ],
+                    ),
+              )),
+        ) : SizedBox(height: 0,)
+      ],
+    );
+  }
+}
 
 class CardScreen extends StatefulWidget {
   late String cardName;
@@ -199,6 +324,8 @@ class CardScreenState extends State<CardScreen> {
   ///TODO: if endDate (timestamp type) from database = null, then string = null
   ///TODO: else endDateStr = "Hết hạn vào ngày $selectedDay tháng $selectedMonth, năm $selectedYear lúc $selectedTimeStr";
   String endDateStr = "";
+
+  bool isHaveTaskList = true;
 
   @override
   Widget build(BuildContext context) {
@@ -1078,6 +1205,42 @@ class CardScreenState extends State<CardScreen> {
                 ],
               ),
             ),
+
+            isHaveTaskList
+                ? Column(
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.fromLTRB(20, 8, 20, 8),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Row(
+                              children: [
+                                Icon(MyFlutterApp2.check),
+                                SizedBox(
+                                  width: 20,
+                                ),
+                                Text(
+                                  "DANH SÁCH CÔNG VIỆC",
+                                  style: TextStyle(fontSize: 20),
+                                ),
+                              ],
+                            ),
+                            IconButton(
+                              onPressed: () {},
+                              icon: Icon(Icons.add),
+                              color: Colors.blue,
+                              iconSize: 30,
+                            ),
+                          ],
+                        ),
+                      ),
+                      CheckList(),
+                    ],
+                  )
+                : SizedBox(
+                    height: 0,
+                  ),
 
             ///for bottom sheet not cover last element
             SizedBox(

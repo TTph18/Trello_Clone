@@ -10,12 +10,14 @@ class Cards {
   final String cardName;
   final String createdBy;
   final String description;
-  final Timestamp startDate;
-  final Timestamp dueDate;
+  final String startDate;
+  final String startTime;
+  final String dueDate;
+  final String dueTime;
   final List<String> assignedUser;
   final bool status; //true: not due | false: is due
 
-  Cards({required this.cardID, required this.cardName, required this.createdBy, required this.description, required this.startDate, required this.dueDate, required this.assignedUser, required this.status,required this.listID, required this.boardID});
+  Cards({required this.cardID, required this.cardName, required this.createdBy, required this.description, required this.startDate, required this.startTime, required this.dueDate, required this.dueTime, required this.assignedUser, required this.status,required this.listID, required this.boardID});
 
   factory Cards.fromDocument(DocumentSnapshot document) {
     return Cards(
@@ -27,6 +29,8 @@ class Cards {
       description: document['description'],
       dueDate: document['dueDate'],
       startDate: document['startDate'],
+      dueTime: document['dueTime'],
+      startTime: document['startTime'],
       assignedUser: document['assignedUser'],
       status: document['status'],
     );

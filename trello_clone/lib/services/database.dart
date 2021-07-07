@@ -79,6 +79,7 @@ class DatabaseService {
         .collection('boards')
         .doc(boardID)
         .collection('lists')
+        .orderBy("position")
         .get();
     return snapshot.docs;
   }
@@ -112,6 +113,7 @@ class DatabaseService {
       'workspaceID': workspaceID,
       'listList' : FieldValue.arrayUnion([]),
       'labelList' : FieldValue.arrayUnion([]),
+      'listNumber' : 3,
     });
     //update boardID = document ID
     var snap = await FirebaseFirestore.instance
@@ -123,10 +125,83 @@ class DatabaseService {
         .collection('workspaces')
         .doc(workspaceID)
         .update({"boardList": FieldValue.arrayUnion([docRef.id]),});
+    initialize3List(docRef.id);
+    initialize5Labels(docRef.id);
   }
 
-  //initialize a default board: 3 lists, 7 labels
-  static Future<void> initializeComponent(String boardID) async {
+  //initialize a default board: 3 lists, 6 labels
+  static Future<void> initialize3List(String boardID) async {
+    final docRef1 = await FirebaseFirestore.instance.collection('boards')
+        .doc(boardID).collection('lists')
+        .add({'listName': "Done", 'cardList' : [], 'position': 3});
+    await FirebaseFirestore.instance.collection('boards')
+        .doc(boardID)
+        .collection('lists')
+        .doc(docRef1.id)
+        .update({"listID": docRef1.id});
+    final docRef2 = await FirebaseFirestore.instance.collection('boards')
+        .doc(boardID).collection('lists')
+        .add({'listName': "Doing", 'cardList' : [], 'position': 2});
+    await FirebaseFirestore.instance.collection('boards')
+        .doc(boardID)
+        .collection('lists')
+        .doc(docRef2.id)
+        .update({"listID": docRef2.id});
+    final docRef3 = await FirebaseFirestore.instance.collection('boards')
+        .doc(boardID).collection('lists')
+        .add({'listName': "To do", 'cardList' : [], 'position': 1});
+    await FirebaseFirestore.instance.collection('boards')
+        .doc(boardID)
+        .collection('lists')
+        .doc(docRef3.id)
+        .update({"listID": docRef3.id});
+  }
+
+  static Future<void> initialize5Labels(String boardID) async {
+    final docRef1 = await FirebaseFirestore.instance.collection('boards')
+        .doc(boardID).collection('labels')
+        .add({'labelName': "", 'color' : "0xff0079bf"});
+    await FirebaseFirestore.instance.collection('boards')
+        .doc(boardID)
+        .collection('labels')
+        .doc(docRef1.id)
+        .update({"labelID": docRef1.id});
+
+    final docRef2 = await FirebaseFirestore.instance.collection('boards')
+        .doc(boardID).collection('labels')
+        .add({'labelName': "", 'color' : "0xffc377e0"});
+    await FirebaseFirestore.instance.collection('boards')
+        .doc(boardID)
+        .collection('labels')
+        .doc(docRef2.id)
+        .update({"labelID": docRef2.id});
+
+    final docRef3 = await FirebaseFirestore.instance.collection('boards')
+        .doc(boardID).collection('labels')
+        .add({'labelName': "", 'color' : "0xffeb5a46"});
+    await FirebaseFirestore.instance.collection('boards')
+        .doc(boardID)
+        .collection('labels')
+        .doc(docRef3.id)
+        .update({"labelID": docRef3.id});
+
+    final docRef4 = await FirebaseFirestore.instance.collection('boards')
+        .doc(boardID).collection('labels')
+        .add({'labelName': "", 'color' : "0xff61bd4f"});
+    await FirebaseFirestore.instance.collection('boards')
+        .doc(boardID)
+        .collection('labels')
+        .doc(docRef4.id)
+        .update({"labelID": docRef4.id});
+
+    final docRef5 = await FirebaseFirestore.instance.collection('boards')
+        .doc(boardID).collection('labels')
+        .add({'labelName': "", 'color' : "0xfff2d600"});
+    await FirebaseFirestore.instance.collection('boards')
+        .doc(boardID)
+        .collection('labels')
+        .doc(docRef5.id)
+        .update({"labelID": docRef5.id});
 
   }
 
@@ -348,17 +423,20 @@ class DatabaseService {
   }
 
   //add a card
-  static Future<void> addCard(String boardID, String listID, String cardName, String userID, DateTime startDate, DateTime dueDate) async {
+  static Future<void> addCard(String boardID, String listID, String cardName, String description, String userID, List<String> assignedUser, String startDate, String dueDate, String startTime, String dueTime) async {
     String uid = FirebaseAuth.instance.currentUser!.uid;
-    final docRef = await FirebaseFirestore.instance.collection('card').add({
+    final docRef = await FirebaseFirestore.instance.collection('cards').add({
       'cardName': cardName,
       'createdBy': uid,
-      'description' : "",
-      'assignedUser': FieldValue.arrayUnion([uid]),
-      'labelList' : FieldValue.arrayUnion([]),
+      'description' : description,
+      'assignedUser': assignedUser,
+      'listID': listID,
+      'labelList' : [],
       'status' : true,
-      'startDate': Timestamp.fromDate(startDate),
-      'dueDate': Timestamp.fromDate(dueDate)
+      'startDate': startDate,
+      'dueDate': dueDate,
+      'startTime': startTime,
+      'dueTime': dueTime
     });
     //add card uid to list
     await FirebaseFirestore.instance
