@@ -113,6 +113,7 @@ class DatabaseService {
       'workspaceID': workspaceID,
       'listList' : FieldValue.arrayUnion([]),
       'labelList' : FieldValue.arrayUnion([]),
+      'listNumber' : 3,
     });
     //update boardID = document ID
     var snap = await FirebaseFirestore.instance

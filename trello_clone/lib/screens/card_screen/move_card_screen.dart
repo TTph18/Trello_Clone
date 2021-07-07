@@ -18,7 +18,8 @@ class MoveCardScreenState extends State<MoveCardScreen> {
       createdBy: "",
       background: "",
       isPersonal: false,
-      workspaceID: "");
+      workspaceID: "",
+      listNumber: 0);
   late Boards selectedBoard = nullBr;
   late List<Workspaces> group = [];
   ///TODO: get current board to show in dropdownlist
