@@ -34,7 +34,7 @@ class CreateCardScreenState extends State<CreateCardScreen> {
   late List<BoardItem> boardItems = [];
 
   List<String> boardList = ["Tên bảng 1", "Tên bảng 2", "Tên bảng 3"];
-  late Lists selectedList = Lists(listID: "", listName: "");
+  late Lists selectedList = Lists(listID: "", listName: "", cardList: [], position: 1);
   late List<Lists> listList = [];
   late List<Users> users = [];
 
@@ -53,7 +53,7 @@ class CreateCardScreenState extends State<CreateCardScreen> {
   void initState() {
     super.initState();
     futureUserList = getListUser();
-    selectedList = Lists(listID: "", listName: "");
+    selectedList = Lists(listID: "", listName: "", cardList: [], position: 1);
   }
 
   var cardNameTxtCtrl = TextEditingController();
