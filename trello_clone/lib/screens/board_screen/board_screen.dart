@@ -380,9 +380,10 @@ class BoardScreenState extends State<BoardScreen> {
   final GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey<ScaffoldState>();
   late Future<Boards> futureBoards;
   late Future<Users> futureUsers;
+  late Future<List<Lists>> futureLists;
   late Boards boards;
   late bool isShowDrawer;
-  late List<String> listName = [];
+  late List<String> listName=[];
   late List<_card> cards;
   var controller = AnimateIconController();
   AssetImage bg = AssetImage("assets/images/BlueBG.png");
@@ -411,12 +412,26 @@ class BoardScreenState extends State<BoardScreen> {
     return temp;
   }
 
+  Future<List<Lists>> getLists() async {
+    List<Lists> list =[];
+    var doc = await DatabaseService.getlistList(boards.boardID);
+    for(var item in doc){
+      Lists temp = Lists.fromDocument(item);
+      list.add(temp);
+    }
+    return list;
+  }
+
   @override
   void initState() {
     super.initState();
     futureBoards = getBoards();
     futureUsers = getBoardUser();
-    listName = ["To Do", "Completed"];
+    futureLists = getLists();
+
+    for(int i = 0; i < boards.listNumber; i++) {
+        listName.add("");
+    }
     for (int i = 0; i < listName.length + 1; i++)
       controllers.add(new ScrollController());
 
@@ -483,14 +498,12 @@ class BoardScreenState extends State<BoardScreen> {
                               isTapNewList = false;
                               newListController.text = "";
                             }
-
                             int index = isTapNewCard
                                 .indexWhere((element) => element == true);
                             if (index != -1) {
                               isTapNewCard[index] = false;
                               newCardController.text = "";
                             }
-
                             index = isTapChangeListName
                                 .indexWhere((element) => element == true);
                             if (index != -1) {
@@ -520,10 +533,12 @@ class BoardScreenState extends State<BoardScreen> {
                         onPressed: () {
                           if (isTapNewList) {
                             if (newListController.text != "") {
-                              ///TODO: Add new list to board
+                              DatabaseService.addList(boards.boardID, newListController.text);
                               setState(
                                 () {
-                                  ///TODO: Reload list of lists in board
+                                  futureLists = getLists();
+                                  listName.add(newListController.text);
+                                  ///TODO: Cant reload widget
                                   isTapNewList = false;
                                   newListController.text = "";
                                 },
@@ -537,7 +552,10 @@ class BoardScreenState extends State<BoardScreen> {
                               ///TODO: Add new card to list [index]
                               setState(
                                 () {
-                                  ///TODO: Reload card in list [index]
+                                  Route route = MaterialPageRoute(
+                                      builder: (context) =>
+                                          BoardScreen(boards, true));
+                                  Navigator.push(context, route);
                                   isTapNewCard[index] = false;
                                   newListController.text = "";
                                 },
@@ -593,7 +611,7 @@ class BoardScreenState extends State<BoardScreen> {
                   ),
                 ),
                 child: FutureBuilder(
-                    future: DatabaseService.getlistList(boards.boardID),
+                    future: futureLists,
                     builder: (BuildContext context, AsyncSnapshot snapshot) {
                       if (!snapshot.hasData) {
                         return Container(
@@ -604,8 +622,7 @@ class BoardScreenState extends State<BoardScreen> {
                         _lists.clear();
                         listName.clear();
                         for (var item in snapshot.data) {
-                          Lists _list = Lists.fromDocument(item);
-                          listName.add(_list.listName);
+                          listName.add(item.listName);
                         }
                       }
                       for (int i = 0; i < listName.length + 1; i++)
