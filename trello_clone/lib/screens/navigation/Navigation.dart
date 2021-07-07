@@ -82,6 +82,11 @@ class NavigationMain extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     changeNameController.value = TextEditingValue(text: 'Old name');
+    FirebaseAuth auth = FirebaseAuth.instance;
+
+    signOut() async {
+      await auth.signOut();
+    }
 
     ///TODO: get username
     if (hasData) {}
@@ -239,10 +244,10 @@ class NavigationMain extends StatelessWidget {
               CustomListTile(
                   Icons.logout,
                   "Đăng xuất",
-                  () => {
-                        ///TODO: process on logout
-                        Navigator.of(context).pushNamed(LOGIN)
-                      }),
+                  () {
+                    signOut();
+                    Navigator.of(context).pushNamed(LOGIN);
+                  }),
             ],
           );
         });

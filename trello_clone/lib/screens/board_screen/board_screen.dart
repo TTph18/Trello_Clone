@@ -12,6 +12,7 @@ import 'package:trello_clone/drag_and_drop/drag_and_drop_list.dart';
 import 'package:trello_clone/drag_and_drop/drag_and_drop_lists.dart';
 import 'package:trello_clone/icons/app_icons.dart';
 import 'package:trello_clone/models/boards.dart';
+import 'package:trello_clone/models/cards.dart';
 import 'package:trello_clone/models/lists.dart';
 import 'package:trello_clone/models/user.dart';
 import 'package:trello_clone/screens/board_screen/end_drawer.dart';
@@ -101,15 +102,17 @@ class tagList extends StatelessWidget {
 }
 
 class _card extends StatefulWidget {
+  final Cards card;
   final String name;
 
-  _card(this.name);
+  _card(this.name, this.card);
 
   @override
-  _cardState createState() => _cardState(name);
+  _cardState createState() => _cardState(name, card);
 }
 
 class _cardState extends State<_card> {
+  late Cards card;
   late String name;
   List<tag> tags = [];
   bool iconSeen = false;
@@ -128,7 +131,7 @@ class _cardState extends State<_card> {
   int numTotal = 4;
   List<Image> avas = [];
 
-  _cardState(this.name);
+  _cardState(this.name, this.card);
 
   @override
   void initState() {
@@ -169,7 +172,7 @@ class _cardState extends State<_card> {
     contents.add(
       Align(
         alignment: Alignment.centerLeft,
-        child: Text(name,
+        child: Text(card.cardName,
             style: TextStyle(
               fontSize: 18,
               color: Colors.black,
@@ -284,7 +287,11 @@ class ListCard {
   List<_card> children;
   bool isLast;
 
-  ListCard({required this.list, required this.name, required this.children, required this.isLast});
+  ListCard(
+      {required this.list,
+      required this.name,
+      required this.children,
+      required this.isLast});
 }
 
 Widget CreateDateString(DateTime dateStart, DateTime dateEnd, bool isFinish) {
@@ -382,10 +389,11 @@ class BoardScreenState extends State<BoardScreen> {
   late Future<Boards> futureBoards;
   late Future<Users> futureUsers;
   late Future<List<Lists>> futureLists;
-  late List<Lists> listList=[];
+  late List<Lists> listList = [];
+  late List<Cards> listCard = [];
   late Boards boards;
   late bool isShowDrawer;
-  late List<String> listName=[];
+  late List<String> listName = [];
   late List<_card> cards;
   var controller = AnimateIconController();
   AssetImage bg = AssetImage("assets/images/BlueBG.png");
@@ -415,10 +423,20 @@ class BoardScreenState extends State<BoardScreen> {
   }
 
   Future<List<Lists>> getLists() async {
-    List<Lists> list =[];
+    List<Lists> list = [];
     var doc = await DatabaseService.getlistList(boards.boardID);
-    for(var item in doc){
+    for (var item in doc) {
       Lists temp = Lists.fromDocument(item);
+      list.add(temp);
+    }
+    return list;
+  }
+
+  Future<List<Cards>> getCards() async {
+    List<Cards> list = [];
+    var doc = await DatabaseService.getListCard(boards.boardID);
+    for (var item in doc) {
+      Cards temp = Cards.fromDocument(item);
       list.add(temp);
     }
     return list;
@@ -431,21 +449,31 @@ class BoardScreenState extends State<BoardScreen> {
     futureUsers = getBoardUser();
     futureLists = getLists();
 
-    for(int i = 0; i < boards.listNumber; i++) {
-        listName.add("");
-        listList.add(new Lists(listID: "", listName: "", position: 0, cardList: [], cardNumber: 0));
+    for (int i = 0; i < boards.listNumber; i++) {
+      listName.add("");
+      listList.add(new Lists(
+          listID: "", listName: "", position: 0, cardList: [], cardNumber: 0));
     }
     for (int i = 0; i < listName.length + 1; i++)
       controllers.add(new ScrollController());
 
     isTapNewCard = List.filled(listName.length + 1, false);
     isTapNewList = false;
+    Cards nullCard = new Cards(
+        cardID: "",
+        cardName: "",
+        createdBy: "",
+        description: "",
+        startDate: "",
+        startTime: "",
+        dueDate: "",
+        dueTime: "",
+        assignedUser: [],
+        status: false,
+        listID: "",
+        boardID: "");
     cards = [
-      _card("Thẻ 1"),
-      _card("Thẻ 2"),
-      _card("Thẻ 3"),
-      _card("Thẻ 4"),
-      _card("Thẻ 5"),
+      _card("Thẻ 1", nullCard),
     ];
     _lists = List.generate(listName.length + 1, (outerIndex) {
       if (outerIndex < listName.length)
@@ -458,7 +486,12 @@ class BoardScreenState extends State<BoardScreen> {
         );
       else
         return ListCard(
-          list: new Lists(listID: "", listName: "", position: 0, cardList: [], cardNumber: 0),
+          list: new Lists(
+              listID: "",
+              listName: "",
+              position: 0,
+              cardList: [],
+              cardNumber: 0),
           name: "Add List",
           children: [],
           isLast: true,
@@ -538,11 +571,13 @@ class BoardScreenState extends State<BoardScreen> {
                         onPressed: () {
                           if (isTapNewList) {
                             if (newListController.text != "") {
-                              DatabaseService.addList(boards.boardID, newListController.text);
+                              DatabaseService.addList(
+                                  boards.boardID, newListController.text);
                               setState(
                                 () {
                                   futureLists = getLists();
                                   listName.add(newListController.text);
+
                                   ///TODO: Cant update widget
                                   isTapNewList = false;
                                   newListController.text = "";
@@ -572,7 +607,10 @@ class BoardScreenState extends State<BoardScreen> {
                           if (index != -1) {
                             if (newCardController.text != "") {
                               //TODO: Rename list - ERROR
-                              DatabaseService.renameList(boards.boardID, _lists[index].list.listID, newCardController.text);
+                              DatabaseService.renameList(
+                                  boards.boardID,
+                                  _lists[index].list.listID,
+                                  newCardController.text);
                               setState(
                                 () {
                                   ///TODO: Reload list name [index]
@@ -624,59 +662,78 @@ class BoardScreenState extends State<BoardScreen> {
                             alignment: FractionalOffset.center,
                             child: CircularProgressIndicator());
                       } else {
-                        controllers.clear();
-                        _lists.clear();
                         listName.clear();
-                        listList.clear();
+                        listList = snapshot.data;
                         for (var item in snapshot.data) {
-                          listList.add(item);
                           listName.add(item.listName);
                         }
                       }
-                      for (int i = 0; i < listName.length + 1; i++)
-                        controllers.add(new ScrollController());
-                      _lists = List.generate(
-                        listName.length + 1,
-                        (outerIndex) {
-                          if (outerIndex < listName.length)
-                            return ListCard(
-                              list: listList[outerIndex],
-                              name: listName[outerIndex],
-                              children: List.generate(cards.length,
-                                  (innerIndex) => cards[innerIndex]),
-                              isLast: false,
+                      return FutureBuilder(
+                          future: getCards(),
+                          builder:
+                              (BuildContext context, AsyncSnapshot snapshot) {
+                            if (!snapshot.hasData) {
+                              return Container(
+                                  alignment: FractionalOffset.center,
+                                  child: CircularProgressIndicator());
+                            } else {
+                              controllers.clear();
+                              _lists.clear();
+                              for (var item in snapshot.data) {
+                                cards.add(_card(item.cardName, item));
+                              }
+                            }
+                            for (int i = 0; i < listName.length + 1; i++)
+                              controllers.add(new ScrollController());
+                            _lists = List.generate(
+                              listName.length + 1,
+                              (outerIndex) {
+                                if (outerIndex < listName.length)
+                                  return ListCard(
+                                    list: listList[outerIndex],
+                                    name: listName[outerIndex],
+                                    children: List.generate(cards.length,
+                                            (innerIndex) => cards[innerIndex]),
+                                    isLast: false,
+                                  );
+                                else
+                                  return ListCard(
+                                    list: new Lists(
+                                        listID: "",
+                                        listName: "",
+                                        position: 0,
+                                        cardList: [],
+                                        cardNumber: 0),
+                                    name: "Add List",
+                                    children: [],
+                                    isLast: true,
+                                  );
+                              },
                             );
-                          else
-                            return ListCard(
-                              list: new Lists(listID: "", listName: "", position: 0, cardList: [], cardNumber: 0),
-                              name: "Add List",
-                              children: [],
-                              isLast: true,
+                            return DragAndDropLists(
+                              children: List.generate(
+                                  _lists.length, (index) => _buildList(index)),
+                              onItemReorder: _onItemReorder,
+                              onListReorder: _onListReorder,
+                              axis: Axis.horizontal,
+                              listWidth: 320,
+                              listDraggingWidth: 288,
+                              listDecoration: BoxDecoration(
+                                color: Color.fromRGBO(244, 245, 247, 1.0),
+                                borderRadius:
+                                    BorderRadius.all(Radius.circular(7.0)),
+                                boxShadow: <BoxShadow>[
+                                  BoxShadow(
+                                    color: Colors.black45,
+                                    spreadRadius: 3.0,
+                                    blurRadius: 6.0,
+                                    offset: Offset(2, 3),
+                                  ),
+                                ],
+                              ),
+                              listPadding: EdgeInsets.fromLTRB(16, 8, 16, 8),
                             );
-                        },
-                      );
-                      return DragAndDropLists(
-                        children: List.generate(
-                            _lists.length, (index) => _buildList(index)),
-                        onItemReorder: _onItemReorder,
-                        onListReorder: _onListReorder,
-                        axis: Axis.horizontal,
-                        listWidth: 320,
-                        listDraggingWidth: 288,
-                        listDecoration: BoxDecoration(
-                          color: Color.fromRGBO(244, 245, 247, 1.0),
-                          borderRadius: BorderRadius.all(Radius.circular(7.0)),
-                          boxShadow: <BoxShadow>[
-                            BoxShadow(
-                              color: Colors.black45,
-                              spreadRadius: 3.0,
-                              blurRadius: 6.0,
-                              offset: Offset(2, 3),
-                            ),
-                          ],
-                        ),
-                        listPadding: EdgeInsets.fromLTRB(16, 8, 16, 8),
-                      );
+                          });
                     })),
             floatingActionButton: FloatingActionButton(
               onPressed: () {},
@@ -762,8 +819,10 @@ class BoardScreenState extends State<BoardScreen> {
                             );
                           } else if (value == 2) {
                             Route route = MaterialPageRoute(
-                              ///TODO: Cant delete list in old board
-                                builder: (context) => MoveBoardScreen(boards, innerList.list));
+
+                                ///TODO: Cant delete list in old board
+                                builder: (context) =>
+                                    MoveBoardScreen(boards, innerList.list));
                             Navigator.push(context, route);
                           } else {
                             showDialog<String>(
@@ -804,7 +863,9 @@ class BoardScreenState extends State<BoardScreen> {
                                             onPressed: () {
                                               setState(() {
                                                 ///TODO: Cant update widget
-                                                DatabaseService.deleteList(boards.boardID, innerList.list.listID);
+                                                DatabaseService.deleteList(
+                                                    boards.boardID,
+                                                    innerList.list.listID);
                                               });
                                               Navigator.of(context).pop();
                                             },

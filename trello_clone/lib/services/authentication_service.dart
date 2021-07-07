@@ -17,6 +17,10 @@ Future<String?> signIn(String email, String password) async {
   }
 }
 
+Future<void> signOut() async {
+  await FirebaseAuth.instance.signOut();
+}
+
 Future<String?> register(String email, String password, String userName, String profileName) async {
   var newUID, newEmail;
   try {

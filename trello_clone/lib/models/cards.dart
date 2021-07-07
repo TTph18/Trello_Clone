@@ -31,7 +31,7 @@ class Cards {
       startDate: document['startDate'],
       dueTime: document['dueTime'],
       startTime: document['startTime'],
-      assignedUser: document['assignedUser'],
+      assignedUser: document['assignedUser'].cast<String>(),
       status: document['status'],
     );
   }

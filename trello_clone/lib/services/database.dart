@@ -572,22 +572,49 @@ class DatabaseService {
   }
 
   // get lists card
-  static Future getlistCard(Lists currentList) async {
-    List listList = [];
-    for(var item in currentList.cardList) {
+  static Future getListCard(String boardID) async {
       var snapshot = await FirebaseFirestore.instance
           .collection('cards')
-          .doc(item)
+          .where('boardID', isEqualTo: boardID)
           .get();
-      listList.add(snapshot);
-    }
-    return listList;
+    return snapshot.docs;
   }
+
+  //delete a board
+  static Future<void> deleteCard(String cardID) async {
+    var oldListID;
+    //get old wp id
+    await FirebaseFirestore.instance
+        .collection('cards')
+        .doc(cardID)
+        .get().then((value) {
+      oldListID = value['listID'].toString();
+    });
+    //delete card
+    await FirebaseFirestore.instance
+        .collection('cards')
+        .doc(cardID)
+        .delete();
+    //delete card from list
+    List<String> cardList;
+    await FirebaseFirestore.instance
+        .collection('workspaces')
+        .doc(oldListID)
+        .get().then((value) {
+      cardList = value['cardList'].cast<String>();
+      cardList.remove(cardID);
+      FirebaseFirestore.instance
+          .collection('lists')
+          .doc(oldListID).update({"cardList": cardList});
+    });
+  }
+
   //add a card
   static Future<void> addCard(String boardID, String listID, String cardName, String description, String userID, List<String> assignedUser, String startDate, String dueDate, String startTime, String dueTime) async {
     String uid = FirebaseAuth.instance.currentUser!.uid;
     final docRef = await FirebaseFirestore.instance.collection('cards').add({
       'cardName': cardName,
+      'boardID' : boardID,
       'createdBy': uid,
       'description' : description,
       'assignedUser': assignedUser,
