@@ -9,7 +9,6 @@ import 'package:trello_clone/models/boards.dart';
 import 'package:trello_clone/models/cards.dart';
 import 'package:trello_clone/models/user.dart';
 import 'package:trello_clone/screens/card_screen/move_card_screen.dart';
-
 import 'package:trello_clone/widgets/reuse_widget/avatar.dart';
 
 class CardScreen extends StatefulWidget {
@@ -73,12 +72,34 @@ class CardScreenState extends State<CardScreen> {
   @override
   void initState() {
     for (Users user in users) {
-      var foundUser =
-          pickedUsers.where((element) => element.userID == user.userID);
+      var foundUser = pickedUsers.where((element) => element.userID == user.userID);
       if (foundUser.isNotEmpty)
         flagPickedUsers.add(true);
       else
         flagPickedUsers.add(false);
+    }
+    tasks = [
+      [
+        "Name 11",
+        "Name 12",
+        "Name 13",
+      ],
+      [
+        "Name 21",
+        "Name 22",
+      ],
+      [
+        "Name 31",
+        "Name 32",
+        "Name 33",
+      ],
+    ];
+    controllers = [];
+    for (int i = 0; i < tasks.length; i++) {
+      controllers.add([]);
+      for (int j = 0; j < tasks[i].length; j++) {
+        controllers[i].add(new TextEditingController.fromValue(TextEditingValue(text: tasks[i][j])));
+      }
     }
     super.initState();
   }
@@ -90,23 +111,13 @@ class CardScreenState extends State<CardScreen> {
 
   Future<Null> _selectedStartDate(BuildContext context) async {
     final DateTime picked = (await showDatePicker(
-        context: context,
-        initialDate: selectedStartDate,
-        initialDatePickerMode: DatePickerMode.day,
-        firstDate: DateTime(2015),
-        lastDate: DateTime(2101)))!;
+        context: context, initialDate: selectedStartDate, initialDatePickerMode: DatePickerMode.day, firstDate: DateTime(2015), lastDate: DateTime(2101)))!;
     setState(() {
       selectedStartDate = picked;
       if (selectedStartDate.year != DateTime.now().year)
-        startDateTxtCtrl.text = selectedStartDate.day.toString() +
-            " thg " +
-            selectedStartDate.month.toString() +
-            ", " +
-            selectedStartDate.year.toString();
+        startDateTxtCtrl.text = selectedStartDate.day.toString() + " thg " + selectedStartDate.month.toString() + ", " + selectedStartDate.year.toString();
       else
-        startDateTxtCtrl.text = selectedStartDate.day.toString() +
-            " thg " +
-            selectedStartDate.month.toString();
+        startDateTxtCtrl.text = selectedStartDate.day.toString() + " thg " + selectedStartDate.month.toString();
     });
   }
 
@@ -117,23 +128,13 @@ class CardScreenState extends State<CardScreen> {
 
   Future<Null> _selectedEndDate(BuildContext context) async {
     final DateTime picked = (await showDatePicker(
-        context: context,
-        initialDate: selectedEndDate,
-        initialDatePickerMode: DatePickerMode.day,
-        firstDate: DateTime(2015),
-        lastDate: DateTime(2101)))!;
+        context: context, initialDate: selectedEndDate, initialDatePickerMode: DatePickerMode.day, firstDate: DateTime(2015), lastDate: DateTime(2101)))!;
     setState(() {
       selectedEndDate = picked;
       if (selectedEndDate.year != DateTime.now().year)
-        endDateTxtCtrl.text = selectedEndDate.day.toString() +
-            " thg " +
-            selectedEndDate.month.toString() +
-            ", " +
-            selectedEndDate.year.toString();
+        endDateTxtCtrl.text = selectedEndDate.day.toString() + " thg " + selectedEndDate.month.toString() + ", " + selectedEndDate.year.toString();
       else
-        endDateTxtCtrl.text = selectedEndDate.day.toString() +
-            " thg " +
-            selectedEndDate.month.toString();
+        endDateTxtCtrl.text = selectedEndDate.day.toString() + " thg " + selectedEndDate.month.toString();
     });
   }
 
@@ -151,11 +152,9 @@ class CardScreenState extends State<CardScreen> {
       selectedStartTime = picked;
       startTimeTxtCtrl.text = selectedStartTime.hour.toString() + ":";
       if (selectedStartTime.minute >= 10)
-        startTimeTxtCtrl.text =
-            startTimeTxtCtrl.text + selectedStartTime.minute.toString();
+        startTimeTxtCtrl.text = startTimeTxtCtrl.text + selectedStartTime.minute.toString();
       else
-        startTimeTxtCtrl.text =
-            startTimeTxtCtrl.text + "0" + selectedStartTime.minute.toString();
+        startTimeTxtCtrl.text = startTimeTxtCtrl.text + "0" + selectedStartTime.minute.toString();
     });
   }
 
@@ -173,11 +172,9 @@ class CardScreenState extends State<CardScreen> {
       selectedEndTime = picked;
       endTimeTxtCtrl.text = selectedEndTime.hour.toString() + ":";
       if (selectedEndTime.minute >= 10)
-        endTimeTxtCtrl.text =
-            endTimeTxtCtrl.text + selectedEndTime.minute.toString();
+        endTimeTxtCtrl.text = endTimeTxtCtrl.text + selectedEndTime.minute.toString();
       else
-        endTimeTxtCtrl.text =
-            endTimeTxtCtrl.text + "0" + selectedEndTime.minute.toString();
+        endTimeTxtCtrl.text = endTimeTxtCtrl.text + "0" + selectedEndTime.minute.toString();
     });
   }
 
@@ -210,6 +207,7 @@ class CardScreenState extends State<CardScreen> {
     "Name 3",
   ];
   bool isAddTask = false;
+  bool isChangeTaskListName = false;
   List<List<String>> tasks = [
     [
       "Name 11",
@@ -247,6 +245,7 @@ class CardScreenState extends State<CardScreen> {
     true,
     true,
   ];
+  List<List<TextEditingController>> controllers = [];
 
   ///For comment
   ///TODO: Load currentUser data
@@ -276,86 +275,98 @@ class CardScreenState extends State<CardScreen> {
             ),
             onPressed: () {
               if (isAddTask) {
+                isAddTask = false;
+                FocusScope.of(context).unfocus();
               } else
                 Navigator.of(context).pop();
             },
           ),
           elevation: 0.0,
           actions: [
-            PopupMenuButton<String>(
-                icon: const Icon(
-                  Icons.more_vert,
-                  color: Colors.black,
-                ),
-                onSelected: (value) {
-                  switch (value) {
-                    case "Di chuyển thẻ":
-                      Route route = MaterialPageRoute(
-                          builder: (context) => MoveCardScreen());
-                      Navigator.push(context, route);
-                      break;
-                    case "Xóa thẻ":
-                      showDialog<String>(
-                        context: context,
-                        builder: (BuildContext context) => AlertDialog(
-                          title: const Text(
-                            'Xóa thẻ',
-                            style: TextStyle(fontWeight: FontWeight.bold),
-                          ),
-                          content: Container(
-                            width: MediaQuery.of(context).size.width * 0.8,
-                            child: Column(
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                Text(
-                                    "Tất cả các thao tác sẽ bị xóa khỏi thông báo hoạt động. Không thể hoàn tác."),
-                                Row(
-                                  mainAxisAlignment: MainAxisAlignment.end,
+            isAddTask
+                ? IconButton(
+                    icon: Icon(
+                      Icons.check,
+                      color: Colors.black,
+                    ),
+                    onPressed: () {
+                      if (isAddTask) {
+                        ///TODO: Add new task
+                        isAddTask = false;
+                        FocusScope.of(context).unfocus();
+                      }
+                    },
+                  )
+                : PopupMenuButton<String>(
+                    icon: const Icon(
+                      Icons.more_vert,
+                      color: Colors.black,
+                    ),
+                    onSelected: (value) {
+                      switch (value) {
+                        case "Di chuyển thẻ":
+                          Route route = MaterialPageRoute(builder: (context) => MoveCardScreen());
+                          Navigator.push(context, route);
+                          break;
+                        case "Xóa thẻ":
+                          showDialog<String>(
+                            context: context,
+                            builder: (BuildContext context) => AlertDialog(
+                              title: const Text(
+                                'Xóa thẻ',
+                                style: TextStyle(fontWeight: FontWeight.bold),
+                              ),
+                              content: Container(
+                                width: MediaQuery.of(context).size.width * 0.8,
+                                child: Column(
+                                  mainAxisSize: MainAxisSize.min,
                                   children: [
-                                    TextButton(
-                                      child: Text(
-                                        'HỦY',
-                                        style: TextStyle(
-                                            fontWeight: FontWeight.bold),
-                                      ),
-                                      onPressed: () {
-                                        Navigator.of(context).pop();
-                                      },
+                                    Text("Tất cả các thao tác sẽ bị xóa khỏi thông báo hoạt động. Không thể hoàn tác."),
+                                    Row(
+                                      mainAxisAlignment: MainAxisAlignment.end,
+                                      children: [
+                                        TextButton(
+                                          child: Text(
+                                            'HỦY',
+                                            style: TextStyle(fontWeight: FontWeight.bold),
+                                          ),
+                                          onPressed: () {
+                                            Navigator.of(context).pop();
+                                          },
+                                        ),
+                                        TextButton(
+                                          child: Text(
+                                            'XÓA',
+                                            style: TextStyle(fontWeight: FontWeight.bold),
+                                          ),
+                                          onPressed: () {
+                                            setState(() {
+                                              ///TODO: delete card
+                                            });
+                                            Navigator.of(context).pop();
+                                            Navigator.of(context).pop();
+                                          },
+                                        )
+                                      ],
                                     ),
-                                    TextButton(
-                                      child: Text(
-                                        'XÓA',
-                                        style: TextStyle(
-                                            fontWeight: FontWeight.bold),
-                                      ),
-                                      onPressed: () {
-                                        setState(() {
-                                          ///TODO: delete card
-                                        });
-                                        Navigator.of(context).pop();
-                                        Navigator.of(context).pop();
-                                      },
-                                    )
                                   ],
                                 ),
-                              ],
+                              ),
                             ),
+                          );
+                          break;
+                      }
+                    },
+                    itemBuilder: (BuildContext context) => <PopupMenuEntry<String>>[
+                          const PopupMenuItem<String>(
+                            value: "Di chuyển thẻ",
+                            child: Text('Di chuyển thẻ'),
                           ),
-                        ),
-                      );
-                      break;
-                  }
-                },
-                itemBuilder: (BuildContext context) => <PopupMenuEntry<String>>[
-                      const PopupMenuItem<String>(
-                        value: "Di chuyển thẻ",
-                        child: Text('Di chuyển thẻ'),
-                      ),
-                      const PopupMenuItem<String>(
-                        value: "Xóa thẻ",
-                        child: Text('Xóa thẻ'),
-                      ),
-                    ])
+                          const PopupMenuItem<String>(
+                            value: "Xóa thẻ",
+                            child: Text('Xóa thẻ'),
+                          ),
+                        ])
           ]),
       body: SingleChildScrollView(
         child: Column(
@@ -377,13 +388,11 @@ class CardScreenState extends State<CardScreen> {
               width: MediaQuery.of(context).size.width,
               color: Colors.white,
               child: Padding(
-                padding:
-                    const EdgeInsets.only(left: 25.0, top: 15.0, bottom: 20.0),
+                padding: const EdgeInsets.only(left: 25.0, top: 15.0, bottom: 20.0),
 
                 ///TODO: Change Tên danh sách to $cardlistName
                 ///TODO: Change Tên bảng to $boardName
-                child: Text("Danh sách Tên danh sách trong Tên bảng",
-                    style: TextStyle(fontSize: 20)),
+                child: Text("Danh sách Tên danh sách trong Tên bảng", style: TextStyle(fontSize: 20)),
               ),
             ),
 
@@ -398,9 +407,7 @@ class CardScreenState extends State<CardScreen> {
               ),
               decoration: BoxDecoration(
                 color: Colors.white,
-                border: Border(
-                    top: BorderSide(color: Colors.grey.shade400),
-                    bottom: BorderSide(color: Colors.grey.shade400)),
+                border: Border(top: BorderSide(color: Colors.grey.shade400), bottom: BorderSide(color: Colors.grey.shade400)),
               ),
               child: TextField(
                 ///TODO: load data from database to descriptionTxtCtrl.text
@@ -437,9 +444,7 @@ class CardScreenState extends State<CardScreen> {
                 ),
                 decoration: BoxDecoration(
                   color: Colors.white,
-                  border: Border(
-                      top: BorderSide(color: Colors.grey.shade400),
-                      bottom: BorderSide(color: Colors.grey.shade400)),
+                  border: Border(top: BorderSide(color: Colors.grey.shade400), bottom: BorderSide(color: Colors.grey.shade400)),
                 ),
                 child: Row(
                   children: [
@@ -475,9 +480,7 @@ class CardScreenState extends State<CardScreen> {
                 ),
                 decoration: BoxDecoration(
                   color: Colors.white,
-                  border: Border(
-                      top: BorderSide(color: Colors.grey.shade400),
-                      bottom: BorderSide(color: Colors.grey.shade400)),
+                  border: Border(top: BorderSide(color: Colors.grey.shade400), bottom: BorderSide(color: Colors.grey.shade400)),
                 ),
                 child: Row(
                   children: [
@@ -501,8 +504,7 @@ class CardScreenState extends State<CardScreen> {
                                   itemBuilder: (context, index) {
                                     return CircleAvatar(
                                       radius: 25,
-                                      backgroundImage:
-                                          AssetImage(pickedUsers[index].avatar),
+                                      backgroundImage: AssetImage(pickedUsers[index].avatar),
                                     );
                                   }),
                             ),
@@ -533,21 +535,13 @@ class CardScreenState extends State<CardScreen> {
                                             InkWell(
                                               onTap: () {
                                                 setState(() {
-                                                  flagPickedUsers[index] == true
-                                                      ? flagPickedUsers[index] =
-                                                          false
-                                                      : flagPickedUsers[index] =
-                                                          true;
+                                                  flagPickedUsers[index] == true ? flagPickedUsers[index] = false : flagPickedUsers[index] = true;
                                                 });
                                               },
                                               child: Padding(
-                                                padding:
-                                                    const EdgeInsets.fromLTRB(
-                                                        16.0, 14.0, 0, 14.0),
+                                                padding: const EdgeInsets.fromLTRB(16.0, 14.0, 0, 14.0),
                                                 child: Row(
-                                                  mainAxisAlignment:
-                                                      MainAxisAlignment
-                                                          .spaceBetween,
+                                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                                   children: [
                                                     Row(
                                                       children: [
@@ -565,50 +559,26 @@ class CardScreenState extends State<CardScreen> {
                                                           width: 20,
                                                         ),
                                                         Column(
-                                                          crossAxisAlignment:
-                                                              CrossAxisAlignment
-                                                                  .start,
+                                                          crossAxisAlignment: CrossAxisAlignment.start,
                                                           children: <Widget>[
                                                             Align(
-                                                              alignment: Alignment
-                                                                  .centerLeft,
-                                                              child: Text(
-                                                                  users[index]
-                                                                      .profileName,
-                                                                  textAlign:
-                                                                      TextAlign
-                                                                          .left,
-                                                                  style: TextStyle(
-                                                                      fontSize:
-                                                                          16,
-                                                                      fontWeight:
-                                                                          FontWeight
-                                                                              .bold)),
+                                                              alignment: Alignment.centerLeft,
+                                                              child: Text(users[index].profileName,
+                                                                  textAlign: TextAlign.left, style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
                                                             ),
                                                             Align(
-                                                              alignment: Alignment
-                                                                  .centerLeft,
+                                                              alignment: Alignment.centerLeft,
                                                               child: Text(
-                                                                '@' +
-                                                                    users[index]
-                                                                        .userName,
-                                                                textAlign:
-                                                                    TextAlign
-                                                                        .left,
-                                                                style: TextStyle(
-                                                                    fontSize:
-                                                                        16,
-                                                                    fontStyle:
-                                                                        FontStyle
-                                                                            .italic),
+                                                                '@' + users[index].userName,
+                                                                textAlign: TextAlign.left,
+                                                                style: TextStyle(fontSize: 16, fontStyle: FontStyle.italic),
                                                               ),
                                                             ),
                                                           ],
                                                         ),
                                                       ],
                                                     ),
-                                                    flagPickedUsers[index] ==
-                                                            false
+                                                    flagPickedUsers[index] == false
                                                         ? SizedBox(
                                                             width: 24,
                                                           )
@@ -623,8 +593,7 @@ class CardScreenState extends State<CardScreen> {
                                               ),
                                             ),
                                             Padding(
-                                              padding: EdgeInsets.fromLTRB(
-                                                  70, 0, 0, 0),
+                                              padding: EdgeInsets.fromLTRB(70, 0, 0, 0),
                                               child: Divider(
                                                 height: 1,
                                                 color: Colors.black,
@@ -646,18 +615,13 @@ class CardScreenState extends State<CardScreen> {
                                       child: TextButton(
                                         onPressed: () {
                                           for (Users user in users) {
-                                            var foundUser = pickedUsers.where(
-                                                (element) =>
-                                                    element.userID ==
-                                                    user.userID);
+                                            var foundUser = pickedUsers.where((element) => element.userID == user.userID);
                                             if (foundUser.isNotEmpty)
                                               flagPickedUsers.add(true);
                                             else
                                               flagPickedUsers.add(false);
                                           }
-                                          Navigator.of(context,
-                                                  rootNavigator: true)
-                                              .pop('dialog');
+                                          Navigator.of(context, rootNavigator: true).pop('dialog');
                                         },
                                         child: Text("HỦY"),
                                       ),
@@ -669,16 +633,11 @@ class CardScreenState extends State<CardScreen> {
                                             pickedUsers = [];
 
                                             ///Save new picked users
-                                            for (int index = 0;
-                                                index < flagPickedUsers.length;
-                                                index++) {
-                                              if (flagPickedUsers[index])
-                                                pickedUsers.add(users[index]);
+                                            for (int index = 0; index < flagPickedUsers.length; index++) {
+                                              if (flagPickedUsers[index]) pickedUsers.add(users[index]);
                                             }
                                           });
-                                          Navigator.of(context,
-                                                  rootNavigator: true)
-                                              .pop('dialog');
+                                          Navigator.of(context, rootNavigator: true).pop('dialog');
                                         },
                                         child: Text("HOÀN TẤT"),
                                       ),
@@ -721,9 +680,7 @@ class CardScreenState extends State<CardScreen> {
                     Container(
                       width: MediaQuery.of(context).size.width - 94,
                       child: Text(
-                        startDateStr == ""
-                            ? "Ngày bắt đầu..."
-                            : "$startDateStr",
+                        startDateStr == "" ? "Ngày bắt đầu..." : "$startDateStr",
                         style: TextStyle(fontSize: 20),
                       ),
                     ),
@@ -731,17 +688,12 @@ class CardScreenState extends State<CardScreen> {
                 ),
               ),
               onTap: () {
-                startDateTxtCtrl.text = selectedStartDate.day.toString() +
-                    " thg " +
-                    selectedStartDate.month.toString();
+                startDateTxtCtrl.text = selectedStartDate.day.toString() + " thg " + selectedStartDate.month.toString();
                 startTimeTxtCtrl.text = selectedStartTime.hour.toString() + ":";
                 if (selectedStartTime.minute >= 10)
-                  startTimeTxtCtrl.text = startTimeTxtCtrl.text +
-                      selectedStartTime.minute.toString();
+                  startTimeTxtCtrl.text = startTimeTxtCtrl.text + selectedStartTime.minute.toString();
                 else
-                  startTimeTxtCtrl.text = startTimeTxtCtrl.text +
-                      "0" +
-                      selectedStartTime.minute.toString();
+                  startTimeTxtCtrl.text = startTimeTxtCtrl.text + "0" + selectedStartTime.minute.toString();
                 showDialog(
                   context: context,
                   builder: (BuildContext context) => AlertDialog(
@@ -766,8 +718,7 @@ class CardScreenState extends State<CardScreen> {
                                   },
                                   decoration: InputDecoration(
                                     hintText: "Chọn ngày",
-                                    contentPadding:
-                                        const EdgeInsets.only(bottom: 0),
+                                    contentPadding: const EdgeInsets.only(bottom: 0),
                                   ),
                                 ),
                               ),
@@ -785,8 +736,7 @@ class CardScreenState extends State<CardScreen> {
                                   },
                                   decoration: InputDecoration(
                                     hintText: "Chọn thời gian",
-                                    contentPadding:
-                                        const EdgeInsets.only(bottom: 0),
+                                    contentPadding: const EdgeInsets.only(bottom: 0),
                                   ),
                                 ),
                               ),
@@ -816,10 +766,8 @@ class CardScreenState extends State<CardScreen> {
 
                                     ///Reset start time, if from database not null, reset it by the data
                                     ///else reset it by TimeOfDay(hour: 9, minute: 0)
-                                    selectedStartTime =
-                                        TimeOfDay(hour: 9, minute: 0);
-                                    Navigator.of(context, rootNavigator: true)
-                                        .pop('dialog');
+                                    selectedStartTime = TimeOfDay(hour: 9, minute: 0);
+                                    Navigator.of(context, rootNavigator: true).pop('dialog');
                                   },
                                   child: Text("HỦY"),
                                 ),
@@ -827,8 +775,7 @@ class CardScreenState extends State<CardScreen> {
                               Container(
                                 child: TextButton(
                                   onPressed: () {
-                                    if (startDateTxtCtrl.text == "" &&
-                                        startTimeTxtCtrl.text == "") {
+                                    if (startDateTxtCtrl.text == "" && startTimeTxtCtrl.text == "") {
                                       setState(() {
                                         startDateStr = "";
                                       });
@@ -836,23 +783,14 @@ class CardScreenState extends State<CardScreen> {
                                       ///Save null to database
                                     } else {
                                       setState(() {
-                                        String selectedDay =
-                                            selectedStartDate.day.toString();
-                                        String selectedMonth =
-                                            selectedStartDate.month.toString();
-                                        String selectedYear =
-                                            selectedStartDate.year.toString();
-                                        String selectedTimeStr =
-                                            selectedStartTime.hour.toString() +
-                                                (selectedStartTime.minute >= 10
-                                                    ? ":0" +
-                                                        selectedStartTime.minute
-                                                            .toString()
-                                                    : ":0" +
-                                                        selectedStartTime.minute
-                                                            .toString());
-                                        startDateStr =
-                                            "Bắt đầu vào ngày $selectedDay tháng $selectedMonth, năm $selectedYear lúc $selectedTimeStr";
+                                        String selectedDay = selectedStartDate.day.toString();
+                                        String selectedMonth = selectedStartDate.month.toString();
+                                        String selectedYear = selectedStartDate.year.toString();
+                                        String selectedTimeStr = selectedStartTime.hour.toString() +
+                                            (selectedStartTime.minute >= 10
+                                                ? ":0" + selectedStartTime.minute.toString()
+                                                : ":0" + selectedStartTime.minute.toString());
+                                        startDateStr = "Bắt đầu vào ngày $selectedDay tháng $selectedMonth, năm $selectedYear lúc $selectedTimeStr";
                                       });
 
                                       ///save selected Date and selected time to database. This condition means:
@@ -860,8 +798,7 @@ class CardScreenState extends State<CardScreen> {
                                       ///date not null, time null => save date value + time default at 9:00
                                       ///date, time not null => save normally
                                     }
-                                    Navigator.of(context, rootNavigator: true)
-                                        .pop('dialog');
+                                    Navigator.of(context, rootNavigator: true).pop('dialog');
                                   },
                                   child: Text("HOÀN TẤT"),
                                 ),
@@ -894,8 +831,7 @@ class CardScreenState extends State<CardScreen> {
                 ),
                 decoration: BoxDecoration(
                   color: Colors.white,
-                  border:
-                      Border(bottom: BorderSide(color: Colors.grey.shade400)),
+                  border: Border(bottom: BorderSide(color: Colors.grey.shade400)),
                 ),
                 child: Row(
                   children: [
@@ -913,17 +849,12 @@ class CardScreenState extends State<CardScreen> {
                 ),
               ),
               onTap: () {
-                endDateTxtCtrl.text = selectedEndDate.day.toString() +
-                    " thg " +
-                    selectedEndDate.month.toString();
+                endDateTxtCtrl.text = selectedEndDate.day.toString() + " thg " + selectedEndDate.month.toString();
                 endTimeTxtCtrl.text = selectedEndTime.hour.toString() + ":";
                 if (selectedEndTime.minute >= 10)
-                  endTimeTxtCtrl.text =
-                      endTimeTxtCtrl.text + selectedEndTime.minute.toString();
+                  endTimeTxtCtrl.text = endTimeTxtCtrl.text + selectedEndTime.minute.toString();
                 else
-                  endTimeTxtCtrl.text = endTimeTxtCtrl.text +
-                      "0" +
-                      selectedEndTime.minute.toString();
+                  endTimeTxtCtrl.text = endTimeTxtCtrl.text + "0" + selectedEndTime.minute.toString();
                 showDialog(
                   context: context,
                   builder: (BuildContext context) => AlertDialog(
@@ -948,8 +879,7 @@ class CardScreenState extends State<CardScreen> {
                                   },
                                   decoration: InputDecoration(
                                     hintText: "Chọn ngày",
-                                    contentPadding:
-                                        const EdgeInsets.only(bottom: 0),
+                                    contentPadding: const EdgeInsets.only(bottom: 0),
                                   ),
                                 ),
                               ),
@@ -967,8 +897,7 @@ class CardScreenState extends State<CardScreen> {
                                   },
                                   decoration: InputDecoration(
                                     hintText: "Chọn thời gian",
-                                    contentPadding:
-                                        const EdgeInsets.only(bottom: 0),
+                                    contentPadding: const EdgeInsets.only(bottom: 0),
                                   ),
                                 ),
                               ),
@@ -1026,8 +955,7 @@ class CardScreenState extends State<CardScreen> {
                           ),
                           Container(
                             alignment: Alignment.centerLeft,
-                            child: Text(
-                                "Nhắc nhở chỉ được gửi đến các thành viên và người theo dõi thẻ."),
+                            child: Text("Nhắc nhở chỉ được gửi đến các thành viên và người theo dõi thẻ."),
                           ),
                           SizedBox(
                             height: 20,
@@ -1044,10 +972,8 @@ class CardScreenState extends State<CardScreen> {
 
                                     ///Reset end time, if from database not null, reset it by the data
                                     ///else reset it by TimeOfDay(hour: 9, minute: 0)
-                                    selectedEndTime =
-                                        TimeOfDay(hour: 9, minute: 0);
-                                    Navigator.of(context, rootNavigator: true)
-                                        .pop('dialog');
+                                    selectedEndTime = TimeOfDay(hour: 9, minute: 0);
+                                    Navigator.of(context, rootNavigator: true).pop('dialog');
                                   },
                                   child: Text("HỦY"),
                                 ),
@@ -1055,8 +981,7 @@ class CardScreenState extends State<CardScreen> {
                               Container(
                                 child: TextButton(
                                   onPressed: () {
-                                    if (endDateTxtCtrl.text == "" &&
-                                        endDateTxtCtrl.text == "") {
+                                    if (endDateTxtCtrl.text == "" && endDateTxtCtrl.text == "") {
                                       setState(() {
                                         endDateStr = "";
                                       });
@@ -1064,23 +989,14 @@ class CardScreenState extends State<CardScreen> {
                                       ///Save null to database
                                     } else {
                                       setState(() {
-                                        String selectedDay =
-                                            selectedEndDate.day.toString();
-                                        String selectedMonth =
-                                            selectedEndDate.month.toString();
-                                        String selectedYear =
-                                            selectedEndDate.year.toString();
-                                        String selectedTimeStr =
-                                            selectedEndTime.hour.toString() +
-                                                (selectedEndTime.minute >= 10
-                                                    ? ":0" +
-                                                        selectedEndTime.minute
-                                                            .toString()
-                                                    : ":0" +
-                                                        selectedEndTime.minute
-                                                            .toString());
-                                        endDateStr =
-                                            "Hết hạn vào ngày $selectedDay tháng $selectedMonth, năm $selectedYear lúc $selectedTimeStr";
+                                        String selectedDay = selectedEndDate.day.toString();
+                                        String selectedMonth = selectedEndDate.month.toString();
+                                        String selectedYear = selectedEndDate.year.toString();
+                                        String selectedTimeStr = selectedEndTime.hour.toString() +
+                                            (selectedEndTime.minute >= 10
+                                                ? ":0" + selectedEndTime.minute.toString()
+                                                : ":0" + selectedEndTime.minute.toString());
+                                        endDateStr = "Hết hạn vào ngày $selectedDay tháng $selectedMonth, năm $selectedYear lúc $selectedTimeStr";
                                       });
 
                                       ///save selected Date and selected time to database. This condition means:
@@ -1088,8 +1004,7 @@ class CardScreenState extends State<CardScreen> {
                                       ///date not null, time null => save date value + time default at 9:00
                                       ///date, time not null => save normally
                                     }
-                                    Navigator.of(context, rootNavigator: true)
-                                        .pop('dialog');
+                                    Navigator.of(context, rootNavigator: true).pop('dialog');
                                   },
                                   child: Text("HOÀN TẤT"),
                                 ),
@@ -1119,9 +1034,7 @@ class CardScreenState extends State<CardScreen> {
               ),
               decoration: BoxDecoration(
                 color: Colors.white,
-                border: Border(
-                    top: BorderSide(color: Colors.grey.shade400),
-                    bottom: BorderSide(color: Colors.grey.shade400)),
+                border: Border(top: BorderSide(color: Colors.grey.shade400), bottom: BorderSide(color: Colors.grey.shade400)),
               ),
               child: Row(
                 children: [
@@ -1176,79 +1089,76 @@ class CardScreenState extends State<CardScreen> {
                             (index) => Column(
                                   children: [
                                     ///Header
-                                    Container(
-                                      padding: const EdgeInsets.fromLTRB(
-                                          20, 8, 20, 8),
-                                      decoration: BoxDecoration(
-                                          color: Colors.white,
-                                          border: Border(
-                                            top: BorderSide(
-                                                color: Colors.grey.shade400),
-                                            bottom: BorderSide(
-                                                color: Colors.grey.shade400),
-                                          )),
-                                      child: Row(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.spaceBetween,
-                                        children: [
-                                          Text(
-                                            taskListNames[index],
-                                            style: TextStyle(
-                                              fontSize: 20,
+                                    InkWell(
+                                      onTap: () {
+                                        setState(() {});
+                                      },
+                                      child: Container(
+                                        padding: const EdgeInsets.fromLTRB(20, 8, 20, 8),
+                                        decoration: BoxDecoration(
+                                            color: Colors.white,
+                                            border: Border(
+                                              top: BorderSide(color: Colors.grey.shade400),
+                                              bottom: BorderSide(color: Colors.grey.shade400),
+                                            )),
+                                        child: Row(
+                                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                          children: [
+                                            Text(
+                                              taskListNames[index],
+                                              style: TextStyle(
+                                                fontSize: 20,
+                                              ),
                                             ),
-                                          ),
-                                          Row(
-                                            children: [
-                                              AnimatedIconButton(
-                                                  size: 25,
-                                                  onPressed: () => {
-                                                        setState(() {
-                                                          isShow[index] =
-                                                              !isShow[index];
-                                                        })
-                                                      },
-                                                  icons: [
-                                                    AnimatedIconItem(
-                                                      icon: Icon(
-                                                        Icons
-                                                            .keyboard_arrow_down,
-                                                        color: Colors.black,
+                                            Row(
+                                              children: [
+                                                AnimatedIconButton(
+                                                    size: 25,
+                                                    onPressed: () => {
+                                                          setState(() {
+                                                            isShow[index] = !isShow[index];
+                                                          })
+                                                        },
+                                                    icons: [
+                                                      AnimatedIconItem(
+                                                        icon: Icon(
+                                                          Icons.keyboard_arrow_down,
+                                                          color: Colors.black,
+                                                        ),
+                                                      ),
+                                                      AnimatedIconItem(
+                                                        icon: Icon(
+                                                          Icons.keyboard_arrow_up,
+                                                          color: Colors.black,
+                                                        ),
+                                                      ),
+                                                    ]),
+                                                PopupMenuButton(
+                                                  iconSize: 30,
+                                                  padding: EdgeInsets.zero,
+                                                  icon: Icon(Icons.more_horiz),
+                                                  onSelected: (value) {},
+                                                  itemBuilder: (context) => [
+                                                    PopupMenuItem(
+                                                      value: 1,
+                                                      child: Text(
+                                                        'Xóa',
+                                                        style: TextStyle(
+                                                          fontSize: 20,
+                                                        ),
                                                       ),
                                                     ),
-                                                    AnimatedIconItem(
-                                                      icon: Icon(
-                                                        Icons.keyboard_arrow_up,
-                                                        color: Colors.black,
-                                                      ),
-                                                    ),
-                                                  ]),
-                                              PopupMenuButton(
-                                                iconSize: 30,
-                                                padding: EdgeInsets.zero,
-                                                icon: Icon(Icons.more_horiz),
-                                                onSelected: (value) {},
-                                                itemBuilder: (context) => [
-                                                  PopupMenuItem(
-                                                    value: 1,
-                                                    child: Text(
-                                                      'Xóa',
-                                                      style: TextStyle(
-                                                        fontSize: 20,
-                                                      ),
-                                                    ),
-                                                  ),
-                                                ],
-                                              )
-                                            ],
-                                          )
-                                        ],
+                                                  ],
+                                                )
+                                              ],
+                                            )
+                                          ],
+                                        ),
                                       ),
                                     ),
                                     Container(
                                       height: 5,
-                                      decoration: BoxDecoration(
-                                          color:
-                                              Color.fromRGBO(188, 217, 234, 1)),
+                                      decoration: BoxDecoration(color: Color.fromRGBO(188, 217, 234, 1)),
                                       child: Row(),
                                     ),
                                     isShow[index]
@@ -1268,38 +1178,36 @@ class CardScreenState extends State<CardScreen> {
                                                             Transform.scale(
                                                               scale: 1.2,
                                                               child: Checkbox(
-                                                                value: isTaskDone[
-                                                                        index][
-                                                                    innerIndex],
-                                                                onChanged:
-                                                                    (value) {
+                                                                value: isTaskDone[index][innerIndex],
+                                                                onChanged: (value) {
                                                                   setState(() {
-                                                                    isTaskDone[
-                                                                            index]
-                                                                        [
-                                                                        innerIndex] = !isTaskDone[
-                                                                            index]
-                                                                        [
-                                                                        innerIndex];
+                                                                    isTaskDone[index][innerIndex] = !isTaskDone[index][innerIndex];
 
                                                                     ///TODO: Change state of task
                                                                   });
                                                                 },
                                                               ),
                                                             ),
-                                                            Text(
-                                                              tasks[index]
-                                                                  [innerIndex],
-                                                              style: TextStyle(
-                                                                  fontSize: 20),
+                                                            Container(
+                                                              width: MediaQuery. of(context). size. width - 100,
+                                                              child: TextField(
+                                                                controller: controllers[index][innerIndex],
+                                                                style: TextStyle(fontSize: 20),
+                                                                decoration: InputDecoration(
+                                                                  border: InputBorder.none,
+                                                                  focusedBorder: InputBorder.none,
+                                                                  enabledBorder: InputBorder.none,
+                                                                  errorBorder: InputBorder.none,
+                                                                  disabledBorder: InputBorder.none,
+                                                                  hintStyle: TextStyle(fontSize: 20),
+                                                                ),
+                                                              ),
                                                             ),
+
                                                           ],
                                                         ),
                                                         Padding(
-                                                          padding:
-                                                              const EdgeInsets
-                                                                      .fromLTRB(
-                                                                  50, 0, 0, 0),
+                                                          padding: const EdgeInsets.fromLTRB(50, 0, 0, 0),
                                                           child: Divider(),
                                                         ),
                                                       ],
@@ -1307,57 +1215,37 @@ class CardScreenState extends State<CardScreen> {
                                                   ),
                                                 ),
                                                 Padding(
-                                                  padding:
-                                                      const EdgeInsets.fromLTRB(
-                                                          0, 2, 0, 8),
+                                                  padding: const EdgeInsets.fromLTRB(0, 2, 0, 8),
                                                   child: Row(
                                                     children: [
                                                       SizedBox(
                                                         width: 50,
                                                       ),
                                                       Container(
-                                                        width: MediaQuery.of(
-                                                                    context)
-                                                                .size
-                                                                .width -
-                                                            70,
+                                                        width: MediaQuery.of(context).size.width - 70,
                                                         child: Focus(
                                                           child: TextField(
-                                                            style: TextStyle(
-                                                                fontSize: 20),
-                                                            cursorColor:
-                                                                Colors.blue,
-                                                            decoration:
-                                                                InputDecoration(
-                                                              border:
-                                                                  InputBorder
-                                                                      .none,
-                                                              focusedBorder:
-                                                                  InputBorder
-                                                                      .none,
-                                                              enabledBorder:
-                                                                  InputBorder
-                                                                      .none,
-                                                              errorBorder:
-                                                                  InputBorder
-                                                                      .none,
-                                                              disabledBorder:
-                                                                  InputBorder
-                                                                      .none,
-                                                              hintText:
-                                                                  "Thêm mục…",
-                                                              hintStyle:
-                                                                  TextStyle(
-                                                                      fontSize:
-                                                                          20),
+                                                            style: TextStyle(fontSize: 20),
+                                                            cursorColor: Colors.blue,
+                                                            decoration: InputDecoration(
+                                                              border: InputBorder.none,
+                                                              focusedBorder: InputBorder.none,
+                                                              enabledBorder: InputBorder.none,
+                                                              errorBorder: InputBorder.none,
+                                                              disabledBorder: InputBorder.none,
+                                                              hintText: "Thêm mục…",
+                                                              hintStyle: TextStyle(fontSize: 20),
                                                             ),
                                                           ),
-                                                          onFocusChange:
-                                                              (hasFocus) {
+                                                          onFocusChange: (hasFocus) {
                                                             if (hasFocus) {
-                                                              setState(() {});
+                                                              setState(() {
+                                                                isAddTask = true;
+                                                              });
                                                             } else {
-                                                              setState(() {});
+                                                              setState(() {
+                                                                isAddTask = false;
+                                                              });
                                                             }
                                                           },
                                                         ),
@@ -1403,8 +1291,7 @@ class CardScreenState extends State<CardScreen> {
                           ///TODO: Load User Name who comments this
                           Text(
                             "User Name",
-                            style: TextStyle(
-                                fontWeight: FontWeight.bold, fontSize: 18),
+                            style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
                           ),
 
                           IconButton(
@@ -1471,8 +1358,7 @@ class CardScreenState extends State<CardScreen> {
           ),
           child: Row(
             children: [
-              avatar(
-                  50, 50, Colors.grey, Image.asset('assets/images/BlueBG.png')),
+              avatar(50, 50, Colors.grey, Image.asset('assets/images/BlueBG.png')),
               SizedBox(
                 width: 10,
               ),
