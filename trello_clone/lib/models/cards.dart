@@ -52,16 +52,31 @@ class Comments {
 }
 
 class CheckLists {
+  final String title;
+  final String checklistID;
 
-  final String content;
-  final bool status;
-
-  CheckLists({required this.content, required this.status});
+  CheckLists({required this.title, required this.checklistID});
 
   factory CheckLists.fromDocument(DocumentSnapshot document) {
     return CheckLists(
-      content: document['content'],
-      status: document['status'],
+      title: document['title'],
+      checklistID: document['checklistID'],
+    );
+  }
+}
+
+class Tasks {
+  final String checklistID;
+  final String content;
+  final String status;
+
+  Tasks({required this.checklistID, required this.content, required this.status});
+
+  factory Tasks.fromDocument(DocumentSnapshot document) {
+    return Tasks(
+        checklistID: document['checklistID'],
+        content: document['content'],
+        status: document['status']
     );
   }
 }
