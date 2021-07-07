@@ -1,3 +1,5 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:trello_clone/icons/app_icons.dart';
@@ -25,50 +27,35 @@ class CreateCardScreenState extends State<CreateCardScreen> {
       createdBy: "",
       background: "",
       isPersonal: false,
-      workspaceID: "");
+      workspaceID: "",
+      listNumber: 0);
   late Boards selectedBoard = nullBr;
   late List<Workspaces> group = [];
+  late Future<List<Users>> futureUserList;
   late List<BoardItem> boardItems = [];
 
   List<String> boardList = ["Tên bảng 1", "Tên bảng 2", "Tên bảng 3"];
-  late Lists selectedList;
+  late Lists selectedList = Lists(listID: "", listName: "", cardList: [], position: 1, cardNumber: 0);
   late List<Lists> listList = [];
-  List<Users> users = [
-    Users(
-      userID: "12345",
-      userName: "name1",
-      profileName: "Name 1",
-      email: '123456@gmail.com',
-      avatar: 'assets/images/BlueBG.png',
-      workspaceList: [],
-    ),
-    Users(
-      userID: "12345",
-      userName: "name2",
-      profileName: "Name 2",
-      email: '123456@gmail.com',
-      avatar: 'assets/images/BlueBG.png',
-      workspaceList: [],
-    ),
-    Users(
-      userID: "12345",
-      userName: "name3",
-      profileName: "Name 3",
-      email: '123456@gmail.com',
-      avatar: 'assets/images/BlueBG.png',
-      workspaceList: [],
-    ),
-    Users(
-      userID: "12345",
-      userName: "Test4",
-      profileName: "Cun cun cute",
-      email: '123456@gmail.com',
-      avatar: 'assets/images/BlueBG.png',
-      workspaceList: [],
-    ),
-  ];
+  late List<Users> users = [];
 
   List<Users> pickedUsers = [];
+  Future<List<Users>> getListUser() async {
+    var doc = await DatabaseService.getListUserData(selectedBoard.userList);
+    List<Users> temp = [];
+    for (var item in doc) {
+      Users _user = Users.fromDocument(item);
+      temp.add(_user);
+    }
+    return temp;
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    futureUserList = getListUser();
+    selectedList = Lists(listID: "", listName: "", cardList: [], position: 1, cardNumber: 0);
+  }
 
   var cardNameTxtCtrl = TextEditingController();
   var descriptionTxtCtrl = TextEditingController();
@@ -92,6 +79,7 @@ class CreateCardScreenState extends State<CreateCardScreen> {
       selectedDate = picked;
       switch (dateTypePicked) {
         case 1:
+          startDate = selectedDate.toString();
           if (selectedDate.year != DateTime.now().year)
             startDateTxtCtrl.text = selectedDate.day.toString() +
                 " thg " +
@@ -104,6 +92,7 @@ class CreateCardScreenState extends State<CreateCardScreen> {
                 selectedDate.month.toString();
           break;
         case 2:
+          endDate = selectedDate.toString();
           if (selectedDate.year != DateTime.now().year)
             endDateTxtCtrl.text = selectedDate.day.toString() +
                 " thg " +
@@ -116,6 +105,8 @@ class CreateCardScreenState extends State<CreateCardScreen> {
                 selectedDate.month.toString();
           break;
         default:
+          startDate = "";
+          endDate ="";
           startDateTxtCtrl.text = "";
           endDateTxtCtrl.text = "";
       }
@@ -129,6 +120,10 @@ class CreateCardScreenState extends State<CreateCardScreen> {
   TimeOfDay selectedTime = TimeOfDay(hour: 9, minute: 0);
   var startTimeTxtCtrl = TextEditingController();
   var endTimeTxtCtrl = TextEditingController();
+  String startDate = "";
+  String startTime = "";
+  String endDate = "";
+  String endTime = "";
 
   Future<Null> _selectTime(BuildContext context) async {
     final TimeOfDay picked = (await showTimePicker(
@@ -140,6 +135,7 @@ class CreateCardScreenState extends State<CreateCardScreen> {
       switch (timeTypePicked) {
         case 1:
           startTimeTxtCtrl.text = selectedTime.hour.toString() + ":";
+          startTime = selectedTime.format(context);
           if (selectedTime.minute >= 10)
             startTimeTxtCtrl.text =
                 startTimeTxtCtrl.text + selectedTime.minute.toString();
@@ -149,6 +145,7 @@ class CreateCardScreenState extends State<CreateCardScreen> {
           break;
         case 2:
           endTimeTxtCtrl.text = selectedTime.hour.toString() + ":";
+          endTime = selectedTime.format(context);
           if (selectedTime.minute >= 10)
             endTimeTxtCtrl.text =
                 endTimeTxtCtrl.text + selectedTime.minute.toString();
@@ -157,6 +154,8 @@ class CreateCardScreenState extends State<CreateCardScreen> {
                 endTimeTxtCtrl.text + "0" + selectedTime.minute.toString();
           break;
         default:
+          startTime = "";
+          endTime ="";
           startTimeTxtCtrl.text = "";
           endTimeTxtCtrl.text = "";
       }
@@ -175,7 +174,7 @@ class CreateCardScreenState extends State<CreateCardScreen> {
     "1 ngày trước",
     "2 ngày trước"
   ];
-
+  String uid = FirebaseAuth.instance.currentUser!.uid;
   ///String value to set for startDate, endDate TextButton
   String startDateStr = "";
   String endDateStr = "";
@@ -197,7 +196,15 @@ class CreateCardScreenState extends State<CreateCardScreen> {
           actions: [
             IconButton(
               icon: const Icon(Icons.check),
-              onPressed: () {},
+              onPressed: () {
+                List<String> userListID = [];
+
+                for (var item in pickedUsers){
+                  userListID.add(item.userID);
+                }
+                DatabaseService.addCard(selectedBoard.boardID, selectedList.listID, cardNameTxtCtrl.text, descriptionTxtCtrl.text, uid, userListID, startDate, endDate, startTime, endTime);
+                Navigator.of(context).pushNamed(MAIN_SCREEN);
+              },
             ),
           ]),
       body: Form(
@@ -375,20 +382,22 @@ class CreateCardScreenState extends State<CreateCardScreen> {
                   builder: (BuildContext context, AsyncSnapshot snapshot) {
                     if (!snapshot.hasData) {
                       return DropdownButtonFormField(
-                          icon: Icon(Icons.keyboard_arrow_down),
-                          hint: Align(
-                            alignment: Alignment.centerLeft,
-                            child: Text(
-                              "Chọn danh sách",
-                              style: TextStyle(fontSize: 20.0),
-                            ),
+                        icon: Icon(Icons.keyboard_arrow_down),
+                        hint: Align(
+                          alignment: Alignment.centerLeft,
+                          child: Text(
+                            "Chọn danh sách",
+                            style: TextStyle(fontSize: 20.0),
                           ),
-                          decoration: InputDecoration(
-                            labelStyle: TextStyle(fontSize: 18.0, height: 0.9),
-                            labelText: "Danh sách",
-                            floatingLabelBehavior: FloatingLabelBehavior.always,
-                            contentPadding: EdgeInsets.only(bottom: 0),
-                          ), items: [],);
+                        ),
+                        decoration: InputDecoration(
+                          labelStyle: TextStyle(fontSize: 18.0, height: 0.9),
+                          labelText: "Danh sách",
+                          floatingLabelBehavior: FloatingLabelBehavior.always,
+                          contentPadding: EdgeInsets.only(bottom: 0),
+                        ),
+                        items: [],
+                      );
                     } else {
                       listList.clear();
                       for (var item in snapshot.data) {
@@ -413,9 +422,8 @@ class CreateCardScreenState extends State<CreateCardScreen> {
                       ),
                       onChanged: (value) {
                         setState(() {
-                          selectedList = listList.where(
-                                  (element) => element.listID == value)
-                          as Lists;
+                          selectedList = listList[listList.indexWhere(
+                                  (element) => element.listID == value)];
                         });
                       },
                       selectedItemBuilder: (BuildContext context) {
@@ -433,7 +441,8 @@ class CreateCardScreenState extends State<CreateCardScreen> {
                             value: item.listID,
                             child: Row(
                               children: [
-                                Text(item.listName, style: TextStyle(fontSize: 20.0)),
+                                Text(item.listName,
+                                    style: TextStyle(fontSize: 20.0)),
                               ],
                             ));
                       }).toList(),
@@ -500,78 +509,104 @@ class CreateCardScreenState extends State<CreateCardScreen> {
                         padding: const EdgeInsets.only(top: 15),
                         child: Column(
                           children: [
-                            ///Members here
-
-                            ///Members here
                             selectedBoard == nullBr
                                 ? SizedBox()
-                                :Row(
-                              children: [
-                                IconButton(
-                                  icon: Icon(MyFlutterApp.person_outline),
-                                  alignment: Alignment.centerLeft,
-                                  onPressed: () {},
-                                ),
-                                Container(
-                                  alignment: Alignment.centerLeft,
-                                  child: CircleAvatar(
-                                      radius: 25,
-                                      backgroundColor: Colors.green,
-                                      child: PopupMenuButton<Users>(
-                                        itemBuilder: (context) => List.generate(
-                                          users.length,
-                                          (index) => PopupMenuItem<Users>(
-                                            value: users[index],
-                                            child: ListTile(
-                                              leading: CircleAvatar(
-                                                radius: 25,
-                                                backgroundImage: AssetImage(
-                                                    users[index].avatar),
-                                              ),
-                                              title: Text(
-                                                  '${users[index].userName}'),
-                                            ),
+                                : FutureBuilder(
+                                    future: DatabaseService.getListUserData(selectedBoard.userList),
+                                    builder: (BuildContext context,
+                                        AsyncSnapshot snapshot) {
+                                      if (!snapshot.hasData) {
+                                        return Container(
+                                            alignment: FractionalOffset.center,
+                                            child: CircularProgressIndicator());
+                                      } else {
+                                        users.clear();
+                                        for (var item in snapshot.data){
+                                          Users temp = Users.fromDocument(item);
+                                          users.add(temp);
+                                        }
+                                      }
+                                      return Row(
+                                        children: [
+                                          IconButton(
+                                            icon: Icon(
+                                                MyFlutterApp.person_outline),
+                                            alignment: Alignment.centerLeft,
+                                            onPressed: () {},
                                           ),
-                                        ),
-                                        onSelected: (value) {
-                                          setState(() {
-                                            pickedUsers.add(value);
-                                            print("Length = " +
-                                                pickedUsers.length.toString());
-                                          });
-                                        },
-                                        icon: Icon(
-                                          Icons.add,
-                                          color: Colors.white,
-                                          size: 18,
-                                        ),
-                                      )),
-                                ),
-                                pickedUsers.length < 1
-                                    ? SizedBox()
-                                    : Container(
-                                        height: 50,
-                                        child: SizedBox(
-                                          width: MediaQuery.of(context)
-                                                  .size
-                                                  .width *
-                                              0.5,
-                                          child: ListView.builder(
-                                              shrinkWrap: true,
-                                              scrollDirection: Axis.horizontal,
-                                              itemCount: pickedUsers.length,
-                                              itemBuilder: (context, index) {
-                                                return CircleAvatar(
-                                                  radius: 25,
-                                                  backgroundImage: AssetImage(
-                                                      pickedUsers[index]
-                                                          .avatar),
-                                                );
-                                              }),
-                                        ),
-                                      ),
-                              ],
-                            ),
+                                          Container(
+                                            alignment: Alignment.centerLeft,
+                                            child: CircleAvatar(
+                                                radius: 25,
+                                                backgroundColor: Colors.green,
+                                                child: PopupMenuButton<Users>(
+                                                  itemBuilder: (context) =>
+                                                      List.generate(
+                                                    users.length,
+                                                    (index) =>
+                                                        PopupMenuItem<Users>(
+                                                      value: users[index],
+                                                      child: ListTile(
+                                                        leading: CircleAvatar(
+                                                          radius: 25,
+                                                          backgroundImage:
+                                                              AssetImage(
+                                                                  users[index]
+                                                                      .avatar),
+                                                        ),
+                                                        title: Text(
+                                                            '${users[index].userName}'),
+                                                      ),
+                                                    ),
+                                                  ),
+                                                  onSelected: (value) {
+                                                    setState(() {
+                                                      bool isSelected = false;
+                                                      for (var item in pickedUsers){
+                                                        if(value.userID == item.userID) isSelected = true;
+                                                      }
+                                                      if(!isSelected) pickedUsers.add(value);
+                                                    });
+                                                  },
+                                                  icon: Icon(
+                                                    Icons.add,
+                                                    color: Colors.white,
+                                                    size: 18,
+                                                  ),
+                                                )),
+                                          ),
+                                          pickedUsers.length < 1
+                                              ? SizedBox()
+                                              : Container(
+                                                  height: 50,
+                                                  child: SizedBox(
+                                                    width:
+                                                        MediaQuery.of(context)
+                                                                .size
+                                                                .width *
+                                                            0.5,
+                                                    child: ListView.builder(
+                                                        shrinkWrap: true,
+                                                        scrollDirection:
+                                                            Axis.horizontal,
+                                                        itemCount:
+                                                            pickedUsers.length,
+                                                        itemBuilder:
+                                                            (context, index) {
+                                                          return CircleAvatar(
+                                                            radius: 25,
+                                                            backgroundImage:
+                                                                AssetImage(
+                                                                    pickedUsers[
+                                                                            index]
+                                                                        .avatar),
+                                                          );
+                                                        }),
+                                                  ),
+                                                ),
+                                        ],
+                                      );
+                                    }),
 
                             ///DateStart
                             Row(
@@ -917,11 +952,15 @@ class CreateCardScreenState extends State<CreateCardScreen> {
                                                                 "") {
                                                           setState(() {
                                                             startDateStr = "";
+                                                            startDate = "";
+                                                            startTime = "";
                                                           });
 
                                                           ///Save null to database
                                                         } else {
                                                           setState(() {
+                                                            startDate = selectedDate.toString();
+                                                            startTime = selectedTime.format(context);
                                                             String selectedDay =
                                                                 selectedDate.day
                                                                     .toString();
@@ -1002,6 +1041,8 @@ class CreateCardScreenState extends State<CreateCardScreen> {
                                             Colors.white),
                                   ),
                                   onPressed: () {
+                                    endDate = selectedDate.toString();
+                                    endTime = selectedTime.format(context);
                                     endDateTxtCtrl.text =
                                         selectedDate.day.toString() +
                                             " thg " +
@@ -1194,6 +1235,7 @@ class CreateCardScreenState extends State<CreateCardScreen> {
                                                           ///Save null to database
                                                         } else {
                                                           setState(() {
+
                                                             String selectedDay =
                                                                 selectedDate.day
                                                                     .toString();
