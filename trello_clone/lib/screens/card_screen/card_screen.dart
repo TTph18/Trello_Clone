@@ -8,7 +8,6 @@ import 'package:trello_clone/icons/my_flutter_app2_icons.dart';
 import 'package:trello_clone/models/boards.dart';
 import 'package:trello_clone/models/user.dart';
 import 'package:trello_clone/screens/card_screen/move_card_screen.dart';
-import 'dart:math' as math;
 
 import 'package:trello_clone/widgets/reuse_widget/avatar.dart';
 
@@ -1210,39 +1209,6 @@ class CardScreenState extends State<CardScreen> {
               height: 10,
             ),
 
-            ///Attachment
-            Container(
-              width: MediaQuery.of(context).size.width,
-              padding: const EdgeInsets.only(
-                left: 25,
-                right: 25,
-                top: 20.0,
-                bottom: 20.0,
-              ),
-              decoration: BoxDecoration(
-                color: Colors.white,
-                border: Border(
-                    top: BorderSide(color: Colors.grey.shade400),
-                    bottom: BorderSide(color: Colors.grey.shade400)),
-              ),
-              child: Row(
-                children: [
-                  Transform(
-                    alignment: Alignment.center,
-                    transform: Matrix4.rotationY(math.pi),
-                    child: Icon(MyFlutterApp2.attach),
-                  ),
-                  SizedBox(
-                    width: 20,
-                  ),
-                  Text(
-                    "Tệp đính kèm...",
-                    style: TextStyle(fontSize: 20),
-                  ),
-                ],
-              ),
-            ),
-
             isHaveTaskList
                 ? Column(
                     children: [
@@ -1330,10 +1296,6 @@ class CardScreenState extends State<CardScreen> {
                   ),
                 ),
               ),
-              SizedBox(
-                width: 10,
-              ),
-              IconButton(onPressed: () {}, icon: Icon(MyFlutterApp2.attach)),
             ],
           ),
         ),
