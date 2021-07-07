@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:trello_clone/icons/app_icons.dart';
 import 'package:trello_clone/models/boards.dart';
+import 'package:trello_clone/models/lists.dart';
 import 'package:trello_clone/models/user.dart';
 import 'package:trello_clone/models/workspaces.dart';
 import 'package:trello_clone/services/database.dart';
@@ -22,19 +23,21 @@ class BoardItem {
 
 class CreateCardScreenState extends State<CreateCardScreen> {
   final formKey = GlobalKey<FormState>();
-  Boards nullBr = new Boards(boardID: "", userList: [], boardName: "", createdBy: "", background: "", isPersonal: false, workspaceID: "");
+  Boards nullBr = new Boards(
+      boardID: "",
+      userList: [],
+      boardName: "",
+      createdBy: "",
+      background: "",
+      isPersonal: false,
+      workspaceID: "");
   late Boards selectedBoard = nullBr;
   late List<Workspaces> group = [];
-  late List<Boards> br = [];
   late List<BoardItem> boardItems = [];
 
   List<String> boardList = ["Tên bảng 1", "Tên bảng 2", "Tên bảng 3"];
-  String? selectedList = "";
-  List<String> listList = [
-    "Tên danh sách 1",
-    "Tên danh sách 2",
-    "Tên danh sách 3"
-  ];
+  late Lists selectedList;
+  late List<Lists> listList = [];
   List<Users> users = [
     Users(
       userID: "12345",
@@ -223,7 +226,6 @@ class CreateCardScreenState extends State<CreateCardScreen> {
                             child: CircularProgressIndicator());
                       } else {
                         group.clear();
-                        br.clear();
                         for (var item in snapshot.data) {
                           Workspaces _wp = Workspaces.fromDocument(item);
                           group.add(_wp);
@@ -240,12 +242,17 @@ class CreateCardScreenState extends State<CreateCardScreen> {
                             } else {
                               boardItems.clear();
                               for (var _item in group) {
-                                boardItems.add(new BoardItem(wpname: _item.workspaceName, type: "sep", boards: nullBr));
+                                boardItems.add(new BoardItem(
+                                    wpname: _item.workspaceName,
+                                    type: "sep",
+                                    boards: nullBr));
                                 for (var item in snapshot.data) {
                                   Boards _br = Boards.fromDocument(item);
-                                  br.add(_br);
-                                  if(_item.workspaceID == _br.workspaceID){
-                                    boardItems.add(new BoardItem(wpname: _item.workspaceName , type: "data", boards: _br));
+                                  if (_item.workspaceID == _br.workspaceID) {
+                                    boardItems.add(new BoardItem(
+                                        wpname: _item.workspaceName,
+                                        type: "data",
+                                        boards: _br));
                                   }
                                 }
                               }
@@ -268,14 +275,19 @@ class CreateCardScreenState extends State<CreateCardScreen> {
                                 contentPadding: EdgeInsets.only(bottom: 0),
                               ),
                               onChanged: (value) {
-                                if (boardItems[boardItems
-                                    .indexWhere((element) => element.boards.boardID == value)]
-                                    .type ==
+                                if (boardItems[boardItems.indexWhere(
+                                            (element) =>
+                                                element.boards.boardID ==
+                                                value)]
+                                        .type ==
                                     "sep") {
                                   return;
                                 }
                                 setState(() {
-                                  selectedBoard = (boardItems[boardItems.indexWhere((element) => element.boards.boardID == value)].boards);
+                                  selectedBoard = (boardItems[
+                                          boardItems.indexWhere((element) =>
+                                              element.boards.boardID == value)]
+                                      .boards);
                                 });
                               },
                               selectedItemBuilder: (BuildContext context) {
@@ -289,66 +301,71 @@ class CreateCardScreenState extends State<CreateCardScreen> {
                                 }).toList();
                               },
                               items: boardItems == null
-                              ? [] :
-                              boardItems.map((BoardItem item) {
-                                return DropdownMenuItem(
-                                  value: item.boards.boardID,
-                                  onTap: item.type == "data" ? () {} : null,
-                                  child: item.type == "data"
-                                      ? Container(
-                                          padding:
-                                              EdgeInsets.fromLTRB(15, 7, 15, 7),
-                                          child: Row(
-                                            children: [
-                                              Container(
+                                  ? []
+                                  : boardItems.map((BoardItem item) {
+                                      return DropdownMenuItem(
+                                        value: item.boards.boardID,
+                                        onTap:
+                                            item.type == "data" ? () {} : null,
+                                        child: item.type == "data"
+                                            ? Container(
                                                 padding: EdgeInsets.fromLTRB(
-                                                    0, 0, 15, 0),
-                                                child: ClipRRect(
-                                                  borderRadius:
-                                                      BorderRadius.circular(
-                                                          3.0),
-                                                  child: Image(
-                                                    image: AssetImage(
-                                                        "assets/images/BlueBG.png"),
-                                                    width: 50,
-                                                    height: 50,
+                                                    15, 7, 15, 7),
+                                                child: Row(
+                                                  children: [
+                                                    Container(
+                                                      padding:
+                                                          EdgeInsets.fromLTRB(
+                                                              0, 0, 15, 0),
+                                                      child: ClipRRect(
+                                                        borderRadius:
+                                                            BorderRadius
+                                                                .circular(3.0),
+                                                        child: Image(
+                                                          image: AssetImage(
+                                                              "assets/images/BlueBG.png"),
+                                                          width: 50,
+                                                          height: 50,
+                                                        ),
+                                                      ),
+                                                    ),
+                                                    Text(
+                                                      item.boards.boardName,
+                                                      style: TextStyle(
+                                                          fontSize: 20),
+                                                    ),
+                                                  ],
+                                                ),
+                                              )
+                                            : Container(
+                                                height: 50,
+                                                decoration: BoxDecoration(
+                                                  color: Colors.white,
+                                                  border: Border(
+                                                    top: BorderSide(
+                                                        width: 1.0,
+                                                        color: Colors.black),
+                                                    bottom: BorderSide(
+                                                        width: 1.0,
+                                                        color: Colors.black),
+                                                  ),
+                                                ),
+                                                child: Align(
+                                                  alignment:
+                                                      Alignment.centerLeft,
+                                                  child: Text(
+                                                    item.wpname,
+                                                    style: TextStyle(
+                                                      color: Colors.black,
+                                                      fontWeight:
+                                                          FontWeight.normal,
+                                                      fontSize: 16,
+                                                    ),
                                                   ),
                                                 ),
                                               ),
-                                              Text(
-                                                item.boards.boardName,
-                                                style: TextStyle(fontSize: 20),
-                                              ),
-                                            ],
-                                          ),
-                                        )
-                                      : Container(
-                                          height: 50,
-                                          decoration: BoxDecoration(
-                                            color: Colors.white,
-                                            border: Border(
-                                              top: BorderSide(
-                                                  width: 1.0,
-                                                  color: Colors.black),
-                                              bottom: BorderSide(
-                                                  width: 1.0,
-                                                  color: Colors.black),
-                                            ),
-                                          ),
-                                          child: Align(
-                                            alignment: Alignment.centerLeft,
-                                            child: Text(
-                                              item.wpname,
-                                              style: TextStyle(
-                                                color: Colors.black,
-                                                fontWeight: FontWeight.normal,
-                                                fontSize: 16,
-                                              ),
-                                            ),
-                                          ),
-                                        ),
-                                );
-                              }).toList(),
+                                      );
+                                    }).toList(),
                             );
                           });
                     }),
@@ -358,46 +375,75 @@ class CreateCardScreenState extends State<CreateCardScreen> {
             ///Card list selection
             Padding(
               padding: const EdgeInsets.only(left: 20, right: 20, top: 20),
-              child: DropdownButtonFormField<String>(
-                icon: Icon(Icons.keyboard_arrow_down),
-                hint: Align(
-                  alignment: Alignment.centerLeft,
-                  child: Text(
-                    "Chọn danh sách",
-                    style: TextStyle(fontSize: 20.0),
-                  ),
-                ),
-                decoration: InputDecoration(
-                  labelStyle: TextStyle(fontSize: 18.0, height: 0.9),
-                  labelText: "Danh sách",
-                  floatingLabelBehavior: FloatingLabelBehavior.always,
-                  contentPadding: EdgeInsets.only(bottom: 0),
-                ),
-                onChanged:  (value) {
+              child: FutureBuilder(
+                  future: DatabaseService.getlistList(selectedBoard.boardID),
+                  builder: (BuildContext context, AsyncSnapshot snapshot) {
+                    if (!snapshot.hasData) {
+                      return DropdownButtonFormField(
+                          icon: Icon(Icons.keyboard_arrow_down),
+                          hint: Align(
+                            alignment: Alignment.centerLeft,
+                            child: Text(
+                              "Chọn danh sách",
+                              style: TextStyle(fontSize: 20.0),
+                            ),
+                          ),
+                          decoration: InputDecoration(
+                            labelStyle: TextStyle(fontSize: 18.0, height: 0.9),
+                            labelText: "Danh sách",
+                            floatingLabelBehavior: FloatingLabelBehavior.always,
+                            contentPadding: EdgeInsets.only(bottom: 0),
+                          ), items: [],);
+                    } else {
+                      listList.clear();
+                      for (var item in snapshot.data) {
+                        Lists _list = Lists.fromDocument(item);
+                        listList.add(_list);
+                      }
+                    }
+                    return DropdownButtonFormField(
+                      icon: Icon(Icons.keyboard_arrow_down),
+                      hint: Align(
+                        alignment: Alignment.centerLeft,
+                        child: Text(
+                          "Chọn danh sách",
+                          style: TextStyle(fontSize: 20.0),
+                        ),
+                      ),
+                      decoration: InputDecoration(
+                        labelStyle: TextStyle(fontSize: 18.0, height: 0.9),
+                        labelText: "Danh sách",
+                        floatingLabelBehavior: FloatingLabelBehavior.always,
+                        contentPadding: EdgeInsets.only(bottom: 0),
+                      ),
+                      onChanged: (value) {
                         setState(() {
-                          selectedList = value;
+                          selectedList = listList.where(
+                                  (element) => element.listID == value)
+                          as Lists;
                         });
                       },
-                selectedItemBuilder: (BuildContext context) {
-                  return listList.map<Widget>((String item) {
-                    return Text(
-                      item,
-                      style: TextStyle(
-                        fontSize: 20.0,
-                      ),
+                      selectedItemBuilder: (BuildContext context) {
+                        return listList.map<Widget>((Lists item) {
+                          return Text(
+                            item.listName,
+                            style: TextStyle(
+                              fontSize: 20.0,
+                            ),
+                          );
+                        }).toList();
+                      },
+                      items: listList.map((Lists item) {
+                        return DropdownMenuItem<String>(
+                            value: item.listID,
+                            child: Row(
+                              children: [
+                                Text(item.listName, style: TextStyle(fontSize: 20.0)),
+                              ],
+                            ));
+                      }).toList(),
                     );
-                  }).toList();
-                },
-                items: listList.map((String item) {
-                  return DropdownMenuItem<String>(
-                      value: item,
-                      child: Row(
-                        children: [
-                          Text(item, style: TextStyle(fontSize: 20.0)),
-                        ],
-                      ));
-                }).toList(),
-              ),
+                  }),
             ),
 
             Padding(
@@ -461,82 +507,73 @@ class CreateCardScreenState extends State<CreateCardScreen> {
                           children: [
                             ///Members here
 
-                                 Row(
-                                    children: [
-                                      IconButton(
-                                        icon: Icon(MyFlutterApp.person_outline),
-                                        alignment: Alignment.centerLeft,
-                                        onPressed: () {},
-                                      ),
-                                      Container(
-                                        alignment: Alignment.centerLeft,
-                                        child: CircleAvatar(
-                                            radius: 25,
-                                            backgroundColor: Colors.green,
-                                            child: PopupMenuButton<Users>(
-                                              itemBuilder: (context) =>
-                                                  List.generate(
-                                                users.length,
-                                                (index) => PopupMenuItem<Users>(
-                                                  value: users[index],
-                                                  child: ListTile(
-                                                    leading: CircleAvatar(
-                                                      radius: 25,
-                                                      backgroundImage:
-                                                          AssetImage(
-                                                              users[index]
-                                                                  .avatar),
-                                                    ),
-                                                    title: Text(
-                                                        '${users[index].userName}'),
-                                                  ),
-                                                ),
+                            Row(
+                              children: [
+                                IconButton(
+                                  icon: Icon(MyFlutterApp.person_outline),
+                                  alignment: Alignment.centerLeft,
+                                  onPressed: () {},
+                                ),
+                                Container(
+                                  alignment: Alignment.centerLeft,
+                                  child: CircleAvatar(
+                                      radius: 25,
+                                      backgroundColor: Colors.green,
+                                      child: PopupMenuButton<Users>(
+                                        itemBuilder: (context) => List.generate(
+                                          users.length,
+                                          (index) => PopupMenuItem<Users>(
+                                            value: users[index],
+                                            child: ListTile(
+                                              leading: CircleAvatar(
+                                                radius: 25,
+                                                backgroundImage: AssetImage(
+                                                    users[index].avatar),
                                               ),
-                                              onSelected: (value) {
-                                                setState(() {
-                                                  pickedUsers.add(value);
-                                                  print("Length = " +
-                                                      pickedUsers.length
-                                                          .toString());
-                                                });
-                                              },
-                                              icon: Icon(
-                                                Icons.add,
-                                                color: Colors.white,
-                                                size: 18,
-                                              ),
-                                            )),
-                                      ),
-                                      pickedUsers.length < 1
-                                          ? SizedBox()
-                                          : Container(
-                                              height: 50,
-                                              child: SizedBox(
-                                                width: MediaQuery.of(context)
-                                                        .size
-                                                        .width *
-                                                    0.5,
-                                                child: ListView.builder(
-                                                    shrinkWrap: true,
-                                                    scrollDirection:
-                                                        Axis.horizontal,
-                                                    itemCount:
-                                                        pickedUsers.length,
-                                                    itemBuilder:
-                                                        (context, index) {
-                                                      return CircleAvatar(
-                                                        radius: 25,
-                                                        backgroundImage:
-                                                            AssetImage(
-                                                                pickedUsers[
-                                                                        index]
-                                                                    .avatar),
-                                                      );
-                                                    }),
-                                              ),
+                                              title: Text(
+                                                  '${users[index].userName}'),
                                             ),
-                                    ],
-                                  ),
+                                          ),
+                                        ),
+                                        onSelected: (value) {
+                                          setState(() {
+                                            pickedUsers.add(value);
+                                            print("Length = " +
+                                                pickedUsers.length.toString());
+                                          });
+                                        },
+                                        icon: Icon(
+                                          Icons.add,
+                                          color: Colors.white,
+                                          size: 18,
+                                        ),
+                                      )),
+                                ),
+                                pickedUsers.length < 1
+                                    ? SizedBox()
+                                    : Container(
+                                        height: 50,
+                                        child: SizedBox(
+                                          width: MediaQuery.of(context)
+                                                  .size
+                                                  .width *
+                                              0.5,
+                                          child: ListView.builder(
+                                              shrinkWrap: true,
+                                              scrollDirection: Axis.horizontal,
+                                              itemCount: pickedUsers.length,
+                                              itemBuilder: (context, index) {
+                                                return CircleAvatar(
+                                                  radius: 25,
+                                                  backgroundImage: AssetImage(
+                                                      pickedUsers[index]
+                                                          .avatar),
+                                                );
+                                              }),
+                                        ),
+                                      ),
+                              ],
+                            ),
 
                             ///DateStart
                             Row(
