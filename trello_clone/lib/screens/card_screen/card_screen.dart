@@ -234,6 +234,8 @@ class CardScreenState extends State<CardScreen> {
   ];
 
   ///For comment
+  var commentEnterTxtCtrl = TextEditingController();
+
   ///TODO: Load currentUser data
   ///Users currentUser = ...;
   ///TODO: Delete this when load current data
@@ -1395,6 +1397,8 @@ class CardScreenState extends State<CardScreen> {
                   ),
 
             ///Comment display here
+            ///TODO: remember to change list to the loaded commentList
+            commentUserIDList.length < 1 ? SizedBox(height: 30) :
             Column(
                 children: List.generate(commentUserIDList.length, (index) => Padding(
                   padding: const EdgeInsets.only(left: 25, right: 20, top: 20),
@@ -1518,6 +1522,7 @@ class CardScreenState extends State<CardScreen> {
               ),
               Expanded(
                 child: TextField(
+                  controller: commentEnterTxtCtrl,
                   decoration: InputDecoration(
                     hintText: 'Enter a message',
                     suffixIcon: IconButton(
