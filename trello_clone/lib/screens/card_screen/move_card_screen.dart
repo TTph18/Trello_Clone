@@ -104,10 +104,10 @@ class MoveCardScreenState extends State<MoveCardScreen> {
                                 }
                               }
                             }
-
+                            currentBoard = boardItems[0].boards;
                             return DropdownButtonFormField<String>(
                               icon: Icon(Icons.keyboard_arrow_down),
-                              value: currentBoard.boardName.toString(),
+                              //value: currentBoard.boardName.toString(),
                               hint: Align(
                                 alignment: Alignment.centerLeft,
                                 child: Text(
