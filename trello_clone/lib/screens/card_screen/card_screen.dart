@@ -22,6 +22,7 @@ class CheckListState extends State<CheckList> {
   List<bool> isTaskDone = [];
   String name = "";
   bool isShow = true;
+
   @override
   void initState() {
     super.initState();
@@ -102,33 +103,43 @@ class CheckListState extends State<CheckList> {
           decoration: BoxDecoration(color: Color.fromRGBO(188, 217, 234, 1)),
           child: Row(),
         ),
-        isShow ? Column(
-          children: List.generate(
-              tasks.length,
-              (index) => Container(
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                ),
-                child: Column(
-                      children: [
-                        Row(
-                          children: [
-                            Checkbox(value: isTaskDone[index], onChanged: (value) {
-                              setState(() {
-                                isTaskDone[index] = !isTaskDone[index];
-                              });
-                            }, ),
-                            Text(tasks[index], style: TextStyle(fontSize: 20),),
-                          ],
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.fromLTRB(50, 0, 0, 0),
-                          child: Divider(),
-                        ),
-                      ],
-                    ),
-              )),
-        ) : SizedBox(height: 0,)
+        isShow
+            ? Column(
+                children: List.generate(
+                    tasks.length,
+                    (index) => Container(
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                          ),
+                          child: Column(
+                            children: [
+                              Row(
+                                children: [
+                                  Checkbox(
+                                    value: isTaskDone[index],
+                                    onChanged: (value) {
+                                      setState(() {
+                                        isTaskDone[index] = !isTaskDone[index];
+                                      });
+                                    },
+                                  ),
+                                  Text(
+                                    tasks[index],
+                                    style: TextStyle(fontSize: 20),
+                                  ),
+                                ],
+                              ),
+                              Padding(
+                                padding: const EdgeInsets.fromLTRB(50, 0, 0, 0),
+                                child: Divider(),
+                              ),
+                            ],
+                          ),
+                        )),
+              )
+            : SizedBox(
+                height: 0,
+              )
       ],
     );
   }
@@ -546,10 +557,28 @@ class CardScreenState extends State<CardScreen> {
                     SizedBox(
                       width: 20,
                     ),
-                    Text(
-                      "Thành viên...",
-                      style: TextStyle(fontSize: 20),
-                    ),
+                    pickedUsers.length < 1
+                        ? Text(
+                            "Thành viên...",
+                            style: TextStyle(fontSize: 20),
+                          )
+                        : Container(
+                            height: 50,
+                            child: SizedBox(
+                              width: MediaQuery.of(context).size.width * 0.5,
+                              child: ListView.builder(
+                                  shrinkWrap: true,
+                                  scrollDirection: Axis.horizontal,
+                                  itemCount: pickedUsers.length,
+                                  itemBuilder: (context, index) {
+                                    return CircleAvatar(
+                                      radius: 25,
+                                      backgroundImage:
+                                          AssetImage(pickedUsers[index].avatar),
+                                    );
+                                  }),
+                            ),
+                          ),
                   ],
                 ),
               ),
@@ -688,6 +717,14 @@ class CardScreenState extends State<CardScreen> {
                                     Container(
                                       child: TextButton(
                                         onPressed: () {
+                                          for (Users user in users) {
+                                            var foundUser =
+                                            pickedUsers.where((element) => element.userID == user.userID);
+                                            if (foundUser.isNotEmpty)
+                                              flagPickedUsers.add(true);
+                                            else
+                                              flagPickedUsers.add(false);
+                                          }
                                           Navigator.of(context,
                                                   rootNavigator: true)
                                               .pop('dialog');
@@ -699,11 +736,11 @@ class CardScreenState extends State<CardScreen> {
                                       child: TextButton(
                                         onPressed: () {
                                           setState(() {
+                                            pickedUsers = [];
                                             ///Save new picked users
                                             for (int index = 0;
-                                            index < flagPickedUsers.length;
-                                            index++) {
-                                              pickedUsers = [];
+                                                index < flagPickedUsers.length;
+                                                index++) {
                                               if (flagPickedUsers[index])
                                                 pickedUsers.add(users[index]);
                                             }
