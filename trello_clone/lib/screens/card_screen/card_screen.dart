@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:trello_clone/icons/app_icons.dart';
 import 'package:trello_clone/icons/my_flutter_app2_icons.dart';
 import 'package:trello_clone/models/boards.dart';
+import 'package:trello_clone/screens/card_screen/move_card_screen.dart';
 import 'dart:math' as math;
 
 import 'package:trello_clone/widgets/reuse_widget/avatar.dart';
@@ -136,6 +137,7 @@ class CardScreenState extends State<CardScreen> {
   ///if startDate (timestamp type) from database = null, then = null
   ///else endDateStr = "Bắt đầu vào ngày $selectedDay tháng $selectedMonth, năm $selectedYear lúc $selectedTimeStr";
   String startDateStr = "";
+
   ///if startDate (timestamp type) from database = null, then = null
   ///else endDateStr = "Hết hạn vào ngày $selectedDay tháng $selectedMonth, năm $selectedYear lúc $selectedTimeStr";
   String endDateStr = "";
@@ -147,18 +149,13 @@ class CardScreenState extends State<CardScreen> {
       backgroundColor: Color.fromRGBO(244, 245, 247, 1.0),
       appBar: AppBar(
           backgroundColor: Colors.white,
-          leading: Builder(builder: (BuildContext context) {
-            return IconButton(
-              icon: const Icon(Icons.clear),
+          leading: IconButton(
+            icon: Icon(
+              Icons.close,
               color: Colors.black,
-              onPressed: () {
-                ///TODO: Uncomment after init boards
-                //Route route =
-                //MaterialPageRoute(builder: (context) => BoardScreen(boards, false));
-                //Navigator.push(context, route);
-              },
-            );
-          }),
+            ),
+            onPressed: () => Navigator.of(context).pop(),
+          ),
           elevation: 0.0,
           actions: [
             PopupMenuButton<String>(
@@ -166,6 +163,18 @@ class CardScreenState extends State<CardScreen> {
                   Icons.more_vert,
                   color: Colors.black,
                 ),
+                onSelected: (value) {
+                  switch (value) {
+                    case "Di chuyển thẻ":
+                      Route route = MaterialPageRoute(
+                          builder: (context) => MoveCardScreen());
+                      Navigator.push(context, route);
+                      break;
+                    case "Xóa thẻ":
+                      // do something else
+                      break;
+                  }
+                },
                 itemBuilder: (BuildContext context) => <PopupMenuEntry<String>>[
                       const PopupMenuItem<String>(
                         value: "Di chuyển thẻ",
@@ -178,669 +187,618 @@ class CardScreenState extends State<CardScreen> {
                     ])
           ]),
       body: SingleChildScrollView(
-            child: Column(
-              children: [
-                ///Card name
-                Container(
-                  width: MediaQuery.of(context).size.width,
-                  color: Colors.white,
-                  child: Padding(
-                    padding: const EdgeInsets.only(left: 25.0, top: 30.0),
-                    child: Text("Tên thẻ", style: TextStyle(fontSize: 30)),
-                    /// Change card name to $cardName when data is loaded
-                  ),
-                ),
+        child: Column(
+          children: [
+            ///Card name
+            Container(
+              width: MediaQuery.of(context).size.width,
+              color: Colors.white,
+              child: Padding(
+                padding: const EdgeInsets.only(left: 25.0, top: 30.0),
+                child: Text("Tên thẻ", style: TextStyle(fontSize: 30)),
 
-                ///Card auto-description (user cannot change this description)
-                Container(
-                  width: MediaQuery.of(context).size.width,
-                  color: Colors.white,
-                  child: Padding(
-                    padding: const EdgeInsets.only(
-                        left: 25.0, top: 15.0, bottom: 20.0),
-                    child: Text("Danh sách Tên danh sách trong Tên bảng",
-                        ///Change card list name to $cardlistName
-                        ///Change board name to $boardName
-                        style: TextStyle(fontSize: 20)),
-                  ),
-                ),
-
-                ///Card Description (user can change this description)
-                Container(
-                  width: MediaQuery.of(context).size.width,
-                  padding: const EdgeInsets.only(
-                    left: 25,
-                    right: 25,
-                    top: 5.0,
-                    bottom: 5.0,
-                  ),
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    border: Border(
-                        top: BorderSide(color: Colors.grey.shade400),
-                        bottom: BorderSide(color: Colors.grey.shade400)),
-                  ),
-                  child: TextField(
-                    style: TextStyle(fontSize: 20),
-                    keyboardType: TextInputType.multiline,
-                    maxLines: null,
-                    decoration: InputDecoration(
-                      hintText: "Thêm mô tả thẻ...",
-                      hintStyle: TextStyle(fontSize: 20),
-                      contentPadding: const EdgeInsets.only(bottom: 0.0),
-                      border: InputBorder.none,
-                      focusedBorder: InputBorder.none,
-                      enabledBorder: InputBorder.none,
-                      errorBorder: InputBorder.none,
-                      disabledBorder: InputBorder.none,
-                    ),
-                  ),
-                ),
-                SizedBox(
-                  height: 10,
-                ),
-
-                ///Label
-                Container(
-                  width: MediaQuery.of(context).size.width,
-                  padding: const EdgeInsets.only(
-                    left: 25,
-                    right: 25,
-                    top: 20.0,
-                    bottom: 20.0,
-                  ),
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    border: Border(
-                        top: BorderSide(color: Colors.grey.shade400),
-                        bottom: BorderSide(color: Colors.grey.shade400)),
-                  ),
-                  child: Row(
-                    children: [
-                      Icon(MyFlutterApp2.tag),
-                      SizedBox(
-                        width: 20,
-                      ),
-                      Text(
-                        "Nhãn...",
-                        style: TextStyle(fontSize: 20),
-                      )
-                    ],
-                  ),
-                ),
-
-                SizedBox(
-                  height: 10,
-                ),
-
-                ///Member
-                Container(
-                  width: MediaQuery.of(context).size.width,
-                  padding: const EdgeInsets.only(
-                    left: 25,
-                    right: 25,
-                    top: 20.0,
-                    bottom: 20.0,
-                  ),
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    border: Border(
-                        top: BorderSide(color: Colors.grey.shade400),
-                        bottom: BorderSide(color: Colors.grey.shade400)),
-                  ),
-                  child: Row(
-                    children: [
-                      Icon(MyFlutterApp.person_outline),
-                      SizedBox(
-                        width: 20,
-                      ),
-                      Text(
-                        "Thành viên...",
-                        style: TextStyle(fontSize: 20),
-                      ),
-                    ],
-                  ),
-                ),
-                SizedBox(
-                  height: 10,
-                ),
-
-                ///DateStart
-                InkWell(
-                  child: Container(
-                    width: MediaQuery.of(context).size.width,
-                    padding: const EdgeInsets.only(
-                      left: 25,
-                      right: 25,
-                      top: 20.0,
-                      bottom: 13.0,
-                    ),
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      border: Border(
-                        top: BorderSide(color: Colors.grey.shade400),),
-                    ),
-                    child: Row(
-                      children: [
-                        Icon(MyFlutterApp.clock),
-                        SizedBox(
-                          width: 20,
-                        ),
-                        Container(
-                          width: MediaQuery.of(context).size.width - 94,
-                          child: Text(
-                            startDateStr == ""
-                                ? "Ngày bắt đầu..."
-                                : "$startDateStr",
-                            style: TextStyle(fontSize: 20),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-
-                  onTap: () {
-                    startDateTxtCtrl.text =
-                        selectedStartDate.day.toString() +
-                            " thg " +
-                            selectedStartDate.month.toString();
-                    startTimeTxtCtrl.text =
-                        selectedStartTime.hour.toString() + ":";
-                    if (selectedStartTime.minute >= 10)
-                      startTimeTxtCtrl.text =
-                          startTimeTxtCtrl.text +
-                              selectedStartTime.minute.toString();
-                    else
-                      startTimeTxtCtrl.text =
-                          startTimeTxtCtrl.text +
-                              "0" +
-                              selectedStartTime.minute.toString();
-                    showDialog(
-                      context: context,
-                      builder: (BuildContext context) =>
-                          AlertDialog(
-                            title: const Text(
-                              'Ngày bắt đầu',
-                              style: TextStyle(
-                                  fontWeight: FontWeight.bold),
-                            ),
-                            content: Container(
-                              height: 120,
-                              child: Column(
-                                children: [
-                                  Row(
-                                    children: [
-                                      Container(
-                                        width:
-                                        MediaQuery.of(context)
-                                            .size
-                                            .width /
-                                            3.7,
-                                        child: TextField(
-                                          controller:
-                                          startDateTxtCtrl,
-                                          onTap: () {
-                                            _selectedStartDate(context);
-                                          },
-                                          decoration:
-                                          InputDecoration(
-                                            hintText: "Chọn ngày",
-                                            contentPadding:
-                                            const EdgeInsets
-                                                .only(
-                                                bottom: 0),
-                                          ),
-                                        ),
-                                      ),
-                                      SizedBox(
-                                        width: 10,
-                                      ),
-                                      Container(
-                                        width:
-                                        MediaQuery.of(context)
-                                            .size
-                                            .width /
-                                            3.7,
-                                        child: TextField(
-                                          controller:
-                                          startTimeTxtCtrl,
-                                          onTap: () {
-                                            _selectedStartTime(context);
-                                          },
-                                          decoration:
-                                          InputDecoration(
-                                            hintText:
-                                            "Chọn thời gian",
-                                            contentPadding:
-                                            const EdgeInsets
-                                                .only(
-                                                bottom: 0),
-                                          ),
-                                        ),
-                                      ),
-                                      Container(
-                                        child: IconButton(
-                                          icon: Icon(Icons.close),
-                                          onPressed: () {
-                                            startDateTxtCtrl.text =
-                                            "";
-                                            startTimeTxtCtrl.text =
-                                            "";
-                                          },
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                  SizedBox(
-                                    height: 20,
-                                  ),
-                                  Row(
-                                    mainAxisAlignment:
-                                    MainAxisAlignment.end,
-                                    children: [
-                                      Container(
-                                        child: TextButton(
-                                          onPressed: () {
-                                            ///Reset start date, if from database not null, reset it by the data
-                                            ///else reset it by DateTime.now()
-                                            selectedStartDate =
-                                                DateTime.now();
-                                            ///Reset start time, if from database not null, reset it by the data
-                                            ///else reset it by TimeOfDay(hour: 9, minute: 0)
-                                            selectedStartTime =
-                                                TimeOfDay(
-                                                    hour: 9,
-                                                    minute: 0);
-                                            Navigator.of(context,
-                                                rootNavigator:
-                                                true)
-                                                .pop('dialog');
-                                          },
-                                          child: Text("HỦY"),
-                                        ),
-                                      ),
-                                      Container(
-                                        child: TextButton(
-                                          onPressed: () {
-                                            if (startDateTxtCtrl.text == "" && startTimeTxtCtrl.text == "")
-                                            {
-                                              setState(() {
-                                                startDateStr = "";
-                                              });
-                                              ///Save null to database
-                                            }
-                                            else
-                                            {
-                                              setState(() {
-                                                String selectedDay = selectedStartDate.day.toString();
-                                                String selectedMonth = selectedStartDate.month.toString();
-                                                String selectedYear = selectedStartDate.year.toString();
-                                                String selectedTimeStr = selectedStartTime.hour.toString() + (selectedStartTime.minute >= 10 ? ":0" + selectedStartTime.minute.toString() : ":0" + selectedStartTime.minute.toString());
-                                                startDateStr = "Bắt đầu vào ngày $selectedDay tháng $selectedMonth, năm $selectedYear lúc $selectedTimeStr";
-                                              });
-                                              ///save selected Date and selected time to database. This condition means:
-                                              ///date null, time not null => save date now + time value
-                                              ///date not null, time null => save date value + time default at 9:00
-                                              ///date, time not null => save normally
-                                            }
-                                            Navigator.of(context,
-                                                rootNavigator:
-                                                true)
-                                                .pop('dialog');
-                                          },
-                                          child: Text("HOÀN TẤT"),
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ),
-                    );
-                  },
-                ),
-
-                Container(
-                  color: Colors.white,
-                  padding: const EdgeInsets.fromLTRB(70, 0, 0, 0),
-                  child: Divider(color: Colors.grey.shade400),
-                ),
-
-                ///DateEnd
-                InkWell(
-                  child: Container(
-                    width: MediaQuery.of(context).size.width,
-                    padding: const EdgeInsets.only(
-                      left: 25,
-                      right: 25,
-                      top: 13.0,
-                      bottom: 20.0,
-                    ),
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      border:
-                      Border(bottom: BorderSide(color: Colors.grey.shade400)),
-                    ),
-                    child: Row(
-                      children: [
-                        SizedBox(
-                          width: 24,
-                        ),
-                        SizedBox(
-                          width: 20,
-                        ),
-                        Container(
-                          width: MediaQuery.of(context).size.width - 94,
-                          child: Text(endDateStr == ""
-                              ? "Ngày hết hạn..."
-                              : "$endDateStr",
-                            style: TextStyle(fontSize: 20),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                  onTap: () {
-                    endDateTxtCtrl.text =
-                        selectedEndDate.day.toString() +
-                            " thg " +
-                            selectedEndDate.month.toString();
-                    endTimeTxtCtrl.text =
-                        selectedEndTime.hour.toString() + ":";
-                    if (selectedEndTime.minute >= 10)
-                      endTimeTxtCtrl.text =
-                          endTimeTxtCtrl.text +
-                              selectedEndTime.minute.toString();
-                    else
-                      endTimeTxtCtrl.text =
-                          endTimeTxtCtrl.text +
-                              "0" +
-                              selectedEndTime.minute.toString();
-                    showDialog(
-                      context: context,
-                      builder: (BuildContext context) =>
-                          AlertDialog(
-                            title: const Text(
-                              'Ngày hết hạn',
-                              style: TextStyle(
-                                  fontWeight: FontWeight.bold),
-                            ),
-                            content: Container(
-                              height: 285,
-                              child: Column(
-                                children: [
-                                  Row(
-                                    children: [
-                                      Container(
-                                        width:
-                                        MediaQuery.of(context)
-                                            .size
-                                            .width /
-                                            3.7,
-                                        child: TextField(
-                                          controller:
-                                          endDateTxtCtrl,
-                                          onTap: () {
-                                            _selectedEndDate(context);
-                                          },
-                                          decoration:
-                                          InputDecoration(
-                                            hintText: "Chọn ngày",
-                                            contentPadding:
-                                            const EdgeInsets
-                                                .only(
-                                                bottom: 0),
-                                          ),
-                                        ),
-                                      ),
-                                      SizedBox(
-                                        width: 10,
-                                      ),
-                                      Container(
-                                        width:
-                                        MediaQuery.of(context)
-                                            .size
-                                            .width /
-                                            3.7,
-                                        child: TextField(
-                                          controller:
-                                          endTimeTxtCtrl,
-                                          onTap: () {
-                                            _selectedEndTime(context);
-                                          },
-                                          decoration:
-                                          InputDecoration(
-                                            hintText:
-                                            "Chọn thời gian",
-                                            contentPadding:
-                                            const EdgeInsets
-                                                .only(
-                                                bottom: 0),
-                                          ),
-                                        ),
-                                      ),
-                                      Container(
-                                        child: IconButton(
-                                          icon: Icon(Icons.close),
-                                          onPressed: () {
-                                            endDateTxtCtrl.text =
-                                            "";
-                                            endTimeTxtCtrl.text =
-                                            "";
-                                          },
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                  SizedBox(
-                                    height: 20,
-                                  ),
-                                  Container(
-                                    alignment: Alignment.centerLeft,
-                                    child: Text(
-                                      "Thiết lập nhắc nhở",
-                                      style: TextStyle(
-                                          fontWeight:
-                                          FontWeight.bold),
-                                    ),
-                                  ),
-                                  SizedBox(
-                                    height: 20,
-                                  ),
-                                  Container(
-                                    width:
-                                    MediaQuery.of(context)
-                                        .size
-                                        .width,
-                                    child:
-                                    DropdownButtonFormField<
-                                        String>(
-                                      value: selectedNotiTime,
-                                      decoration:
-                                      InputDecoration(
-                                        contentPadding:
-                                        EdgeInsets.only(
-                                            bottom: 0),
-                                      ),
-                                      onChanged: (value) {
-                                        setState(() {
-                                          selectedNotiTime =
-                                              value;
-                                        });
-                                      },
-                                      items:
-                                      notificationTimeList
-                                          .map((String
-                                      item) {
-                                        return DropdownMenuItem<
-                                            String>(
-                                            value: item,
-                                            child: Row(
-                                              children: [
-                                                Text(
-                                                  item,
-                                                ),
-                                              ],
-                                            ));
-                                      }).toList(),
-                                    ),
-                                  ),
-                                  SizedBox(
-                                    height: 20,
-                                  ),
-                                  Container(
-                                    alignment: Alignment.centerLeft,
-                                    child: Text(
-                                        "Nhắc nhở chỉ được gửi đến các thành viên và người theo dõi thẻ."),
-                                  ),
-                                  SizedBox(
-                                    height: 20,
-                                  ),
-                                  Row(
-                                    mainAxisAlignment:
-                                    MainAxisAlignment.end,
-                                    children: [
-                                      Container(
-                                        child: TextButton(
-                                          onPressed: () {
-                                            ///Reset end date, if from database not null, reset it by the data
-                                            ///else reset it by DateTime.now()
-                                            selectedEndDate =
-                                                DateTime.now();
-                                            ///Reset end time, if from database not null, reset it by the data
-                                            ///else reset it by TimeOfDay(hour: 9, minute: 0)
-                                            selectedEndTime =
-                                                TimeOfDay(
-                                                    hour: 9,
-                                                    minute: 0);
-                                            Navigator.of(context,
-                                                rootNavigator:
-                                                true)
-                                                .pop('dialog');
-                                          },
-                                          child: Text("HỦY"),
-                                        ),
-                                      ),
-                                      Container(
-                                        child: TextButton(
-                                          onPressed: () {
-                                            if (endDateTxtCtrl.text == "" && endDateTxtCtrl.text == "")
-                                            {
-                                              setState(() {
-                                                endDateStr = "";
-                                              });
-                                              ///Save null to database
-                                            }
-                                            else
-                                            {
-                                              setState(() {
-                                                String selectedDay = selectedEndDate.day.toString();
-                                                String selectedMonth = selectedEndDate.month.toString();
-                                                String selectedYear = selectedEndDate.year.toString();
-                                                String selectedTimeStr = selectedEndTime.hour.toString() + (selectedEndTime.minute >= 10 ? ":0" + selectedEndTime.minute.toString() : ":0" + selectedEndTime.minute.toString());
-                                                endDateStr = "Hết hạn vào ngày $selectedDay tháng $selectedMonth, năm $selectedYear lúc $selectedTimeStr";
-                                              });
-                                              ///save selected Date and selected time to database. This condition means:
-                                              ///date null, time not null => save date now + time value
-                                              ///date not null, time null => save date value + time default at 9:00
-                                              ///date, time not null => save normally
-                                            }
-                                            Navigator.of(context,
-                                                rootNavigator:
-                                                true)
-                                                .pop('dialog');
-                                          },
-                                          child: Text("HOÀN TẤT"),
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ),
-                    );
-                  },
-                ),
-
-                SizedBox(
-                  height: 10,
-                ),
-
-                ///Checklist
-                Container(
-                  width: MediaQuery.of(context).size.width,
-                  padding: const EdgeInsets.only(
-                    left: 25,
-                    right: 25,
-                    top: 20.0,
-                    bottom: 20.0,
-                  ),
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    border: Border(
-                        top: BorderSide(color: Colors.grey.shade400),
-                        bottom: BorderSide(color: Colors.grey.shade400)),
-                  ),
-                  child: Row(
-                    children: [
-                      Icon(MyFlutterApp2.check),
-                      SizedBox(
-                        width: 20,
-                      ),
-                      Text(
-                        "Danh sách công việc...",
-                        style: TextStyle(fontSize: 20),
-                      ),
-                    ],
-                  ),
-                ),
-
-                SizedBox(
-                  height: 10,
-                ),
-
-                ///Attachment
-                Container(
-                  width: MediaQuery.of(context).size.width,
-                  padding: const EdgeInsets.only(
-                    left: 25,
-                    right: 25,
-                    top: 20.0,
-                    bottom: 20.0,
-                  ),
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    border: Border(
-                        top: BorderSide(color: Colors.grey.shade400),
-                        bottom: BorderSide(color: Colors.grey.shade400)),
-                  ),
-                  child: Row(
-                    children: [
-                      Transform(
-                        alignment: Alignment.center,
-                        transform: Matrix4.rotationY(math.pi),
-                        child: Icon(MyFlutterApp2.attach),
-                      ),
-                      SizedBox(
-                        width: 20,
-                      ),
-                      Text(
-                        "Tệp đính kèm...",
-                        style: TextStyle(fontSize: 20),
-                      ),
-                    ],
-                  ),
-                ),
-
-                ///for bottom sheet not cover last element
-                SizedBox(height: 69,)
-
-                ///Comment display here
-              ],
+                /// Change card name to $cardName when data is loaded
+              ),
             ),
-          ),
+
+            ///Card auto-description (user cannot change this description)
+            Container(
+              width: MediaQuery.of(context).size.width,
+              color: Colors.white,
+              child: Padding(
+                padding:
+                    const EdgeInsets.only(left: 25.0, top: 15.0, bottom: 20.0),
+                child: Text("Danh sách Tên danh sách trong Tên bảng",
+
+                    ///Change card list name to $cardlistName
+                    ///Change board name to $boardName
+                    style: TextStyle(fontSize: 20)),
+              ),
+            ),
+
+            ///Card Description (user can change this description)
+            Container(
+              width: MediaQuery.of(context).size.width,
+              padding: const EdgeInsets.only(
+                left: 25,
+                right: 25,
+                top: 5.0,
+                bottom: 5.0,
+              ),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                border: Border(
+                    top: BorderSide(color: Colors.grey.shade400),
+                    bottom: BorderSide(color: Colors.grey.shade400)),
+              ),
+              child: TextField(
+                style: TextStyle(fontSize: 20),
+                keyboardType: TextInputType.multiline,
+                maxLines: null,
+                decoration: InputDecoration(
+                  hintText: "Thêm mô tả thẻ...",
+                  hintStyle: TextStyle(fontSize: 20),
+                  contentPadding: const EdgeInsets.only(bottom: 0.0),
+                  border: InputBorder.none,
+                  focusedBorder: InputBorder.none,
+                  enabledBorder: InputBorder.none,
+                  errorBorder: InputBorder.none,
+                  disabledBorder: InputBorder.none,
+                ),
+              ),
+            ),
+            SizedBox(
+              height: 10,
+            ),
+
+            ///Label
+            Container(
+              width: MediaQuery.of(context).size.width,
+              padding: const EdgeInsets.only(
+                left: 25,
+                right: 25,
+                top: 20.0,
+                bottom: 20.0,
+              ),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                border: Border(
+                    top: BorderSide(color: Colors.grey.shade400),
+                    bottom: BorderSide(color: Colors.grey.shade400)),
+              ),
+              child: Row(
+                children: [
+                  Icon(MyFlutterApp2.tag),
+                  SizedBox(
+                    width: 20,
+                  ),
+                  Text(
+                    "Nhãn...",
+                    style: TextStyle(fontSize: 20),
+                  )
+                ],
+              ),
+            ),
+
+            SizedBox(
+              height: 10,
+            ),
+
+            ///Member
+            Container(
+              width: MediaQuery.of(context).size.width,
+              padding: const EdgeInsets.only(
+                left: 25,
+                right: 25,
+                top: 20.0,
+                bottom: 20.0,
+              ),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                border: Border(
+                    top: BorderSide(color: Colors.grey.shade400),
+                    bottom: BorderSide(color: Colors.grey.shade400)),
+              ),
+              child: Row(
+                children: [
+                  Icon(MyFlutterApp.person_outline),
+                  SizedBox(
+                    width: 20,
+                  ),
+                  Text(
+                    "Thành viên...",
+                    style: TextStyle(fontSize: 20),
+                  ),
+                ],
+              ),
+            ),
+            SizedBox(
+              height: 10,
+            ),
+
+            ///DateStart
+            InkWell(
+              child: Container(
+                width: MediaQuery.of(context).size.width,
+                padding: const EdgeInsets.only(
+                  left: 25,
+                  right: 25,
+                  top: 20.0,
+                  bottom: 13.0,
+                ),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  border: Border(
+                    top: BorderSide(color: Colors.grey.shade400),
+                  ),
+                ),
+                child: Row(
+                  children: [
+                    Icon(MyFlutterApp.clock),
+                    SizedBox(
+                      width: 20,
+                    ),
+                    Container(
+                      width: MediaQuery.of(context).size.width - 94,
+                      child: Text(
+                        startDateStr == ""
+                            ? "Ngày bắt đầu..."
+                            : "$startDateStr",
+                        style: TextStyle(fontSize: 20),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              onTap: () {
+                startDateTxtCtrl.text = selectedStartDate.day.toString() +
+                    " thg " +
+                    selectedStartDate.month.toString();
+                startTimeTxtCtrl.text = selectedStartTime.hour.toString() + ":";
+                if (selectedStartTime.minute >= 10)
+                  startTimeTxtCtrl.text = startTimeTxtCtrl.text +
+                      selectedStartTime.minute.toString();
+                else
+                  startTimeTxtCtrl.text = startTimeTxtCtrl.text +
+                      "0" +
+                      selectedStartTime.minute.toString();
+                showDialog(
+                  context: context,
+                  builder: (BuildContext context) => AlertDialog(
+                    title: const Text(
+                      'Ngày bắt đầu',
+                      style: TextStyle(fontWeight: FontWeight.bold),
+                    ),
+                    content: Container(
+                      height: 120,
+                      child: Column(
+                        children: [
+                          Row(
+                            children: [
+                              Container(
+                                width: MediaQuery.of(context).size.width / 3.7,
+                                child: TextField(
+                                  controller: startDateTxtCtrl,
+                                  onTap: () {
+                                    _selectedStartDate(context);
+                                  },
+                                  decoration: InputDecoration(
+                                    hintText: "Chọn ngày",
+                                    contentPadding:
+                                        const EdgeInsets.only(bottom: 0),
+                                  ),
+                                ),
+                              ),
+                              SizedBox(
+                                width: 10,
+                              ),
+                              Container(
+                                width: MediaQuery.of(context).size.width / 3.7,
+                                child: TextField(
+                                  controller: startTimeTxtCtrl,
+                                  onTap: () {
+                                    _selectedStartTime(context);
+                                  },
+                                  decoration: InputDecoration(
+                                    hintText: "Chọn thời gian",
+                                    contentPadding:
+                                        const EdgeInsets.only(bottom: 0),
+                                  ),
+                                ),
+                              ),
+                              Container(
+                                child: IconButton(
+                                  icon: Icon(Icons.close),
+                                  onPressed: () {
+                                    startDateTxtCtrl.text = "";
+                                    startTimeTxtCtrl.text = "";
+                                  },
+                                ),
+                              ),
+                            ],
+                          ),
+                          SizedBox(
+                            height: 20,
+                          ),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.end,
+                            children: [
+                              Container(
+                                child: TextButton(
+                                  onPressed: () {
+                                    ///Reset start date, if from database not null, reset it by the data
+                                    ///else reset it by DateTime.now()
+                                    selectedStartDate = DateTime.now();
+
+                                    ///Reset start time, if from database not null, reset it by the data
+                                    ///else reset it by TimeOfDay(hour: 9, minute: 0)
+                                    selectedStartTime =
+                                        TimeOfDay(hour: 9, minute: 0);
+                                    Navigator.of(context, rootNavigator: true)
+                                        .pop('dialog');
+                                  },
+                                  child: Text("HỦY"),
+                                ),
+                              ),
+                              Container(
+                                child: TextButton(
+                                  onPressed: () {
+                                    if (startDateTxtCtrl.text == "" &&
+                                        startTimeTxtCtrl.text == "") {
+                                      setState(() {
+                                        startDateStr = "";
+                                      });
+
+                                      ///Save null to database
+                                    } else {
+                                      setState(() {
+                                        String selectedDay =
+                                            selectedStartDate.day.toString();
+                                        String selectedMonth =
+                                            selectedStartDate.month.toString();
+                                        String selectedYear =
+                                            selectedStartDate.year.toString();
+                                        String selectedTimeStr =
+                                            selectedStartTime.hour.toString() +
+                                                (selectedStartTime.minute >= 10
+                                                    ? ":0" +
+                                                        selectedStartTime.minute
+                                                            .toString()
+                                                    : ":0" +
+                                                        selectedStartTime.minute
+                                                            .toString());
+                                        startDateStr =
+                                            "Bắt đầu vào ngày $selectedDay tháng $selectedMonth, năm $selectedYear lúc $selectedTimeStr";
+                                      });
+
+                                      ///save selected Date and selected time to database. This condition means:
+                                      ///date null, time not null => save date now + time value
+                                      ///date not null, time null => save date value + time default at 9:00
+                                      ///date, time not null => save normally
+                                    }
+                                    Navigator.of(context, rootNavigator: true)
+                                        .pop('dialog');
+                                  },
+                                  child: Text("HOÀN TẤT"),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                );
+              },
+            ),
+
+            Container(
+              color: Colors.white,
+              padding: const EdgeInsets.fromLTRB(70, 0, 0, 0),
+              child: Divider(color: Colors.grey.shade400),
+            ),
+
+            ///DateEnd
+            InkWell(
+              child: Container(
+                width: MediaQuery.of(context).size.width,
+                padding: const EdgeInsets.only(
+                  left: 25,
+                  right: 25,
+                  top: 13.0,
+                  bottom: 20.0,
+                ),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  border:
+                      Border(bottom: BorderSide(color: Colors.grey.shade400)),
+                ),
+                child: Row(
+                  children: [
+                    SizedBox(
+                      width: 24,
+                    ),
+                    SizedBox(
+                      width: 20,
+                    ),
+                    Container(
+                      width: MediaQuery.of(context).size.width - 94,
+                      child: Text(
+                        endDateStr == "" ? "Ngày hết hạn..." : "$endDateStr",
+                        style: TextStyle(fontSize: 20),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              onTap: () {
+                endDateTxtCtrl.text = selectedEndDate.day.toString() +
+                    " thg " +
+                    selectedEndDate.month.toString();
+                endTimeTxtCtrl.text = selectedEndTime.hour.toString() + ":";
+                if (selectedEndTime.minute >= 10)
+                  endTimeTxtCtrl.text =
+                      endTimeTxtCtrl.text + selectedEndTime.minute.toString();
+                else
+                  endTimeTxtCtrl.text = endTimeTxtCtrl.text +
+                      "0" +
+                      selectedEndTime.minute.toString();
+                showDialog(
+                  context: context,
+                  builder: (BuildContext context) => AlertDialog(
+                    title: const Text(
+                      'Ngày hết hạn',
+                      style: TextStyle(fontWeight: FontWeight.bold),
+                    ),
+                    content: Container(
+                      height: 285,
+                      child: Column(
+                        children: [
+                          Row(
+                            children: [
+                              Container(
+                                width: MediaQuery.of(context).size.width / 3.7,
+                                child: TextField(
+                                  controller: endDateTxtCtrl,
+                                  onTap: () {
+                                    _selectedEndDate(context);
+                                  },
+                                  decoration: InputDecoration(
+                                    hintText: "Chọn ngày",
+                                    contentPadding:
+                                        const EdgeInsets.only(bottom: 0),
+                                  ),
+                                ),
+                              ),
+                              SizedBox(
+                                width: 10,
+                              ),
+                              Container(
+                                width: MediaQuery.of(context).size.width / 3.7,
+                                child: TextField(
+                                  controller: endTimeTxtCtrl,
+                                  onTap: () {
+                                    _selectedEndTime(context);
+                                  },
+                                  decoration: InputDecoration(
+                                    hintText: "Chọn thời gian",
+                                    contentPadding:
+                                        const EdgeInsets.only(bottom: 0),
+                                  ),
+                                ),
+                              ),
+                              Container(
+                                child: IconButton(
+                                  icon: Icon(Icons.close),
+                                  onPressed: () {
+                                    endDateTxtCtrl.text = "";
+                                    endTimeTxtCtrl.text = "";
+                                  },
+                                ),
+                              ),
+                            ],
+                          ),
+                          SizedBox(
+                            height: 20,
+                          ),
+                          Container(
+                            alignment: Alignment.centerLeft,
+                            child: Text(
+                              "Thiết lập nhắc nhở",
+                              style: TextStyle(fontWeight: FontWeight.bold),
+                            ),
+                          ),
+                          SizedBox(
+                            height: 20,
+                          ),
+                          Container(
+                            width: MediaQuery.of(context).size.width,
+                            child: DropdownButtonFormField<String>(
+                              value: selectedNotiTime,
+                              decoration: InputDecoration(
+                                contentPadding: EdgeInsets.only(bottom: 0),
+                              ),
+                              onChanged: (value) {
+                                setState(() {
+                                  selectedNotiTime = value;
+                                });
+                              },
+                              items: notificationTimeList.map((String item) {
+                                return DropdownMenuItem<String>(
+                                    value: item,
+                                    child: Row(
+                                      children: [
+                                        Text(
+                                          item,
+                                        ),
+                                      ],
+                                    ));
+                              }).toList(),
+                            ),
+                          ),
+                          SizedBox(
+                            height: 20,
+                          ),
+                          Container(
+                            alignment: Alignment.centerLeft,
+                            child: Text(
+                                "Nhắc nhở chỉ được gửi đến các thành viên và người theo dõi thẻ."),
+                          ),
+                          SizedBox(
+                            height: 20,
+                          ),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.end,
+                            children: [
+                              Container(
+                                child: TextButton(
+                                  onPressed: () {
+                                    ///Reset end date, if from database not null, reset it by the data
+                                    ///else reset it by DateTime.now()
+                                    selectedEndDate = DateTime.now();
+
+                                    ///Reset end time, if from database not null, reset it by the data
+                                    ///else reset it by TimeOfDay(hour: 9, minute: 0)
+                                    selectedEndTime =
+                                        TimeOfDay(hour: 9, minute: 0);
+                                    Navigator.of(context, rootNavigator: true)
+                                        .pop('dialog');
+                                  },
+                                  child: Text("HỦY"),
+                                ),
+                              ),
+                              Container(
+                                child: TextButton(
+                                  onPressed: () {
+                                    if (endDateTxtCtrl.text == "" &&
+                                        endDateTxtCtrl.text == "") {
+                                      setState(() {
+                                        endDateStr = "";
+                                      });
+
+                                      ///Save null to database
+                                    } else {
+                                      setState(() {
+                                        String selectedDay =
+                                            selectedEndDate.day.toString();
+                                        String selectedMonth =
+                                            selectedEndDate.month.toString();
+                                        String selectedYear =
+                                            selectedEndDate.year.toString();
+                                        String selectedTimeStr =
+                                            selectedEndTime.hour.toString() +
+                                                (selectedEndTime.minute >= 10
+                                                    ? ":0" +
+                                                        selectedEndTime.minute
+                                                            .toString()
+                                                    : ":0" +
+                                                        selectedEndTime.minute
+                                                            .toString());
+                                        endDateStr =
+                                            "Hết hạn vào ngày $selectedDay tháng $selectedMonth, năm $selectedYear lúc $selectedTimeStr";
+                                      });
+
+                                      ///save selected Date and selected time to database. This condition means:
+                                      ///date null, time not null => save date now + time value
+                                      ///date not null, time null => save date value + time default at 9:00
+                                      ///date, time not null => save normally
+                                    }
+                                    Navigator.of(context, rootNavigator: true)
+                                        .pop('dialog');
+                                  },
+                                  child: Text("HOÀN TẤT"),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                );
+              },
+            ),
+
+            SizedBox(
+              height: 10,
+            ),
+
+            ///Checklist
+            Container(
+              width: MediaQuery.of(context).size.width,
+              padding: const EdgeInsets.only(
+                left: 25,
+                right: 25,
+                top: 20.0,
+                bottom: 20.0,
+              ),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                border: Border(
+                    top: BorderSide(color: Colors.grey.shade400),
+                    bottom: BorderSide(color: Colors.grey.shade400)),
+              ),
+              child: Row(
+                children: [
+                  Icon(MyFlutterApp2.check),
+                  SizedBox(
+                    width: 20,
+                  ),
+                  Text(
+                    "Danh sách công việc...",
+                    style: TextStyle(fontSize: 20),
+                  ),
+                ],
+              ),
+            ),
+
+            SizedBox(
+              height: 10,
+            ),
+
+            ///Attachment
+            Container(
+              width: MediaQuery.of(context).size.width,
+              padding: const EdgeInsets.only(
+                left: 25,
+                right: 25,
+                top: 20.0,
+                bottom: 20.0,
+              ),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                border: Border(
+                    top: BorderSide(color: Colors.grey.shade400),
+                    bottom: BorderSide(color: Colors.grey.shade400)),
+              ),
+              child: Row(
+                children: [
+                  Transform(
+                    alignment: Alignment.center,
+                    transform: Matrix4.rotationY(math.pi),
+                    child: Icon(MyFlutterApp2.attach),
+                  ),
+                  SizedBox(
+                    width: 20,
+                  ),
+                  Text(
+                    "Tệp đính kèm...",
+                    style: TextStyle(fontSize: 20),
+                  ),
+                ],
+              ),
+            ),
+
+            ///for bottom sheet not cover last element
+            SizedBox(
+              height: 69,
+            )
+
+            ///Comment display here
+          ],
+        ),
+      ),
+
       ///comment
       bottomSheet: BottomAppBar(
         child: Container(
@@ -858,16 +816,21 @@ class CardScreenState extends State<CardScreen> {
           ),
           child: Row(
             children: [
-              avatar(50, 50, Colors.grey,
-                  Image.asset('assets/images/BlueBG.png')),
-              SizedBox(width: 10,),
+              avatar(
+                  50, 50, Colors.grey, Image.asset('assets/images/BlueBG.png')),
+              SizedBox(
+                width: 10,
+              ),
               Expanded(
                 child: TextField(
                   decoration: InputDecoration(
                     hintText: 'Enter a message',
                     suffixIcon: IconButton(
                       onPressed: () {},
-                      icon: Icon(Icons.send, size: 30,),
+                      icon: Icon(
+                        Icons.send,
+                        size: 30,
+                      ),
                     ),
                     border: new OutlineInputBorder(
                       borderRadius: const BorderRadius.all(
@@ -877,9 +840,10 @@ class CardScreenState extends State<CardScreen> {
                   ),
                 ),
               ),
-              SizedBox(width: 10,),
-              IconButton(
-                  onPressed: () {}, icon: Icon(MyFlutterApp2.attach)),
+              SizedBox(
+                width: 10,
+              ),
+              IconButton(onPressed: () {}, icon: Icon(MyFlutterApp2.attach)),
             ],
           ),
         ),

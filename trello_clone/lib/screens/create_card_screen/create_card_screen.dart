@@ -2,18 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:trello_clone/icons/app_icons.dart';
 import 'package:trello_clone/models/user.dart';
+import 'package:trello_clone/screens/card_screen/board_item.dart';
 import '../../route_path.dart';
 
 class CreateCardScreen extends StatefulWidget {
   @override
   CreateCardScreenState createState() => CreateCardScreenState();
-}
-
-class BoardItem {
-  String name;
-  String type;
-
-  BoardItem({required this.name, required this.type});
 }
 
 class CreateCardScreenState extends State<CreateCardScreen> {
