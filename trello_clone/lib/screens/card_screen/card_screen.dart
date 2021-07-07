@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:trello_clone/icons/app_icons.dart';
 import 'package:trello_clone/icons/my_flutter_app2_icons.dart';
 import 'package:trello_clone/models/boards.dart';
+import 'package:trello_clone/models/cards.dart';
 import 'package:trello_clone/models/user.dart';
 import 'package:trello_clone/screens/card_screen/move_card_screen.dart';
 
@@ -342,6 +343,19 @@ class CardScreenState extends State<CardScreen> {
 
   bool isHaveTaskList = true;
   List<String> taskListNames = ["Name 1", "Name 2", "Name 3"];
+
+  ///For comment
+  ///TODO: Load currentUser data
+  Users currentUser = Users(
+    userID: "123456",
+    userName: "User123456",
+    profileName: "Test",
+    email: '123456@gmail.com',
+    avatar: 'assets/images/BlueBG.png',
+    workspaceList: [],
+  );
+  ///TODO: Load comment list
+  List<Comments> commentList = [];
 
   @override
   Widget build(BuildContext context) {
@@ -1256,12 +1270,76 @@ class CardScreenState extends State<CardScreen> {
                     height: 0,
                   ),
 
+            ///Comment display here
+            Padding(
+              padding: const EdgeInsets.only(left: 25, right: 20, top: 20),
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.only(top: 20),
+                    child: CircleAvatar(
+                      radius: 25,
+                      backgroundImage: AssetImage(currentUser.avatar),
+                    ),
+                  ),
+
+                  SizedBox(width: 20),
+
+                  Column(
+                    children: [
+                      ///User Name
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          ///TODO: Load User Name who comments this
+                          Text("User Name", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),),
+
+                          IconButton(
+                            icon: Icon(Icons.more_horiz),
+                            onPressed: () {},
+                          ),
+                        ],
+                      ),
+
+                      ///Comment content
+                      Container(
+                        width: MediaQuery. of(context).size.width - 115,
+                        height: 50,
+                        decoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: BorderRadius.all(
+                                Radius.circular(10)
+                            ),
+                        ),
+                        child: TextField(
+                          readOnly: true,
+                        ),
+                      ),
+
+                      SizedBox(height: 10),
+
+                      ///Load date comment
+                      ///TODO: Format hh:mm dd/mm/yyyy if year is different from current year
+                      ///TODO: Format hh:mm dd/mm if year is equal to current year
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        children: [
+                          Text("hh:mm dd/mm/yyyy"),
+                        ],
+                      ),
+
+                      SizedBox(height: 20),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+
             ///for bottom sheet not cover last element
             SizedBox(
               height: 69,
             )
-
-            ///Comment display here
           ],
         ),
       ),
