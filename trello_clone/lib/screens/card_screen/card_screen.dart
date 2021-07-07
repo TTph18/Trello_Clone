@@ -379,6 +379,8 @@ class CardScreenState extends State<CardScreen> {
                                         child: TextField(
                                           controller:
                                           startDateTxtCtrl,
+                                          readOnly: true,
+                                          showCursor: true,
                                           onTap: () {
                                             _selectedStartDate(context);
                                           },
@@ -404,6 +406,8 @@ class CardScreenState extends State<CardScreen> {
                                         child: TextField(
                                           controller:
                                           startTimeTxtCtrl,
+                                          readOnly: true,
+                                          showCursor: true,
                                           onTap: () {
                                             _selectedStartTime(context);
                                           },
@@ -581,6 +585,8 @@ class CardScreenState extends State<CardScreen> {
                                         child: TextField(
                                           controller:
                                           endDateTxtCtrl,
+                                          readOnly: true,
+                                          showCursor: true,
                                           onTap: () {
                                             _selectedEndDate(context);
                                           },
@@ -606,6 +612,8 @@ class CardScreenState extends State<CardScreen> {
                                         child: TextField(
                                           controller:
                                           endTimeTxtCtrl,
+                                          readOnly: true,
+                                          showCursor: true,
                                           onTap: () {
                                             _selectedEndTime(context);
                                           },
