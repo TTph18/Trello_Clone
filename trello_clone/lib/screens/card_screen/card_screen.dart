@@ -5,6 +5,7 @@ import 'package:trello_clone/icons/my_flutter_app2_icons.dart';
 import 'package:trello_clone/models/boards.dart';
 import 'package:trello_clone/models/user.dart';
 import 'package:trello_clone/screens/card_screen/move_card_screen.dart';
+import 'package:trello_clone/services/database.dart';
 import 'dart:math' as math;
 
 import 'package:trello_clone/widgets/reuse_widget/avatar.dart';
@@ -25,7 +26,7 @@ class CardScreenState extends State<CardScreen> {
   CardScreenState(this.cardName);
 
   var descriptionTxtCtrl = TextEditingController();
-
+  late List<Users> userList = [];
   List<Users> users = [
     Users(
       userID: "12345",
@@ -224,14 +225,16 @@ class CardScreenState extends State<CardScreen> {
                             child: Column(
                               mainAxisSize: MainAxisSize.min,
                               children: [
-                                Text("Tất cả các thao tác sẽ bị xóa khỏi thông báo hoạt động. Không thể hoàn tác."),
+                                Text(
+                                    "Tất cả các thao tác sẽ bị xóa khỏi thông báo hoạt động. Không thể hoàn tác."),
                                 Row(
                                   mainAxisAlignment: MainAxisAlignment.end,
                                   children: [
                                     TextButton(
                                       child: Text(
                                         'HỦY',
-                                        style: TextStyle(fontWeight: FontWeight.bold),
+                                        style: TextStyle(
+                                            fontWeight: FontWeight.bold),
                                       ),
                                       onPressed: () {
                                         Navigator.of(context).pop();
@@ -240,7 +243,8 @@ class CardScreenState extends State<CardScreen> {
                                     TextButton(
                                       child: Text(
                                         'XÓA',
-                                        style: TextStyle(fontWeight: FontWeight.bold),
+                                        style: TextStyle(
+                                            fontWeight: FontWeight.bold),
                                       ),
                                       onPressed: () {
                                         setState(() {
@@ -417,9 +421,107 @@ class CardScreenState extends State<CardScreen> {
                           content: Container(
                             width: MediaQuery.of(context).size.width,
                             child: Column(
+                              mainAxisSize: MainAxisSize.min,
                               children: [
                                 ///TODO: Load memberList to select here
-
+                                Column(
+                                  children: List.generate(
+                                    users.length,
+                                    (int index) {
+                                      return Column(
+                                        children: [
+                                          InkWell(
+                                            child: Padding(
+                                              padding:
+                                                  const EdgeInsets.fromLTRB(
+                                                      16.0, 14.0, 0, 14.0),
+                                              child: Row(
+                                                mainAxisAlignment:
+                                                    MainAxisAlignment
+                                                        .spaceBetween,
+                                                children: [
+                                                  Row(
+                                                    children: [
+                                                      avatar(
+                                                        40,
+                                                        40,
+                                                        Colors.grey,
+                                                        Image.network(
+                                                          users[index].avatar,
+                                                          width: 40,
+                                                          height: 40,
+                                                        ),
+                                                      ),
+                                                      SizedBox(
+                                                        width: 20,
+                                                      ),
+                                                      Column(
+                                                        crossAxisAlignment:
+                                                            CrossAxisAlignment
+                                                                .start,
+                                                        children: <Widget>[
+                                                          Align(
+                                                            alignment: Alignment
+                                                                .centerLeft,
+                                                            child: Text(
+                                                                users[index]
+                                                                    .profileName,
+                                                                textAlign:
+                                                                    TextAlign
+                                                                        .left,
+                                                                style: TextStyle(
+                                                                    fontSize:
+                                                                        16,
+                                                                    fontWeight:
+                                                                        FontWeight
+                                                                            .bold)),
+                                                          ),
+                                                          Align(
+                                                            alignment: Alignment
+                                                                .centerLeft,
+                                                            child: Text(
+                                                              '@' +
+                                                                  users[index]
+                                                                      .userName,
+                                                              textAlign:
+                                                                  TextAlign
+                                                                      .left,
+                                                              style: TextStyle(
+                                                                  fontSize: 16,
+                                                                  fontStyle:
+                                                                      FontStyle
+                                                                          .italic),
+                                                            ),
+                                                          ),
+                                                        ],
+                                                      ),
+                                                    ],
+                                                  ),
+                                                  IconButton(
+                                                    onPressed: () {
+                                                      {}
+                                                    },
+                                                    icon: Icon(
+                                                      Icons.close,
+                                                    ),
+                                                  )
+                                                ],
+                                              ),
+                                            ),
+                                          ),
+                                          Padding(
+                                            padding: EdgeInsets.fromLTRB(
+                                                70, 0, 0, 0),
+                                            child: Divider(
+                                              height: 1,
+                                              color: Colors.black,
+                                            ),
+                                          ),
+                                        ],
+                                      );
+                                    },
+                                  ),
+                                ),
 
                                 SizedBox(
                                   height: 20,
@@ -433,7 +535,7 @@ class CardScreenState extends State<CardScreen> {
                                         onPressed: () {
                                           ///TODO: Reset to original value
                                           Navigator.of(context,
-                                              rootNavigator: true)
+                                                  rootNavigator: true)
                                               .pop('dialog');
                                         },
                                         child: Text("HỦY"),
