@@ -73,6 +73,35 @@ class DatabaseService {
     return brList;
   }
 
+  //add a list
+  static Future<void> addList(String boardID, String listName) async {
+    await FirebaseFirestore.instance.collection('boards')
+        .doc(boardID).get().then((value) async {
+    int listNumber = value['listNumber'];
+    final docRef = await FirebaseFirestore.instance.collection('boards')
+        .doc(boardID)
+        .collection('lists')
+        .add({
+      'listName': listName,
+      'cardList': [],
+      "cardNumber": 0,
+      "position": listNumber + 1
+    });
+    //update listID = document ID
+    FirebaseFirestore.instance
+        .collection('lists')
+        .doc(docRef.id)
+        .update({"listID": docRef.id});
+    //update listID = document ID
+    FirebaseFirestore.instance
+        .collection('boards')
+        .doc(boardID)
+        .update({"listNumber": listNumber + 1});
+    });
+
+
+  }
+
   // get lists in board
   static Future getlistList(String boardID) async {
     var snapshot = await FirebaseFirestore.instance
@@ -99,6 +128,40 @@ class DatabaseService {
         .collection('boards')
         .get();
     return snapshot.docs;
+  }
+
+  //move a list to other position
+  static Future<void> moveList(String boardID, String newWorkspaceID) async {
+    var oldWorkspaceID;
+    //get old wp id
+    await FirebaseFirestore.instance
+        .collection('boards')
+        .doc(boardID)
+        .get().then((value) {
+      oldWorkspaceID = value['workspaceID'].toString();
+    });
+    //delete board id from old wp
+    List<String> boardList;
+    await FirebaseFirestore.instance
+        .collection('workspaces')
+        .doc(oldWorkspaceID)
+        .get().then((value) {
+      boardList = value['boardList'].cast<String>();
+      boardList.remove(boardID);
+      FirebaseFirestore.instance
+          .collection('workspaces')
+          .doc(oldWorkspaceID).update({"boardList": boardList});
+    });
+    //update board id in new wp
+    await FirebaseFirestore.instance
+        .collection('workspaces')
+        .doc(newWorkspaceID)
+        .update({"boardList": FieldValue.arrayUnion([boardID])});
+    //update new wp id in board
+    await FirebaseFirestore.instance
+        .collection('boards')
+        .doc(boardID)
+        .update({"workspaceID": newWorkspaceID});
   }
 
   //add a board
