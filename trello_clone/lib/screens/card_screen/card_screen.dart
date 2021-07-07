@@ -217,6 +217,8 @@ class CardScreenState extends State<CardScreen> {
   List<TextEditingController> controllersList = [];
 
   ///For comment
+  var commentEnterTxtCtrl = TextEditingController();
+
   ///TODO: Load currentUser data
   ///Users currentUser = ...;
   ///TODO: Delete this when load current data
@@ -1380,6 +1382,8 @@ class CardScreenState extends State<CardScreen> {
                   ),
 
             ///Comment display here
+            ///TODO: remember to change list to the loaded commentList
+            commentUserIDList.length < 1 ? SizedBox(height: 30) :
             Column(
                 children: List.generate(
               commentUserIDList.length,
@@ -1523,6 +1527,7 @@ class CardScreenState extends State<CardScreen> {
               ),
               Expanded(
                 child: TextField(
+                  controller: commentEnterTxtCtrl,
                   decoration: InputDecoration(
                     hintText: 'Enter a message',
                     suffixIcon: IconButton(
