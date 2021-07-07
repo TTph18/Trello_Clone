@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:trello_clone/icons/app_icons.dart';
+import 'package:trello_clone/models/boards.dart';
 import 'package:trello_clone/models/user.dart';
+import 'package:trello_clone/models/workspaces.dart';
+import 'package:trello_clone/services/database.dart';
 import '../../route_path.dart';
 
 class CreateCardScreen extends StatefulWidget {
@@ -10,30 +13,20 @@ class CreateCardScreen extends StatefulWidget {
 }
 
 class BoardItem {
-  String name;
+  Boards boards;
+  String wpname;
   String type;
 
-  BoardItem({required this.name, required this.type});
+  BoardItem({required this.wpname, required this.type, required this.boards});
 }
 
 class CreateCardScreenState extends State<CreateCardScreen> {
   final formKey = GlobalKey<FormState>();
-  String selectedBoard = "";
-  List<String> groupName = ["Tên nhóm 1", "Tên nhóm 2", "Tên nhóm 3"];
-  List<BoardItem> boardItems = [
-    BoardItem(name: "Tên nhóm 1", type: "sep"),
-    BoardItem(name: "Tên bảng 1 nhóm 1", type: "data"),
-    BoardItem(name: "Tên bảng 2 nhóm 1", type: "data"),
-    BoardItem(name: "Tên nhóm 2", type: "sep"),
-    BoardItem(name: "Tên bảng 1 nhóm 2", type: "data"),
-    BoardItem(name: "Tên bảng 2 nhóm 2", type: "data"),
-    BoardItem(name: "Tên bảng 3 nhóm 2", type: "data"),
-    BoardItem(name: "Tên bảng 4 nhóm 2", type: "data"),
-    BoardItem(name: "Tên nhóm 3", type: "sep"),
-    BoardItem(name: "Tên bảng 1 nhóm 3", type: "data"),
-    BoardItem(name: "Tên bảng 2 nhóm 3", type: "data"),
-    BoardItem(name: "Tên bảng 3 nhóm 3", type: "data"),
-  ];
+  Boards nullBr = new Boards(boardID: "", userList: [], boardName: "", createdBy: "", background: "", isPersonal: false, workspaceID: "");
+  late Boards selectedBoard = nullBr;
+  late List<Workspaces> group = [];
+  late List<Boards> br = [];
+  late List<BoardItem> boardItems = [];
 
   List<String> boardList = ["Tên bảng 1", "Tên bảng 2", "Tên bảng 3"];
   String? selectedList = "";
@@ -84,6 +77,7 @@ class CreateCardScreenState extends State<CreateCardScreen> {
 
   ///Date picker
   int dateTypePicked = 0;
+
   /// 0 = no date is picked, 1 = start date is picked, 2 = end date is picked
   DateTime selectedDate = DateTime.now();
   var startDateTxtCtrl = TextEditingController();
@@ -220,100 +214,144 @@ class CreateCardScreenState extends State<CreateCardScreen> {
             SizedBox(
               width: MediaQuery.of(context).size.width * 0.9,
               child: ButtonTheme(
-                child: DropdownButtonFormField<String>(
-                  icon: Icon(Icons.keyboard_arrow_down),
-                  hint: Align(
-                    alignment: Alignment.centerLeft,
-                    child: Text(
-                      "Chọn bảng",
-                      style: TextStyle(fontSize: 20.0),
-                    ),
-                  ),
-                  decoration: InputDecoration(
-                    labelStyle: TextStyle(fontSize: 18.0, height: 0.9),
-                    labelText: "Bảng",
-                    floatingLabelBehavior: FloatingLabelBehavior.always,
-                    contentPadding: EdgeInsets.only(bottom: 0),
-                  ),
-                  onChanged: (value) {
-                    if (value != null)
-                      print("VALUE: " + value);
-                    else
-                      print("NOT VALUE");
-                    if (boardItems[boardItems
-                                .indexWhere((element) => element.name == value)]
-                            .type ==
-                        "sep") {
-                      return;
-                    }
-                    setState(() {
-                      if (value != null) selectedBoard = value;
-                    });
-                  },
-                  selectedItemBuilder: (BuildContext context) {
-                    return boardItems.map((BoardItem item) {
-                      return Text(
-                        selectedBoard,
-                        style: TextStyle(
-                          fontSize: 20.0,
-                        ),
-                      );
-                    }).toList();
-                  },
-                  items: boardItems.map((BoardItem item) {
-                    return DropdownMenuItem(
-                      value: item.name,
-                      onTap: item.type == "data" ? () {} : null,
-                      child: item.type == "data"
-                          ? Container(
-                              padding: EdgeInsets.fromLTRB(15, 7, 15, 7),
-                              child: Row(
-                                children: [
-                                  Container(
-                                    padding: EdgeInsets.fromLTRB(0, 0, 15, 0),
-                                    child: ClipRRect(
-                                      borderRadius: BorderRadius.circular(3.0),
-                                      child: Image(
-                                        image: AssetImage(
-                                            "assets/images/BlueBG.png"),
-                                        width: 50,
-                                        height: 50,
-                                      ),
-                                    ),
-                                  ),
-                                  Text(
-                                    item.name,
-                                    style: TextStyle(fontSize: 20),
-                                  ),
-                                ],
-                              ),
-                            )
-                          : Container(
-                              height: 50,
-                              decoration: BoxDecoration(
-                                color: Colors.white,
-                                border: Border(
-                                  top: BorderSide(
-                                      width: 1.0, color: Colors.black),
-                                  bottom: BorderSide(
-                                      width: 1.0, color: Colors.black),
-                                ),
-                              ),
-                              child: Align(
+                child: FutureBuilder(
+                    future: DatabaseService.getUserWorkspaceList(),
+                    builder: (BuildContext context, AsyncSnapshot snapshot) {
+                      if (!snapshot.hasData) {
+                        return Container(
+                            alignment: FractionalOffset.center,
+                            child: CircularProgressIndicator());
+                      } else {
+                        group.clear();
+                        br.clear();
+                        for (var item in snapshot.data) {
+                          Workspaces _wp = Workspaces.fromDocument(item);
+                          group.add(_wp);
+                        }
+                      }
+                      return FutureBuilder(
+                          future: DatabaseService.getAllBoards(),
+                          builder:
+                              (BuildContext context, AsyncSnapshot snapshot) {
+                            if (!snapshot.hasData) {
+                              return Container(
+                                  alignment: FractionalOffset.center,
+                                  child: CircularProgressIndicator());
+                            } else {
+                              boardItems.clear();
+                              for (var _item in group) {
+                                boardItems.add(new BoardItem(wpname: _item.workspaceName, type: "sep", boards: nullBr));
+                                for (var item in snapshot.data) {
+                                  Boards _br = Boards.fromDocument(item);
+                                  br.add(_br);
+                                  if(_item.workspaceID == _br.workspaceID){
+                                    boardItems.add(new BoardItem(wpname: _item.workspaceName , type: "data", boards: _br));
+                                  }
+                                }
+                              }
+                            }
+                            return DropdownButtonFormField<String>(
+                              icon: Icon(Icons.keyboard_arrow_down),
+                              hint: Align(
                                 alignment: Alignment.centerLeft,
                                 child: Text(
-                                  item.name,
-                                  style: TextStyle(
-                                    color: Colors.black,
-                                    fontWeight: FontWeight.normal,
-                                    fontSize: 16,
-                                  ),
+                                  "Chọn bảng",
+                                  style: TextStyle(fontSize: 20.0),
                                 ),
                               ),
-                            ),
-                    );
-                  }).toList(),
-                ),
+                              decoration: InputDecoration(
+                                labelStyle:
+                                    TextStyle(fontSize: 18.0, height: 0.9),
+                                labelText: "Bảng",
+                                floatingLabelBehavior:
+                                    FloatingLabelBehavior.always,
+                                contentPadding: EdgeInsets.only(bottom: 0),
+                              ),
+                              onChanged: (value) {
+                                if (boardItems[boardItems
+                                    .indexWhere((element) => element.boards.boardID == value)]
+                                    .type ==
+                                    "sep") {
+                                  return;
+                                }
+                                setState(() {
+                                  selectedBoard = (boardItems[boardItems.indexWhere((element) => element.boards.boardID == value)].boards);
+                                });
+                              },
+                              selectedItemBuilder: (BuildContext context) {
+                                return boardItems.map((BoardItem item) {
+                                  return Text(
+                                    selectedBoard.boardName,
+                                    style: TextStyle(
+                                      fontSize: 20.0,
+                                    ),
+                                  );
+                                }).toList();
+                              },
+                              items: boardItems == null
+                              ? [] :
+                              boardItems.map((BoardItem item) {
+                                return DropdownMenuItem(
+                                  value: item.boards.boardID,
+                                  onTap: item.type == "data" ? () {} : null,
+                                  child: item.type == "data"
+                                      ? Container(
+                                          padding:
+                                              EdgeInsets.fromLTRB(15, 7, 15, 7),
+                                          child: Row(
+                                            children: [
+                                              Container(
+                                                padding: EdgeInsets.fromLTRB(
+                                                    0, 0, 15, 0),
+                                                child: ClipRRect(
+                                                  borderRadius:
+                                                      BorderRadius.circular(
+                                                          3.0),
+                                                  child: Image(
+                                                    image: AssetImage(
+                                                        "assets/images/BlueBG.png"),
+                                                    width: 50,
+                                                    height: 50,
+                                                  ),
+                                                ),
+                                              ),
+                                              Text(
+                                                item.boards.boardName,
+                                                style: TextStyle(fontSize: 20),
+                                              ),
+                                            ],
+                                          ),
+                                        )
+                                      : Container(
+                                          height: 50,
+                                          decoration: BoxDecoration(
+                                            color: Colors.white,
+                                            border: Border(
+                                              top: BorderSide(
+                                                  width: 1.0,
+                                                  color: Colors.black),
+                                              bottom: BorderSide(
+                                                  width: 1.0,
+                                                  color: Colors.black),
+                                            ),
+                                          ),
+                                          child: Align(
+                                            alignment: Alignment.centerLeft,
+                                            child: Text(
+                                              item.wpname,
+                                              style: TextStyle(
+                                                color: Colors.black,
+                                                fontWeight: FontWeight.normal,
+                                                fontSize: 16,
+                                              ),
+                                            ),
+                                          ),
+                                        ),
+                                );
+                              }).toList(),
+                            );
+                          });
+                    }),
               ),
             ),
 
@@ -335,9 +373,7 @@ class CreateCardScreenState extends State<CreateCardScreen> {
                   floatingLabelBehavior: FloatingLabelBehavior.always,
                   contentPadding: EdgeInsets.only(bottom: 0),
                 ),
-                onChanged: selectedBoard == ""
-                    ? null
-                    : (value) {
+                onChanged:  (value) {
                         setState(() {
                           selectedList = value;
                         });
@@ -424,9 +460,8 @@ class CreateCardScreenState extends State<CreateCardScreen> {
                         child: Column(
                           children: [
                             ///Members here
-                            selectedBoard == ""
-                                ? SizedBox()
-                                : Row(
+
+                                 Row(
                                     children: [
                                       IconButton(
                                         icon: Icon(MyFlutterApp.person_outline),
@@ -626,22 +661,49 @@ class CreateCardScreenState extends State<CreateCardScreen> {
                                                   Container(
                                                     child: TextButton(
                                                       onPressed: () {
-                                                        if (startDateTxtCtrl.text == "" && startTimeTxtCtrl.text == "")
-                                                          {
-                                                            setState(() {
-                                                              startDateStr = "";
-                                                            });
-                                                            ///Save null to database
-                                                          }
-                                                        else
-                                                        {
+                                                        if (startDateTxtCtrl
+                                                                    .text ==
+                                                                "" &&
+                                                            startTimeTxtCtrl
+                                                                    .text ==
+                                                                "") {
                                                           setState(() {
-                                                            String selectedDay = selectedDate.day.toString();
-                                                            String selectedMonth = selectedDate.month.toString();
-                                                            String selectedYear = selectedDate.year.toString();
-                                                            String selectedTimeStr = selectedTime.hour.toString() + (selectedTime.minute >= 10 ? selectedTime.minute.toString() : "0" + selectedTime.minute.toString());
-                                                            startDateStr = "Bắt đầu vào ngày $selectedDay tháng $selectedMonth, năm $selectedYear lúc $selectedTimeStr";
+                                                            startDateStr = "";
                                                           });
+
+                                                          ///Save null to database
+                                                        } else {
+                                                          setState(() {
+                                                            String selectedDay =
+                                                                selectedDate.day
+                                                                    .toString();
+                                                            String
+                                                                selectedMonth =
+                                                                selectedDate
+                                                                    .month
+                                                                    .toString();
+                                                            String
+                                                                selectedYear =
+                                                                selectedDate
+                                                                    .year
+                                                                    .toString();
+                                                            String selectedTimeStr = selectedTime
+                                                                    .hour
+                                                                    .toString() +
+                                                                (selectedTime
+                                                                            .minute >=
+                                                                        10
+                                                                    ? selectedTime
+                                                                        .minute
+                                                                        .toString()
+                                                                    : "0" +
+                                                                        selectedTime
+                                                                            .minute
+                                                                            .toString());
+                                                            startDateStr =
+                                                                "Bắt đầu vào ngày $selectedDay tháng $selectedMonth, năm $selectedYear lúc $selectedTimeStr";
+                                                          });
+
                                                           ///save selected Date and selected time to database. This condition means:
                                                           ///date null, time not null => save date now + time value
                                                           ///date not null, time null => save date value + time default at 9:00
@@ -669,9 +731,10 @@ class CreateCardScreenState extends State<CreateCardScreen> {
                                 TextButton(
                                   child: Container(
                                     width: 265,
-                                    child: Text(startDateStr == ""
-                                        ? "Ngày bắt đầu..."
-                                        : "$startDateStr",
+                                    child: Text(
+                                        startDateStr == ""
+                                            ? "Ngày bắt đầu..."
+                                            : "$startDateStr",
                                         style: TextStyle(
                                             fontSize: 18.0,
                                             color: Colors.black87)),
@@ -679,10 +742,9 @@ class CreateCardScreenState extends State<CreateCardScreen> {
                                   style: ButtonStyle(
                                     alignment: Alignment.bottomLeft,
                                     overlayColor:
-                                    MaterialStateProperty.all<Color>(
-                                        Colors.white),
+                                        MaterialStateProperty.all<Color>(
+                                            Colors.white),
                                   ),
-
                                   onPressed: () {
                                     startDateTxtCtrl.text =
                                         selectedDate.day.toString() +
@@ -804,22 +866,50 @@ class CreateCardScreenState extends State<CreateCardScreen> {
                                                   Container(
                                                     child: TextButton(
                                                       onPressed: () {
-                                                        if (startDateTxtCtrl.text == "" && startTimeTxtCtrl.text == "")
-                                                        {
+                                                        if (startDateTxtCtrl
+                                                                    .text ==
+                                                                "" &&
+                                                            startTimeTxtCtrl
+                                                                    .text ==
+                                                                "") {
                                                           setState(() {
                                                             startDateStr = "";
                                                           });
+
                                                           ///Save null to database
-                                                        }
-                                                        else
-                                                        {
+                                                        } else {
                                                           setState(() {
-                                                            String selectedDay = selectedDate.day.toString();
-                                                            String selectedMonth = selectedDate.month.toString();
-                                                            String selectedYear = selectedDate.year.toString();
-                                                            String selectedTimeStr = selectedTime.hour.toString() + (selectedTime.minute >= 10 ? ":0" + selectedTime.minute.toString() : ":0" + selectedTime.minute.toString());
-                                                            startDateStr = "Bắt đầu vào ngày $selectedDay tháng $selectedMonth, năm $selectedYear lúc $selectedTimeStr";
+                                                            String selectedDay =
+                                                                selectedDate.day
+                                                                    .toString();
+                                                            String
+                                                                selectedMonth =
+                                                                selectedDate
+                                                                    .month
+                                                                    .toString();
+                                                            String
+                                                                selectedYear =
+                                                                selectedDate
+                                                                    .year
+                                                                    .toString();
+                                                            String selectedTimeStr = selectedTime
+                                                                    .hour
+                                                                    .toString() +
+                                                                (selectedTime
+                                                                            .minute >=
+                                                                        10
+                                                                    ? ":0" +
+                                                                        selectedTime
+                                                                            .minute
+                                                                            .toString()
+                                                                    : ":0" +
+                                                                        selectedTime
+                                                                            .minute
+                                                                            .toString());
+                                                            startDateStr =
+                                                                "Bắt đầu vào ngày $selectedDay tháng $selectedMonth, năm $selectedYear lúc $selectedTimeStr";
                                                           });
+
                                                           ///save selected Date and selected time to database. This condition means:
                                                           ///date null, time not null => save date now + time value
                                                           ///date not null, time null => save date value + time default at 9:00
@@ -854,9 +944,10 @@ class CreateCardScreenState extends State<CreateCardScreen> {
                                 TextButton(
                                   child: Container(
                                     width: 265,
-                                    child: Text(endDateStr == ""
-                                        ? "Ngày hết hạn..."
-                                        : "$endDateStr",
+                                    child: Text(
+                                        endDateStr == ""
+                                            ? "Ngày hết hạn..."
+                                            : "$endDateStr",
                                         style: TextStyle(
                                             fontSize: 18.0,
                                             color: Colors.black87)),
@@ -864,10 +955,9 @@ class CreateCardScreenState extends State<CreateCardScreen> {
                                   style: ButtonStyle(
                                     alignment: Alignment.centerLeft,
                                     overlayColor:
-                                    MaterialStateProperty.all<Color>(
-                                        Colors.white),
+                                        MaterialStateProperty.all<Color>(
+                                            Colors.white),
                                   ),
-
                                   onPressed: () {
                                     endDateTxtCtrl.text =
                                         selectedDate.day.toString() +
@@ -978,32 +1068,26 @@ class CreateCardScreenState extends State<CreateCardScreen> {
                                                 height: 20,
                                               ),
                                               Container(
-                                                width:
-                                                MediaQuery.of(context)
+                                                width: MediaQuery.of(context)
                                                     .size
                                                     .width,
-                                                child:
-                                                DropdownButtonFormField<
+                                                child: DropdownButtonFormField<
                                                     String>(
                                                   value: selectedNotiTime,
-                                                  decoration:
-                                                  InputDecoration(
+                                                  decoration: InputDecoration(
                                                     contentPadding:
-                                                    EdgeInsets.only(
-                                                        bottom: 0),
+                                                        EdgeInsets.only(
+                                                            bottom: 0),
                                                   ),
                                                   onChanged: (value) {
                                                     setState(() {
-                                                      selectedNotiTime =
-                                                          value;
+                                                      selectedNotiTime = value;
                                                     });
                                                   },
-                                                  items:
-                                                  notificationTimeList
-                                                      .map((String
-                                                  item) {
+                                                  items: notificationTimeList
+                                                      .map((String item) {
                                                     return DropdownMenuItem<
-                                                        String>(
+                                                            String>(
                                                         value: item,
                                                         child: Row(
                                                           children: [
@@ -1050,22 +1134,50 @@ class CreateCardScreenState extends State<CreateCardScreen> {
                                                   Container(
                                                     child: TextButton(
                                                       onPressed: () {
-                                                        if (endDateTxtCtrl.text == "" && endDateTxtCtrl.text == "")
-                                                        {
+                                                        if (endDateTxtCtrl
+                                                                    .text ==
+                                                                "" &&
+                                                            endDateTxtCtrl
+                                                                    .text ==
+                                                                "") {
                                                           setState(() {
                                                             endDateStr = "";
                                                           });
+
                                                           ///Save null to database
-                                                        }
-                                                        else
-                                                        {
+                                                        } else {
                                                           setState(() {
-                                                            String selectedDay = selectedDate.day.toString();
-                                                            String selectedMonth = selectedDate.month.toString();
-                                                            String selectedYear = selectedDate.year.toString();
-                                                            String selectedTimeStr = selectedTime.hour.toString() + (selectedTime.minute >= 10 ? ":0" + selectedTime.minute.toString() : ":0" + selectedTime.minute.toString());
-                                                            endDateStr = "Hết hạn vào ngày $selectedDay tháng $selectedMonth, năm $selectedYear lúc $selectedTimeStr";
+                                                            String selectedDay =
+                                                                selectedDate.day
+                                                                    .toString();
+                                                            String
+                                                                selectedMonth =
+                                                                selectedDate
+                                                                    .month
+                                                                    .toString();
+                                                            String
+                                                                selectedYear =
+                                                                selectedDate
+                                                                    .year
+                                                                    .toString();
+                                                            String selectedTimeStr = selectedTime
+                                                                    .hour
+                                                                    .toString() +
+                                                                (selectedTime
+                                                                            .minute >=
+                                                                        10
+                                                                    ? ":0" +
+                                                                        selectedTime
+                                                                            .minute
+                                                                            .toString()
+                                                                    : ":0" +
+                                                                        selectedTime
+                                                                            .minute
+                                                                            .toString());
+                                                            endDateStr =
+                                                                "Hết hạn vào ngày $selectedDay tháng $selectedMonth, năm $selectedYear lúc $selectedTimeStr";
                                                           });
+
                                                           ///save selected Date and selected time to database. This condition means:
                                                           ///date null, time not null => save date now + time value
                                                           ///date not null, time null => save date value + time default at 9:00
