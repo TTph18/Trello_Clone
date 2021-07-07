@@ -5,7 +5,6 @@ import 'package:trello_clone/icons/my_flutter_app2_icons.dart';
 import 'package:trello_clone/models/boards.dart';
 import 'package:trello_clone/models/user.dart';
 import 'package:trello_clone/screens/card_screen/move_card_screen.dart';
-import 'package:trello_clone/services/database.dart';
 import 'dart:math' as math;
 
 import 'package:trello_clone/widgets/reuse_widget/avatar.dart';
@@ -26,7 +25,7 @@ class CardScreenState extends State<CardScreen> {
   CardScreenState(this.cardName);
 
   var descriptionTxtCtrl = TextEditingController();
-  late List<Users> userList = [];
+
   List<Users> users = [
     Users(
       userID: "12345",
@@ -62,7 +61,24 @@ class CardScreenState extends State<CardScreen> {
     ),
   ];
   List<Users> pickedUsers = [];
-  List<int> pickedUsersIndex = [];
+
+  ///TODO: Load users from database to pickedUsers
+  List<bool> flagPickedUsers = [];
+
+  ///Use for showing check iconbutton in popup member
+
+  @override
+  void initState() {
+    for (Users user in users) {
+      var foundUser =
+          pickedUsers.where((element) => element.userID == user.userID);
+      if (foundUser.isNotEmpty)
+        flagPickedUsers.add(true);
+      else
+        flagPickedUsers.add(false);
+    }
+    super.initState();
+  }
 
   ///StartDate picker
   ///TODO: Load selectedStartDate from database, if = null, assign Datetime now to it
@@ -423,117 +439,128 @@ class CardScreenState extends State<CardScreen> {
                             child: Column(
                               mainAxisSize: MainAxisSize.min,
                               children: [
-                                ///TODO: Load memberList to select here
-                                Column(
-                                  children: List.generate(
-                                    users.length,
-                                    (int index) {
-                                      return Column(
-                                        children: [
-                                          InkWell(
-                                            child: Padding(
-                                              padding:
-                                                  const EdgeInsets.fromLTRB(
-                                                      16.0, 14.0, 0, 14.0),
-                                              child: Row(
-                                                mainAxisAlignment:
-                                                    MainAxisAlignment
-                                                        .spaceBetween,
-                                                children: [
-                                                  Row(
-                                                    children: [
-                                                      avatar(
-                                                        40,
-                                                        40,
-                                                        Colors.grey,
-                                                        Image.network(
-                                                          users[index].avatar,
-                                                          width: 40,
-                                                          height: 40,
+                                SingleChildScrollView(
+                                  child: Column(
+                                    children: List.generate(
+                                      users.length,
+                                      (int index) {
+                                        return Column(
+                                          children: [
+                                            InkWell(
+                                              onTap: () {
+                                                setState(() {
+                                                  flagPickedUsers[index] == true
+                                                      ? flagPickedUsers[index] =
+                                                          false
+                                                      : flagPickedUsers[index] =
+                                                          true;
+                                                });
+                                              },
+                                              child: Padding(
+                                                padding:
+                                                    const EdgeInsets.fromLTRB(
+                                                        16.0, 14.0, 0, 14.0),
+                                                child: Row(
+                                                  mainAxisAlignment:
+                                                      MainAxisAlignment
+                                                          .spaceBetween,
+                                                  children: [
+                                                    Row(
+                                                      children: [
+                                                        avatar(
+                                                          40,
+                                                          40,
+                                                          Colors.grey,
+                                                          Image.network(
+                                                            users[index].avatar,
+                                                            width: 40,
+                                                            height: 40,
+                                                          ),
                                                         ),
-                                                      ),
-                                                      SizedBox(
-                                                        width: 20,
-                                                      ),
-                                                      Column(
-                                                        crossAxisAlignment:
-                                                            CrossAxisAlignment
-                                                                .start,
-                                                        children: <Widget>[
-                                                          Align(
-                                                            alignment: Alignment
-                                                                .centerLeft,
-                                                            child: Text(
-                                                                users[index]
-                                                                    .profileName,
+                                                        SizedBox(
+                                                          width: 20,
+                                                        ),
+                                                        Column(
+                                                          crossAxisAlignment:
+                                                              CrossAxisAlignment
+                                                                  .start,
+                                                          children: <Widget>[
+                                                            Align(
+                                                              alignment: Alignment
+                                                                  .centerLeft,
+                                                              child: Text(
+                                                                  users[index]
+                                                                      .profileName,
+                                                                  textAlign:
+                                                                      TextAlign
+                                                                          .left,
+                                                                  style: TextStyle(
+                                                                      fontSize:
+                                                                          16,
+                                                                      fontWeight:
+                                                                          FontWeight
+                                                                              .bold)),
+                                                            ),
+                                                            Align(
+                                                              alignment: Alignment
+                                                                  .centerLeft,
+                                                              child: Text(
+                                                                '@' +
+                                                                    users[index]
+                                                                        .userName,
                                                                 textAlign:
                                                                     TextAlign
                                                                         .left,
                                                                 style: TextStyle(
                                                                     fontSize:
                                                                         16,
-                                                                    fontWeight:
-                                                                        FontWeight
-                                                                            .bold)),
-                                                          ),
-                                                          Align(
-                                                            alignment: Alignment
-                                                                .centerLeft,
-                                                            child: Text(
-                                                              '@' +
-                                                                  users[index]
-                                                                      .userName,
-                                                              textAlign:
-                                                                  TextAlign
-                                                                      .left,
-                                                              style: TextStyle(
-                                                                  fontSize: 16,
-                                                                  fontStyle:
-                                                                      FontStyle
-                                                                          .italic),
+                                                                    fontStyle:
+                                                                        FontStyle
+                                                                            .italic),
+                                                              ),
                                                             ),
-                                                          ),
-                                                        ],
-                                                      ),
-                                                    ],
-                                                  ),
-                                                  IconButton(
-                                                    onPressed: () {
-                                                      {}
-                                                    },
-                                                    icon: Icon(
-                                                      Icons.close,
+                                                          ],
+                                                        ),
+                                                      ],
                                                     ),
-                                                  )
-                                                ],
+                                                    flagPickedUsers[index] ==
+                                                            false
+                                                        ? SizedBox(
+                                                            width: 24,
+                                                          )
+                                                        : IconButton(
+                                                            onPressed: () {},
+                                                            icon: Icon(
+                                                              Icons.check,
+                                                            ),
+                                                          )
+                                                  ],
+                                                ),
                                               ),
                                             ),
-                                          ),
-                                          Padding(
-                                            padding: EdgeInsets.fromLTRB(
-                                                70, 0, 0, 0),
-                                            child: Divider(
-                                              height: 1,
-                                              color: Colors.black,
+                                            Padding(
+                                              padding: EdgeInsets.fromLTRB(
+                                                  70, 0, 0, 0),
+                                              child: Divider(
+                                                height: 1,
+                                                color: Colors.black,
+                                              ),
                                             ),
-                                          ),
-                                        ],
-                                      );
-                                    },
+                                          ],
+                                        );
+                                      },
+                                    ),
                                   ),
                                 ),
-
                                 SizedBox(
                                   height: 20,
                                 ),
-
                                 Row(
                                   mainAxisAlignment: MainAxisAlignment.end,
                                   children: [
                                     Container(
                                       child: TextButton(
                                         onPressed: () {
-                                          ///TODO: Reset to original value
                                           Navigator.of(context,
                                                   rootNavigator: true)
                                               .pop('dialog');
@@ -544,7 +571,16 @@ class CardScreenState extends State<CardScreen> {
                                     Container(
                                       child: TextButton(
                                         onPressed: () {
-                                          ///TODO: Save picked users to a variable
+                                          setState(() {
+                                            ///Save new picked users
+                                            for (int index = 0;
+                                            index < flagPickedUsers.length;
+                                            index++) {
+                                              pickedUsers = [];
+                                              if (flagPickedUsers[index])
+                                                pickedUsers.add(users[index]);
+                                            }
+                                          });
                                           Navigator.of(context,
                                                   rootNavigator: true)
                                               .pop('dialog');
