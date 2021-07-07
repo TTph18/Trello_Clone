@@ -92,6 +92,14 @@ class DatabaseService {
     return snapshot;
   }
 
+  // get lists in board
+  static Future getAllBoards() async {
+    var snapshot = await FirebaseFirestore.instance
+        .collection('boards')
+        .get();
+    return snapshot.docs;
+  }
+
   //add a board
   static Future<void> addBoard(String boardName, String workspaceID) async {
     String uid = FirebaseAuth.instance.currentUser!.uid;
