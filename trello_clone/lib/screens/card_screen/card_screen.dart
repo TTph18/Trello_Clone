@@ -172,6 +172,9 @@ class CardScreenState extends State<CardScreen> {
   ];
   bool isAddTask = false;
   bool isChangeTaskListName = false;
+  bool isChangeListName = false;
+  int xChangeTaskListName = -1;
+  int yChangeTaskListName = -1;
   List<List<String>> tasks = [
     [
       "Name 11",
@@ -210,6 +213,7 @@ class CardScreenState extends State<CardScreen> {
     true,
   ];
   List<List<TextEditingController>> controllers = [];
+  List<TextEditingController> controllersList = [];
 
   ///For comment
   var commentEnterTxtCtrl = TextEditingController();
@@ -223,17 +227,14 @@ class CardScreenState extends State<CardScreen> {
 
   ///TODO: Load comment list
   List<Comments> commentList = [];
+
   ///TODO: Delete these when comment list is loaded
   ///TODO: in UI, change the commentUserIDList to commentList and match suitable values
   List<String> commentUserIDList = ["12345", "1234", "1234"];
   List<String> commentUserNameList = ["Test4", "name1", "name1"];
   List<String> commentUserAvatarList = ["assets/images/BlueBG.png", "assets/images/BlueBG.png", "assets/images/BlueBG.png"];
   List<String> commentContentList = ["Test comment for Test4", "Test comment for name1", "Test test test test test comment 2 for name1"];
-  List<DateTime> commentDateList = [
-    DateTime(2021, 7, 7, 8, 30),
-    DateTime(2021, 7, 4, 9, 30),
-    DateTime(2021, 6, 30, 10, 30)
-  ];
+  List<DateTime> commentDateList = [DateTime(2021, 7, 7, 8, 30), DateTime(2021, 7, 4, 9, 30), DateTime(2021, 6, 30, 10, 30)];
 
   List<TextEditingController> commentContentTxtCtrlList = [];
 
@@ -242,8 +243,7 @@ class CardScreenState extends State<CardScreen> {
     super.initState();
 
     for (Users user in users) {
-      var foundUser =
-      pickedUsers.where((element) => element.userID == user.userID);
+      var foundUser = pickedUsers.where((element) => element.userID == user.userID);
       if (foundUser.isNotEmpty)
         flagPickedUsers.add(true);
       else
@@ -273,6 +273,7 @@ class CardScreenState extends State<CardScreen> {
     ];
     controllers = [];
     for (int i = 0; i < tasks.length; i++) {
+      controllersList.add(TextEditingController.fromValue(TextEditingValue(text: taskListNames[i])));
       controllers.add([]);
       for (int j = 0; j < tasks[i].length; j++) {
         controllers[i].add(new TextEditingController.fromValue(TextEditingValue(text: tasks[i][j])));
@@ -287,6 +288,18 @@ class CardScreenState extends State<CardScreen> {
       backgroundColor: Color.fromRGBO(244, 245, 247, 1.0),
       appBar: AppBar(
           backgroundColor: Colors.white,
+          title: Text(
+            isAddTask
+                ? "Mục mới"
+                : isChangeTaskListName
+                    ? "Chỉnh sửa mục"
+                    : isChangeListName
+                        ? "Chỉnh sửa danh sách công việc"
+                        : "",
+            style: TextStyle(
+              color: Colors.black,
+            ),
+          ),
           leading: IconButton(
             icon: Icon(
               Icons.close,
@@ -296,13 +309,22 @@ class CardScreenState extends State<CardScreen> {
               if (isAddTask) {
                 isAddTask = false;
                 FocusScope.of(context).unfocus();
+              } else if (isChangeTaskListName) {
+                isChangeTaskListName = false;
+                xChangeTaskListName = -1;
+                yChangeTaskListName = -1;
+                FocusScope.of(context).unfocus();
+              } else if (isChangeListName) {
+                isChangeListName = false;
+                xChangeTaskListName = -1;
+                FocusScope.of(context).unfocus();
               } else
                 Navigator.of(context).pop();
             },
           ),
           elevation: 0.0,
           actions: [
-            isAddTask
+            isAddTask || isChangeTaskListName || isChangeListName
                 ? IconButton(
                     icon: Icon(
                       Icons.check,
@@ -312,6 +334,17 @@ class CardScreenState extends State<CardScreen> {
                       if (isAddTask) {
                         ///TODO: Add new task
                         isAddTask = false;
+                        FocusScope.of(context).unfocus();
+                      } else if (isChangeTaskListName) {
+                        ///TODO: Change value at [xChangeTaskListName][yChangeTaskListName]
+                        isChangeTaskListName = false;
+                        xChangeTaskListName = -1;
+                        yChangeTaskListName = -1;
+                        FocusScope.of(context).unfocus();
+                      } else if (isChangeListName) {
+                        ///TODO: Change name at [xChangeTaskListName]
+                        isChangeListName = false;
+                        xChangeTaskListName = -1;
                         FocusScope.of(context).unfocus();
                       }
                     },
@@ -1063,29 +1096,34 @@ class CardScreenState extends State<CardScreen> {
             ),
 
             ///Checklist
-            Container(
-              width: MediaQuery.of(context).size.width,
-              padding: const EdgeInsets.only(
-                left: 25,
-                right: 25,
-                top: 20.0,
-                bottom: 20.0,
-              ),
-              decoration: BoxDecoration(
-                color: Colors.white,
-                border: Border(top: BorderSide(color: Colors.grey.shade400), bottom: BorderSide(color: Colors.grey.shade400)),
-              ),
-              child: Row(
-                children: [
-                  Icon(MyFlutterApp2.check),
-                  SizedBox(
-                    width: 20,
-                  ),
-                  Text(
-                    "Danh sách công việc...",
-                    style: TextStyle(fontSize: 20),
-                  ),
-                ],
+            InkWell(
+              onTap: () {
+                ///TODO: Add new task list
+              },
+              child: Container(
+                width: MediaQuery.of(context).size.width,
+                padding: const EdgeInsets.only(
+                  left: 25,
+                  right: 25,
+                  top: 20.0,
+                  bottom: 20.0,
+                ),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  border: Border(top: BorderSide(color: Colors.grey.shade400), bottom: BorderSide(color: Colors.grey.shade400)),
+                ),
+                child: Row(
+                  children: [
+                    Icon(MyFlutterApp2.check),
+                    SizedBox(
+                      width: 20,
+                    ),
+                    Text(
+                      "Danh sách công việc...",
+                      style: TextStyle(fontSize: 20),
+                    ),
+                  ],
+                ),
               ),
             ),
 
@@ -1114,7 +1152,9 @@ class CardScreenState extends State<CardScreen> {
                               ],
                             ),
                             IconButton(
-                              onPressed: () {},
+                              onPressed: () {
+                                ///TODO: Add new task list
+                              },
                               icon: Icon(Icons.add),
                               color: Colors.blue,
                               iconSize: 30,
@@ -1143,10 +1183,40 @@ class CardScreenState extends State<CardScreen> {
                                         child: Row(
                                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                           children: [
-                                            Text(
-                                              taskListNames[index],
-                                              style: TextStyle(
-                                                fontSize: 20,
+                                            //Text(
+                                            //  taskListNames[index],
+                                            //  style: TextStyle(
+                                            //    fontSize: 20,
+                                            //  ),
+                                            //),
+                                            Container(
+                                              width: MediaQuery.of(context).size.width - 140,
+                                              child: Focus(
+                                                child: TextField(
+                                                  controller: controllersList[index],
+                                                  style: TextStyle(fontSize: 20),
+                                                  decoration: InputDecoration(
+                                                    border: InputBorder.none,
+                                                    focusedBorder: InputBorder.none,
+                                                    enabledBorder: InputBorder.none,
+                                                    errorBorder: InputBorder.none,
+                                                    disabledBorder: InputBorder.none,
+                                                    hintStyle: TextStyle(fontSize: 20),
+                                                  ),
+                                                ),
+                                                onFocusChange: (hasFocus) {
+                                                  if (hasFocus) {
+                                                    setState(() {
+                                                      isChangeListName = true;
+                                                      xChangeTaskListName = index;
+                                                    });
+                                                  } else {
+                                                    setState(() {
+                                                      isChangeListName = false;
+                                                      xChangeTaskListName = -1;
+                                                    });
+                                                  }
+                                                },
                                               ),
                                             ),
                                             Row(
@@ -1176,7 +1246,9 @@ class CardScreenState extends State<CardScreen> {
                                                   iconSize: 30,
                                                   padding: EdgeInsets.zero,
                                                   icon: Icon(Icons.more_horiz),
-                                                  onSelected: (value) {},
+                                                  onSelected: (value) {
+                                                    ///TODO: Delete task list
+                                                  },
                                                   itemBuilder: (context) => [
                                                     PopupMenuItem(
                                                       value: 1,
@@ -1228,21 +1300,42 @@ class CardScreenState extends State<CardScreen> {
                                                               ),
                                                             ),
                                                             Container(
-                                                              width: MediaQuery. of(context). size. width - 100,
-                                                              child: TextField(
-                                                                controller: controllers[index][innerIndex],
-                                                                style: TextStyle(fontSize: 20),
-                                                                decoration: InputDecoration(
-                                                                  border: InputBorder.none,
-                                                                  focusedBorder: InputBorder.none,
-                                                                  enabledBorder: InputBorder.none,
-                                                                  errorBorder: InputBorder.none,
-                                                                  disabledBorder: InputBorder.none,
-                                                                  hintStyle: TextStyle(fontSize: 20),
+                                                              width: MediaQuery.of(context).size.width - 100,
+                                                              child: Focus(
+                                                                child: TextField(
+                                                                  controller: controllers[index][innerIndex],
+                                                                  style: TextStyle(fontSize: 20),
+                                                                  decoration: InputDecoration(
+                                                                    border: InputBorder.none,
+                                                                    focusedBorder: InputBorder.none,
+                                                                    enabledBorder: InputBorder.none,
+                                                                    errorBorder: InputBorder.none,
+                                                                    disabledBorder: InputBorder.none,
+                                                                    hintStyle: TextStyle(fontSize: 20),
+                                                                  ),
                                                                 ),
+                                                                onFocusChange: (hasFocus) {
+                                                                  if (hasFocus) {
+                                                                    setState(() {
+                                                                      isChangeTaskListName = true;
+                                                                      xChangeTaskListName = index;
+                                                                      yChangeTaskListName = innerIndex;
+                                                                    });
+                                                                  } else {
+                                                                    setState(() {
+                                                                      isChangeTaskListName = false;
+                                                                      xChangeTaskListName = -1;
+                                                                      yChangeTaskListName = -1;
+                                                                    });
+                                                                  }
+                                                                },
                                                               ),
                                                             ),
-
+                                                            isChangeTaskListName && index == xChangeTaskListName && innerIndex == yChangeTaskListName
+                                                                ? IconButton(onPressed: () {}, icon: Icon(Icons.delete))
+                                                                : SizedBox(
+                                                                    width: 0,
+                                                                  ),
                                                           ],
                                                         ),
                                                         Padding(
@@ -1311,95 +1404,116 @@ class CardScreenState extends State<CardScreen> {
             ///TODO: remember to change list to the loaded commentList
             commentUserIDList.length < 1 ? SizedBox(height: 30) :
             Column(
-                children: List.generate(commentUserIDList.length, (index) => Padding(
-                  padding: const EdgeInsets.only(left: 25, right: 20, top: 20),
-                  child: Row(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Padding(
-                        padding: const EdgeInsets.only(top: 20),
-                        child: CircleAvatar(
-                          radius: 25,
-                          ///TODO: Load Avatar
-                          backgroundImage: AssetImage(commentUserAvatarList[index]),
+                children: List.generate(
+              commentUserIDList.length,
+              (index) => Padding(
+                padding: const EdgeInsets.only(left: 25, right: 20, top: 20),
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.only(top: 20),
+                      child: CircleAvatar(
+                        radius: 25,
+
+                        ///TODO: Load Avatar
+                        backgroundImage: AssetImage(commentUserAvatarList[index]),
+                      ),
+                    ),
+                    SizedBox(width: 20),
+                    Column(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      children: [
+                        ///User Name
+                        Container(
+                          width: MediaQuery.of(context).size.width - 115,
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              ///TODO: Load User Name who comments this
+                              Text(
+                                commentUserNameList[index],
+                                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
+                              ),
+
+                              PopupMenuButton(
+                                  icon: Icon(Icons.more_horiz),
+                                  itemBuilder: (BuildContext context) => <PopupMenuEntry<String>>[
+                                        const PopupMenuItem<String>(
+                                          value: "Chỉnh sửa",
+                                          child: Text('Chỉnh sửa'),
+                                        ),
+                                        const PopupMenuItem<String>(
+                                          value: "Xóa",
+                                          child: Text('Xóa'),
+                                        ),
+                                      ]),
+                            ],
+                          ),
                         ),
-                      ),
 
-                      SizedBox(width: 20),
-
-                      Column(
-                        mainAxisAlignment: MainAxisAlignment.start,
-                        children: [
-                          ///User Name
-                          Container(
-                            width: MediaQuery. of(context).size.width - 115,
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                ///TODO: Load User Name who comments this
-                                Text(commentUserNameList[index], style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),),
-
-                                PopupMenuButton(
-                                    icon: Icon(Icons.more_horiz),
-                                    itemBuilder: (BuildContext context) => <PopupMenuEntry<String>>[
-                                      const PopupMenuItem<String>(
-                                        value: "Chỉnh sửa",
-                                        child: Text('Chỉnh sửa'),
-                                      ),
-                                      const PopupMenuItem<String>(
-                                        value: "Xóa",
-                                        child: Text('Xóa'),
-                                      ),
-                                    ]
-                                ),
-                              ],
+                        ///Comment content
+                        Container(
+                          width: MediaQuery.of(context).size.width - 115,
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: BorderRadius.all(Radius.circular(10)),
+                          ),
+                          child: TextField(
+                            controller: commentContentTxtCtrlList[index],
+                            readOnly: true,
+                            keyboardType: TextInputType.multiline,
+                            maxLines: null,
+                            decoration: InputDecoration(
+                              contentPadding: const EdgeInsets.all(5),
+                              border: InputBorder.none,
+                              focusedBorder: InputBorder.none,
+                              enabledBorder: InputBorder.none,
+                              errorBorder: InputBorder.none,
+                              disabledBorder: InputBorder.none,
                             ),
                           ),
+                        ),
 
-                          ///Comment content
-                          Container(
-                            width: MediaQuery. of(context).size.width - 115,
-                            decoration: BoxDecoration(
-                              color: Colors.white,
-                              borderRadius: BorderRadius.all(
-                                  Radius.circular(10)
-                              ),
-                            ),
-                            child: TextField(
-                              controller: commentContentTxtCtrlList[index],
-                              readOnly: true,
-                              keyboardType: TextInputType.multiline,
-                              maxLines: null,
-                              decoration: InputDecoration(
-                                contentPadding: const EdgeInsets.all(5),
-                                border: InputBorder.none,
-                                focusedBorder: InputBorder.none,
-                                enabledBorder: InputBorder.none,
-                                errorBorder: InputBorder.none,
-                                disabledBorder: InputBorder.none,
-                              ),
-                            ),
-                          ),
+                        SizedBox(height: 10),
 
-                          SizedBox(height: 10),
+                        ///Load date comment
+                        ///TODO: change suitable variable to the
+                        ///Format hh:mm dd/mm/yyyy if year is different from current year
+                        ///Format hh:mm dd/mm if year is equal to current year
+                        Container(
+                          alignment: Alignment.centerLeft,
+                          width: MediaQuery.of(context).size.width - 115,
+                          child: commentDateList[index].year == DateTime.now().year
+                              ? Text(commentDateList[index].hour.toString() +
+                                  ":" +
+                                  (commentDateList[index].minute >= 10
+                                      ? commentDateList[index].minute.toString()
+                                      : "0" + commentDateList[index].minute.toString()) +
+                                  " " +
+                                  commentDateList[index].day.toString() +
+                                  "/" +
+                                  commentDateList[index].month.toString())
+                              : Text(commentDateList[index].hour.toString() +
+                                  ":" +
+                                  (commentDateList[index].minute >= 10
+                                      ? commentDateList[index].minute.toString()
+                                      : "0" + commentDateList[index].minute.toString()) +
+                                  " " +
+                                  commentDateList[index].day.toString() +
+                                  "/" +
+                                  commentDateList[index].month.toString() +
+                                  "/" +
+                                  commentDateList[index].year.toString()),
+                        ),
 
-                          ///Load date comment
-                          ///TODO: change suitable variable to the
-                          ///Format hh:mm dd/mm/yyyy if year is different from current year
-                          ///Format hh:mm dd/mm if year is equal to current year
-                          Container(
-                            alignment: Alignment.centerLeft,
-                            width: MediaQuery. of(context).size.width - 115,
-                            child: commentDateList[index].year == DateTime.now().year ? Text(commentDateList[index].hour.toString() + ":" + (commentDateList[index].minute >= 10 ? commentDateList[index].minute.toString() : "0" + commentDateList[index].minute.toString()) + " " + commentDateList[index].day.toString() + "/" + commentDateList[index].month.toString()) : Text(commentDateList[index].hour.toString() + ":" + (commentDateList[index].minute >= 10 ? commentDateList[index].minute.toString() : "0" + commentDateList[index].minute.toString()) + " " + commentDateList[index].day.toString() + "/" + commentDateList[index].month.toString() + "/" + commentDateList[index].year.toString()),
-                          ),
-
-                          SizedBox(height: 20),
-                        ],
-                      ),
-                    ],
-                  ),
-                ),)
-            ),
+                        SizedBox(height: 20),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+            )),
 
             ///for bottom sheet not cover last element
             SizedBox(
