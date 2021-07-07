@@ -21,13 +21,23 @@ class MoveCardScreenState extends State<MoveCardScreen> {
       workspaceID: "");
   late Boards selectedBoard = nullBr;
   late List<Workspaces> group = [];
+  ///TODO: get current board to show in dropdownlist
+  late Boards currentBoard = nullBr;
   List<BoardItem> boardItems = [];
+
+  String currentList = 'Danh sách 1';
+  List<String> listName = ['Danh sách 1', 'Danh sách 2', 'Danh sách 3'];
+
+  int currentPos = 2;
+  List<int> listPos = [1, 2, 3, 4, 5];
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         leading: IconButton(
-          icon: Icon(Icons.close,),
+          icon: Icon(
+            Icons.close,
+          ),
           onPressed: () => Navigator.of(context).pop(),
         ),
         title: Text("Di chuyển thẻ"),
@@ -35,6 +45,7 @@ class MoveCardScreenState extends State<MoveCardScreen> {
           IconButton(
               onPressed: () {
                 ///TODO: Move card
+                Navigator.of(context).pop();
               },
               icon: Icon(Icons.check)),
         ],
@@ -48,6 +59,7 @@ class MoveCardScreenState extends State<MoveCardScreen> {
             SizedBox(
               height: 20,
             ),
+
             ///Board selection
             SizedBox(
               width: MediaQuery.of(context).size.width * 0.9,
@@ -92,128 +104,221 @@ class MoveCardScreenState extends State<MoveCardScreen> {
                                 }
                               }
                             }
+
                             return DropdownButtonFormField<String>(
-                                icon: Icon(Icons.keyboard_arrow_down),
-                                hint: Align(
-                                  alignment: Alignment.centerLeft,
-                                  child: Text(
-                                    "Chọn bảng",
-                                    style: TextStyle(fontSize: 20.0),
-                                  ),
+                              icon: Icon(Icons.keyboard_arrow_down),
+                              value: currentBoard.boardName.toString(),
+                              hint: Align(
+                                alignment: Alignment.centerLeft,
+                                child: Text(
+                                  "Chọn bảng",
+                                  style: TextStyle(fontSize: 20.0),
                                 ),
-                                decoration: InputDecoration(
-                                  labelStyle:
-                                  TextStyle(fontSize: 18.0, height: 0.9),
-                                  labelText: "Bảng",
-                                  floatingLabelBehavior:
-                                  FloatingLabelBehavior.always,
-                                  contentPadding: EdgeInsets.only(bottom: 0),
-                                ),
-                                onChanged: (value) {
-                                  if (boardItems[boardItems.indexWhere(
-                                          (element) =>
-                                      element.boards.boardID ==
-                                          value)]
-                                      .type ==
-                                      "sep") {
-                                    return;
-                                  }
-                                  setState(() {
-                                    selectedBoard = (boardItems[
-                                    boardItems.indexWhere((element) =>
-                                    element.boards.boardID == value)]
-                                        .boards);
-                                  });
-                                },
-                                selectedItemBuilder: (BuildContext context) {
-                                  return boardItems.map((BoardItem item) {
-                                    return Text(
-                                      selectedBoard.boardName,
-                                      style: TextStyle(
-                                        fontSize: 20.0,
-                                      ),
-                                    );
-                                  }).toList();
-                                },
-                                items: boardItems == null
-                                ? []
-                                    : boardItems.map((BoardItem item) {
-                              return DropdownMenuItem(
-                                value: item.boards.boardID,
-                                onTap:
-                                item.type == "data" ? () {} : null,
-                                child: item.type == "data"
-                                    ? Container(
-                                  padding: EdgeInsets.fromLTRB(
-                                      15, 7, 15, 7),
-                                  child: Row(
-                                    children: [
-                                      Container(
-                                        padding:
-                                        EdgeInsets.fromLTRB(
-                                            0, 0, 15, 0),
-                                        child: ClipRRect(
-                                          borderRadius:
-                                          BorderRadius
-                                              .circular(3.0),
-                                          child: Image(
-                                            image: AssetImage(
-                                                "assets/images/BlueBG.png"),
-                                            width: 50,
-                                            height: 50,
-                                          ),
-                                        ),
-                                      ),
-                                      Text(
-                                        item.boards.boardName,
-                                        style: TextStyle(
-                                            fontSize: 20),
-                                      ),
-                                    ],
-                                  ),
-                                )
-                                    : Container(
-                                  height: 50,
-                                  decoration: BoxDecoration(
-                                    color: Colors.white,
-                                    border: Border(
-                                      top: BorderSide(
-                                          width: 1.0,
-                                          color: Colors.black),
-                                      bottom: BorderSide(
-                                          width: 1.0,
-                                          color: Colors.black),
+                              ),
+                              decoration: InputDecoration(
+                                labelStyle:
+                                    TextStyle(fontSize: 18.0, height: 0.9),
+                                labelText: "Bảng",
+                                floatingLabelBehavior:
+                                    FloatingLabelBehavior.always,
+                                contentPadding: EdgeInsets.only(bottom: 0),
+                              ),
+                              onChanged: (value) {
+                                if (boardItems[boardItems.indexWhere(
+                                            (element) =>
+                                                element.boards.boardID ==
+                                                value)]
+                                        .type ==
+                                    "sep") {
+                                  return;
+                                }
+                                setState(() {
+                                  selectedBoard = (boardItems[
+                                          boardItems.indexWhere((element) =>
+                                              element.boards.boardID == value)]
+                                      .boards);
+                                });
+                              },
+                              selectedItemBuilder: (BuildContext context) {
+                                return boardItems.map((BoardItem item) {
+                                  return Text(
+                                    selectedBoard.boardName,
+                                    style: TextStyle(
+                                      fontSize: 20.0,
                                     ),
-                                  ),
-                                  child: Align(
-                                    alignment:
-                                    Alignment.centerLeft,
-                                    child: Text(
-                                      item.wpname,
-                                      style: TextStyle(
-                                        color: Colors.black,
-                                        fontWeight:
-                                        FontWeight.normal,
-                                        fontSize: 16,
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                              );
-                            }).toList(),
+                                  );
+                                }).toList();
+                              },
+                              items: boardItems == null
+                                  ? []
+                                  : boardItems.map((BoardItem item) {
+                                      return DropdownMenuItem(
+                                        value: item.boards.boardID,
+                                        onTap:
+                                            item.type == "data" ? () {} : null,
+                                        child: item.type == "data"
+                                            ? Container(
+                                                padding: EdgeInsets.fromLTRB(
+                                                    15, 7, 15, 7),
+                                                child: Row(
+                                                  children: [
+                                                    Container(
+                                                      padding:
+                                                          EdgeInsets.fromLTRB(
+                                                              0, 0, 15, 0),
+                                                      child: ClipRRect(
+                                                        borderRadius:
+                                                            BorderRadius
+                                                                .circular(3.0),
+                                                        child: Image(
+                                                          image: AssetImage(
+                                                              "assets/images/BlueBG.png"),
+                                                          width: 50,
+                                                          height: 50,
+                                                        ),
+                                                      ),
+                                                    ),
+                                                    Text(
+                                                      item.boards.boardName,
+                                                      style: TextStyle(
+                                                          fontSize: 20),
+                                                    ),
+                                                  ],
+                                                ),
+                                              )
+                                            : Container(
+                                                height: 50,
+                                                decoration: BoxDecoration(
+                                                  color: Colors.white,
+                                                  border: Border(
+                                                    top: BorderSide(
+                                                        width: 1.0,
+                                                        color: Colors.black),
+                                                    bottom: BorderSide(
+                                                        width: 1.0,
+                                                        color: Colors.black),
+                                                  ),
+                                                ),
+                                                child: Align(
+                                                  alignment:
+                                                      Alignment.centerLeft,
+                                                  child: Text(
+                                                    item.wpname,
+                                                    style: TextStyle(
+                                                      color: Colors.black,
+                                                      fontWeight:
+                                                          FontWeight.normal,
+                                                      fontSize: 16,
+                                                    ),
+                                                  ),
+                                                ),
+                                              ),
+                                      );
+                                    }).toList(),
                             );
                           });
                     }),
               ),
             ),
-            SizedBox(
-              height: 20,
-            ),
 
             SizedBox(
               height: 20,
             ),
+            SizedBox(
+              width: MediaQuery.of(context).size.width * 0.9,
+              child: DropdownButtonFormField<String>(
+                icon: Icon(Icons.keyboard_arrow_down),
+                hint: Align(
+                  alignment: Alignment.centerLeft,
+                  child: Text(
+                    "Danh sách",
+                    style: TextStyle(fontSize: 20.0),
+                  ),
+                ),
+                decoration: InputDecoration(
+                  labelStyle: TextStyle(fontSize: 18.0, height: 0.9),
+                  labelText: "Danh sách",
+                  floatingLabelBehavior: FloatingLabelBehavior.always,
+                  contentPadding: EdgeInsets.only(bottom: 0),
+                ),
+                onChanged: (value) {
+                  setState(() {
 
+                  });
+                },
+                value: currentList,
+                selectedItemBuilder: (BuildContext context) {
+                  return listName.map((String item) {
+                    return Text(
+                      item,
+                      style: TextStyle(
+                        fontSize: 20.0,
+                      ),
+                    );
+                  }).toList();
+                },
+                items: listName
+                    .map((String val) {
+                  return DropdownMenuItem(
+                    value: val,
+                    child: currentList == val? Text(
+                      val + " (hiện tại)",
+                    ) : Text(
+                      val,
+                    ),
+                  );
+                }).toList(),
+              ),
+            ),
+            SizedBox(
+              height: 20,
+            ),
+            SizedBox(
+              width: MediaQuery.of(context).size.width * 0.9,
+              child: DropdownButtonFormField<int>(
+                icon: Icon(Icons.keyboard_arrow_down),
+                value: currentPos,
+                hint: Align(
+                  alignment: Alignment.centerLeft,
+                  child: Text(
+                    "Danh sách",
+                    style: TextStyle(fontSize: 20.0),
+                  ),
+                ),
+                decoration: InputDecoration(
+                  labelStyle: TextStyle(fontSize: 18.0, height: 0.9),
+                  labelText: "Danh sách",
+                  floatingLabelBehavior: FloatingLabelBehavior.always,
+                  contentPadding: EdgeInsets.only(bottom: 0),
+                ),
+                onChanged: (value) {
+                  setState(() {
+
+                  });
+                },
+                selectedItemBuilder: (BuildContext context) {
+                  return listPos.map((int item) {
+                    return Text(
+                      item.toString(),
+                      style: TextStyle(
+                        fontSize: 20.0,
+                      ),
+                    );
+                  }).toList();
+                },
+                items: listPos
+                    .map((int val) {
+                  return DropdownMenuItem(
+                    value: val,
+                    child: currentPos == val ? Text(
+                      val.toString() + " (hiện tại)",
+                    ) : Text(
+                      val.toString(),
+                    ),
+                  );
+                }).toList(),
+              ),
+            ),
           ],
         ),
       ),
