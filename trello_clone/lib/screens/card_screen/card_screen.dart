@@ -115,13 +115,18 @@ class CheckListState extends State<CheckList> {
                             children: [
                               Row(
                                 children: [
-                                  Checkbox(
-                                    value: isTaskDone[index],
-                                    onChanged: (value) {
-                                      setState(() {
-                                        isTaskDone[index] = !isTaskDone[index];
-                                      });
-                                    },
+                                  Transform.scale(
+                                    scale: 1.2,
+                                    child: Checkbox(
+                                      value: isTaskDone[index],
+                                      onChanged: (value) {
+                                        setState(() {
+                                          isTaskDone[index] =
+                                              !isTaskDone[index];
+                                          ///TODO: Change state of task
+                                        });
+                                      },
+                                    ),
                                   ),
                                   Text(
                                     tasks[index],
@@ -337,6 +342,7 @@ class CardScreenState extends State<CardScreen> {
   String endDateStr = "";
 
   bool isHaveTaskList = true;
+  List<String> taskListNames = ["Name 1", "Name 2", "Name 3"];
 
   @override
   Widget build(BuildContext context) {
@@ -718,8 +724,10 @@ class CardScreenState extends State<CardScreen> {
                                       child: TextButton(
                                         onPressed: () {
                                           for (Users user in users) {
-                                            var foundUser =
-                                            pickedUsers.where((element) => element.userID == user.userID);
+                                            var foundUser = pickedUsers.where(
+                                                (element) =>
+                                                    element.userID ==
+                                                    user.userID);
                                             if (foundUser.isNotEmpty)
                                               flagPickedUsers.add(true);
                                             else
@@ -737,6 +745,7 @@ class CardScreenState extends State<CardScreen> {
                                         onPressed: () {
                                           setState(() {
                                             pickedUsers = [];
+
                                             ///Save new picked users
                                             for (int index = 0;
                                                 index < flagPickedUsers.length;
@@ -1272,7 +1281,9 @@ class CardScreenState extends State<CardScreen> {
                           ],
                         ),
                       ),
-                      CheckList(),
+                      Column(
+                        children: List.generate(taskListNames.length, (index) => CheckList()),
+                      ),
                     ],
                   )
                 : SizedBox(
