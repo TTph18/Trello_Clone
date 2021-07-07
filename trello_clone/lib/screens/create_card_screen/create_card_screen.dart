@@ -14,13 +14,7 @@ class CreateCardScreen extends StatefulWidget {
   CreateCardScreenState createState() => CreateCardScreenState();
 }
 
-class BoardItem {
-  Boards boards;
-  String wpname;
-  String type;
 
-  BoardItem({required this.wpname, required this.type, required this.boards});
-}
 
 class CreateCardScreenState extends State<CreateCardScreen> {
   final formKey = GlobalKey<FormState>();
