@@ -11,10 +11,26 @@ class CreateBoardScreen extends StatefulWidget {
 class CreateBoardScreenState extends State<CreateBoardScreen> {
   final formKey = GlobalKey<FormState>();
   var nameTxtCtrl = TextEditingController();
+  late Future<List<Workspaces>> futureGroupList;
   Workspaces? selectedGroup;
   List<Workspaces> groupList = [];
   String? selectedPermission = "Không gian làm việc";
   List<String> permissionList = ["Riêng tư", "Không gian làm việc"];
+
+  Future<List<Workspaces>> getGroupList() async {
+    var doc = await DatabaseService.getUserWorkspaceList();
+    List<Workspaces> temp = [];
+    for (var item in doc) {
+      Workspaces _wp = Workspaces.fromDocument(item);
+      temp.add(_wp);
+    }
+    return temp;
+  }
+
+  void initState() {
+    super.initState();
+    futureGroupList = getGroupList();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -69,20 +85,33 @@ class CreateBoardScreenState extends State<CreateBoardScreen> {
                 },
               ),
               FutureBuilder(
-                  future: DatabaseService.getUserWorkspaceList(),
+                  future: Future.wait([futureGroupList]),
                   builder: (BuildContext context, AsyncSnapshot snapshot) {
                     if (!snapshot.hasData) {
                       return Container(
                           alignment: FractionalOffset.center,
                           child: CircularProgressIndicator());
                     }
-                    for (var item in snapshot.data) {
-                      Workspaces _wp = Workspaces.fromDocument(item);
-                      groupList.add(_wp);
+                    else
+                    {
+                      groupList = snapshot.data[0];
                     }
-                    selectedGroup = groupList.first;
-                    return DropdownButtonFormField<String>(
-                      value: selectedGroup!.workspaceID,
+
+                    return DropdownButtonFormField<Workspaces>(
+                        hint: Align(
+                          alignment: Alignment.centerLeft,
+                          child: Text(
+                            "Chọn không gian làm việc",
+                            style: TextStyle(fontSize: 20.0),
+                          ),
+                        ),
+                      validator: (value) {
+                        if (value == null) {
+                          return 'Không gian làm việc không được để trống';
+                        }
+                        return null;
+                      },
+                      value: selectedGroup,
                       decoration: InputDecoration(
                         labelStyle: TextStyle(fontSize: 18.0, height: 0.9),
                         labelText: "Không gian làm việc",
@@ -91,9 +120,7 @@ class CreateBoardScreenState extends State<CreateBoardScreen> {
                       ),
                       onChanged: (newValue) {
                         setState(() {
-                          selectedGroup = groupList.where(
-                                  (element) => element.workspaceID == newValue)
-                              as Workspaces?;
+                          selectedGroup = newValue;
                         });
                       },
                       selectedItemBuilder: (BuildContext context) {
@@ -109,8 +136,8 @@ class CreateBoardScreenState extends State<CreateBoardScreen> {
                       items: groupList == null
                           ? []
                           : groupList.map((Workspaces item) {
-                              return DropdownMenuItem<String>(
-                                  value: item.workspaceID,
+                              return DropdownMenuItem<Workspaces>(
+                                  value: item,
                                   child: Row(
                                     children: [
                                       Icon(Icons.group),
