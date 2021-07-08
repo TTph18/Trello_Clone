@@ -1,11 +1,8 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_chips_input/flutter_chips_input.dart';
-import 'package:trello_clone/models/boards.dart';
 import 'package:trello_clone/models/user.dart';
-import 'package:trello_clone/models/workspaces.dart';
 import 'package:trello_clone/services/database.dart';
 
 import '../../route_path.dart';
@@ -25,41 +22,7 @@ class CreateWorkspaceScreenState extends State<CreateWorkspaceScreen> {
   late Users currentUser;
   late List<Users> selectedUser = [];
   String uid = FirebaseAuth.instance.currentUser!.uid;
-  List<Users> users = [
-    Users(
-      userID: "12345",
-      userName: "name1",
-      profileName: "Name 1",
-      email: '123456@gmail.com',
-      avatar: 'assets/images/BlueBG.png',
-      workspaceList: [],
-    ),
-    Users(
-      userID: "12345",
-      userName: "name2",
-      profileName: "Name 2",
-      email: '123456@gmail.com',
-      avatar: 'assets/images/BlueBG.png',
-      workspaceList: [],
-    ),
-    Users(
-      userID: "12345",
-      userName: "name3",
-      profileName: "Name 3",
-      email: '123456@gmail.com',
-      avatar: 'assets/images/BlueBG.png',
-      workspaceList: [],
-    ),
-    Users(
-      userID: "12345",
-      userName: "Test4",
-      profileName: "Cun cun cute",
-      email: '123456@gmail.com',
-      avatar: 'assets/images/BlueBG.png',
-      workspaceList: [],
-    ),
-  ];
-
+  List<Users> users = [];
   Future<List<Users>> getListUser() async {
     var doc = await DatabaseService.getAllUsesrData();
     List<Users> temp = [];
@@ -148,12 +111,10 @@ class CreateWorkspaceScreenState extends State<CreateWorkspaceScreen> {
                         users.clear();
                         users = snapshot.data[0];
                         currentUser = snapshot.data[1];
+                        users.removeWhere((element) => element.userID == currentUser.userID);
                         selectedUser.add(currentUser);
                       }
                       return ChipsInput(
-                        initialValue: [
-                          currentUser
-                        ],
                         key: _chipKey,
                         keyboardAppearance: Brightness.dark,
                         textCapitalization: TextCapitalization.words,
@@ -170,9 +131,6 @@ class CreateWorkspaceScreenState extends State<CreateWorkspaceScreen> {
                             var lowercaseQuery = query.toLowerCase();
                             return users.where((profile) {
                               return profile.userName
-                                      .toLowerCase()
-                                      .contains(query.toLowerCase()) ||
-                                  profile.email
                                       .toLowerCase()
                                       .contains(query.toLowerCase());
                             }).toList(growable: false)
@@ -193,7 +151,7 @@ class CreateWorkspaceScreenState extends State<CreateWorkspaceScreen> {
                             key: ObjectKey(profile),
                             label: Text(profile.profileName),
                             avatar: CircleAvatar(
-                              backgroundImage: AssetImage(profile.avatar),
+                              backgroundImage: NetworkImage(profile.avatar),
                             ),
                             onDeleted: () {
                               if(profile.userID != uid) {
@@ -209,7 +167,7 @@ class CreateWorkspaceScreenState extends State<CreateWorkspaceScreen> {
                           return ListTile(
                             key: ObjectKey(profile),
                             leading: CircleAvatar(
-                              backgroundImage: AssetImage(profile.avatar),
+                              backgroundImage: NetworkImage(profile.avatar),
                             ),
                             title: Text(profile.userName),
                             onTap: () {
