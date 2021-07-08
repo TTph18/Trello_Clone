@@ -3,6 +3,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:trello_clone/route_path.dart';
 import 'package:trello_clone/services/authentication_service.dart';
+import 'package:trello_clone/services/validate_service.dart';
 
 class RegisterForm extends StatefulWidget {
   @override
@@ -52,10 +53,14 @@ class _RegisterFormState extends State<RegisterForm> {
                                               if (_emailTextController.text.length <= 0) {
                                                 return "Email không được để trống";
                                               }
+                                              if (validateEmail(_emailTextController.text) == false)
+                                                {
+                                                  return "Email không hợp lệ";
+                                                }
                                               return null;
                                             },
                                           ),
-                                          TextFormField(
+                                            TextFormField(
                                             controller: _userNameTextController,
                                             decoration: InputDecoration(hintText: "Tên đăng nhập"),
                                             validator: (value) {
