@@ -722,7 +722,9 @@ class CardScreenState extends State<CardScreen> {
                             showDialog(
                                 context: context,
                                 builder: (BuildContext context) =>
-                                    AlertDialog(
+                                    StatefulBuilder(
+                                        builder: (context, setState) {
+                                          return AlertDialog(
                                       title: const Text(
                                         'Thành viên của thẻ',
                                         style: TextStyle(
@@ -929,7 +931,8 @@ class CardScreenState extends State<CardScreen> {
                                           ],
                                         ),
                                       ),
-                                    ));
+                                    );})
+                            );
                           },
                         );
                       }),
