@@ -256,7 +256,7 @@ class _cardState extends State<_card> {
         onTap: () {
           ///TODO: Link to card detail screen
           Route route =
-              MaterialPageRoute(builder: (context) => CardScreen(name, card));
+              MaterialPageRoute(builder: (context) => CardScreen(card.cardName, card));
           Navigator.push(context, route);
         },
         child: Ink(
@@ -700,28 +700,10 @@ class BoardScreenState extends State<BoardScreen> {
                                     list: listList[outerIndex],
                                     name: listName[outerIndex],
                                     children: List.generate(item, (innerIndex) {
-                                      for (var item
-                                          in listList[outerIndex].cardList) {
-                                        if (item ==
-                                            cards[innerIndex].card.listID)
-                                          return cards[innerIndex];
-                                      }
-                                      return _card(
-                                          "",
-                                          Cards(
-                                              cardID: "",
-                                              cardName: "",
-                                              createdBy: "",
-                                              description: "",
-                                              startDate: "",
-                                              startTime: "",
-                                              dueDate: "",
-                                              dueTime: "",
-                                              assignedUser: [],
-                                              status: false,
-                                              listID: "",
-                                              boardID: ""));
-                                    }),
+                                      for (var item in listList[outerIndex].cardList) {
+                                        if (item == cards[innerIndex].card.listID)
+                                          break;
+                                    } return cards[innerIndex];}),
                                     isLast: false,
                                   );
                                 } else
