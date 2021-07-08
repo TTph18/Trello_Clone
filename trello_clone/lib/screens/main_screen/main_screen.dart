@@ -170,7 +170,6 @@ class GroupName extends StatelessWidget {
                       showAlertDialog(context, "Bạn không có quyền xóa nhóm này!");
                     } else {
                       DatabaseService.deleteWorkspace(group.workspaceID);
-                      Navigator.of(context).pushNamed(MAIN_SCREEN);
                     }
                   }
                 },
@@ -270,10 +269,10 @@ class _MainScreenState extends State<MainScreen> {
                     child: ListView.builder(
                       physics: ClampingScrollPhysics(),
                       shrinkWrap: true,
-                      itemCount: snapshot.data.length,
+                      itemCount: snapshot.data.docs.length,
                       itemBuilder: (BuildContext context, int index) {
                         Workspaces _wp =
-                            Workspaces.fromDocument(snapshot.data[index]);
+                            Workspaces.fromDocument(snapshot.data.docs[index]);
                         return GroupInfo(_wp);
                       },
                     ),

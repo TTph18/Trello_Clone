@@ -39,7 +39,6 @@ class CardScreenState extends State<CardScreen> {
       profileName: "Name 1",
       email: '123456@gmail.com',
       avatar: 'assets/images/BlueBG.png',
-      workspaceList: [],
     ),
     Users(
       userID: "12345",
@@ -47,7 +46,6 @@ class CardScreenState extends State<CardScreen> {
       profileName: "Name 2",
       email: '123456@gmail.com',
       avatar: 'assets/images/BlueBG.png',
-      workspaceList: [],
     ),
     Users(
       userID: "12345",
@@ -55,7 +53,6 @@ class CardScreenState extends State<CardScreen> {
       profileName: "Name 3",
       email: '123456@gmail.com',
       avatar: 'assets/images/BlueBG.png',
-      workspaceList: [],
     ),
     Users(
       userID: "12345",
@@ -63,7 +60,6 @@ class CardScreenState extends State<CardScreen> {
       profileName: "Cun cun cute",
       email: '123456@gmail.com',
       avatar: 'assets/images/BlueBG.png',
-      workspaceList: [],
     ),
   ];
   List<Users> pickedUsers = [];
@@ -433,7 +429,7 @@ class CardScreenState extends State<CardScreen> {
                                                 ),
                                                 onPressed: () {
                                                   setState(() {
-                                                    ///TODO: delete card
+                                                    DatabaseService.deleteCard(card.cardID);
                                                   });
                                                   Navigator.of(context).pop();
                                                   Navigator.of(context).pop();

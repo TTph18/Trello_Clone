@@ -1,3 +1,4 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:trello_clone/models/user.dart';
@@ -9,6 +10,7 @@ class MemberInfo extends StatelessWidget {
   Workspaces workspaces;
   Users user;
   MemberInfo(this.user, this.workspaces);
+  String uid = FirebaseAuth.instance.currentUser!.uid;
 
   @override
   Widget build(BuildContext context) {
@@ -49,9 +51,13 @@ class MemberInfo extends StatelessWidget {
             children: <Widget>[
               IconButton(
                   onPressed: () {
-                    ///TODO: Delete member from workspace
+                    DatabaseService.deleteUserInWorkspace(user.userID, workspaces.workspaceID);
                   },
-                  icon: Icon(Icons.close)),
+                  icon: Icon(Icons.close,
+                      color: (uid != workspaces.createdBy ||
+                              user.userID != workspaces.createdBy)
+                          ? Colors.transparent
+                          : Colors.black)),
             ],
           ),
         ],
@@ -71,11 +77,18 @@ class MemberListState extends State<MemberList> {
   final _chipKey = GlobalKey<ChipsInputState>();
   late Workspaces workspaces;
   List<Users> WorkspaceUsers = [];
+  List<Users> selectedUsers = [];
+  late Future<List<Users>> futureUserList;
+  String uid = FirebaseAuth.instance.currentUser!.uid;
 
   List<Users> users = [];
+
   MemberListState(this.workspaces);
+
   @override
-  void initState() {}
+  void initState() {
+    futureUserList = getListUser();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -91,16 +104,17 @@ class MemberListState extends State<MemberList> {
             WorkspaceUsers.add(_user);
           }
           return FutureBuilder(
-              future: DatabaseService.getAllUsesrData(),
+              future: futureUserList,
               builder: (BuildContext context, AsyncSnapshot snapshot) {
                 if (!snapshot.hasData)
                   return Container(
                       alignment: FractionalOffset.center,
                       child: CircularProgressIndicator());
                 for (var item in snapshot.data) {
-                  Users _user = Users.fromDocument(item);
-                  users.add(_user);
+                  users.add(item);
                 }
+                users.removeWhere((element) => element.userID == uid);
+                selectedUsers.clear();
                 return Scaffold(
                   appBar: AppBar(
                     title: Text("Thành viên"),
@@ -166,10 +180,12 @@ class MemberListState extends State<MemberList> {
                                             label: Text(profile.userName),
                                             avatar: CircleAvatar(
                                               backgroundImage:
-                                                  AssetImage(profile.avatar),
+                                                  NetworkImage(profile.avatar),
                                             ),
-                                            onDeleted: () =>
-                                                state.deleteChip(profile),
+                                            onDeleted: () {
+                                              state.deleteChip(profile);
+                                              selectedUsers.remove(profile);
+                                            },
                                             materialTapTargetSize:
                                                 MaterialTapTargetSize
                                                     .shrinkWrap,
@@ -181,11 +197,24 @@ class MemberListState extends State<MemberList> {
                                             key: ObjectKey(profile),
                                             leading: CircleAvatar(
                                               backgroundImage:
-                                                  AssetImage(profile.avatar),
+                                                  NetworkImage(profile.avatar),
                                             ),
                                             title: Text(profile.userName),
-                                            onTap: () =>
-                                                state.selectSuggestion(profile),
+                                            onTap: () {
+                                              if (!checkUserAvailable(
+                                                  profile.userID)) {
+                                                state.selectSuggestion(profile);
+                                                selectedUsers.add(profile);
+                                                setState(() {
+                                                  futureUserList =
+                                                      getListUser();
+                                                });
+                                              } else
+
+                                                ///TODO: can't close dialog
+                                                showAlertDialog(context,
+                                                    "Thành viên này đã trong bảng!");
+                                            },
                                           );
                                         },
                                       ),
@@ -212,7 +241,8 @@ class MemberListState extends State<MemberList> {
                                       fontSize: 16),
                                 ),
                                 onPressed: () {
-                                  ///TODO: Add user in chip to workspace
+                                  DatabaseService.addUserToWorkspace(
+                                      workspaces.workspaceID, selectedUsers);
                                 },
                               )
                             ],
@@ -236,5 +266,48 @@ class MemberListState extends State<MemberList> {
                 );
               });
         });
+  }
+
+  Future<List<Users>> getListUser() async {
+    var doc = await DatabaseService.getListUserData(workspaces.userList);
+    List<Users> temp = [];
+    for (var item in doc) {
+      Users _user = Users.fromDocument(item);
+      temp.add(_user);
+    }
+    return temp;
+  }
+
+  bool checkUserAvailable(String userID) {
+    for (var item in users) {
+      if (userID == item.userID) return true;
+    }
+    return false;
+  }
+
+  showAlertDialog(BuildContext context, String alertdialog) {
+    // set up the buttons
+    Widget cancelButton = ElevatedButton(
+      child: Text("Đóng"),
+      onPressed: () {
+        Navigator.of(context).pop();
+      },
+    );
+
+    // set up the AlertDialog
+    AlertDialog alert = AlertDialog(
+      content: Text(alertdialog),
+      actions: [
+        cancelButton,
+      ],
+    );
+
+    // show the dialog
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return alert;
+      },
+    );
   }
 }

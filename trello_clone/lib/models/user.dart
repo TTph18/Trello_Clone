@@ -8,9 +8,8 @@ class Users {
   final String profileName;
   final String email;
   final String avatar;
-  final List<String> workspaceList;
 
-  Users({required this.userID, required this.userName, required this.profileName, required this.email, required this.avatar, required this.workspaceList});
+  Users({required this.userID, required this.userName, required this.profileName, required this.email, required this.avatar});
 
   factory Users.fromDocument(DocumentSnapshot document) {
     return Users(
@@ -19,7 +18,6 @@ class Users {
       profileName: document['profileName'],
       userID: document.id,
       avatar: document['avatar'],
-      workspaceList: document['workspaceList'].cast<String>()
     );
   }
 }

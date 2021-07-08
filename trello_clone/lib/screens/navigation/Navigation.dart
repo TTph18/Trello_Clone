@@ -264,14 +264,14 @@ class NavigationAccount extends StatelessWidget {
         profileName: "Name 1",
         email: '123456@gmail.com',
         avatar: 'assets/images/BlueBG.png',
-        workspaceList: []),
+        ),
     Users(
         userID: "12345",
         userName: "name2",
         profileName: "Name 2",
         email: '123456@gmail.com',
         avatar: 'assets/images/BlueBG.png',
-        workspaceList: []),
+        ),
   ];
 
   @override
@@ -363,7 +363,7 @@ class _NavigationState extends State<Navigation> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         avatar(70, 70, Colors.grey,
-                            Image.asset('assets/images/BlueBG.png')),
+                            Image.asset(currentUser.avatar)),
                         SizedBox(
                           height: 13,
                         ),

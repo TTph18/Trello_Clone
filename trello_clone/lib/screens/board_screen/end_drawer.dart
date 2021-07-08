@@ -831,7 +831,6 @@ class memberContentState extends State<memberContent> {
       profileName: "Name 1",
       email: '123456@gmail.com',
       avatar: 'assets/images/BlueBG.png',
-      workspaceList: [],
     ),
     Users(
       userID: "12345",
@@ -839,7 +838,6 @@ class memberContentState extends State<memberContent> {
       profileName: "Name 2",
       email: '123456@gmail.com',
       avatar: 'assets/images/BlueBG.png',
-      workspaceList: [],
     ),
     Users(
       userID: "12345",
@@ -847,7 +845,6 @@ class memberContentState extends State<memberContent> {
       profileName: "Name 3",
       email: '123456@gmail.com',
       avatar: 'assets/images/BlueBG.png',
-      workspaceList: [],
     ),
     Users(
       userID: "12345",
@@ -855,7 +852,6 @@ class memberContentState extends State<memberContent> {
       profileName: "Cun cun cute",
       email: '123456@gmail.com',
       avatar: 'assets/images/BlueBG.png',
-      workspaceList: [],
     ),
   ];
   GlobalKey key = GlobalKey();

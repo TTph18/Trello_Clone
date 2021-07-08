@@ -649,7 +649,6 @@ class BoardScreenState extends State<BoardScreen> {
                   profileName: boardOwner.profileName,
                   email: boardOwner.email,
                   avatar: boardOwner.avatar,
-                  workspaceList: boardOwner.workspaceList,
                 ),
                 boards),
             body: Container(
