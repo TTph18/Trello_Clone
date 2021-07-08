@@ -281,6 +281,13 @@ class CardScreenState extends State<CardScreen> {
     }
   }
 
+  void addPickedMember(Users pickedUser)
+  {
+    setState(() {
+      pickedUsers.add(pickedUser);
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -567,7 +574,9 @@ class CardScreenState extends State<CardScreen> {
               onTap: () {
                 showDialog(
                     context: context,
-                    builder: (BuildContext context) => AlertDialog(
+                    builder: (BuildContext context) => StatefulBuilder(
+    builder: (context, setState) {
+    return AlertDialog(
                           title: const Text(
                             'Thành viên của thẻ',
                             style: TextStyle(fontWeight: FontWeight.bold),
@@ -683,7 +692,7 @@ class CardScreenState extends State<CardScreen> {
                                             pickedUsers = [];
                                             ///Save new picked users
                                             for (int index = 0; index < flagPickedUsers.length; index++) {
-                                              if (flagPickedUsers[index]) pickedUsers.add(users[index]);
+                                              if (flagPickedUsers[index]) addPickedMember(users[index]);
                                             }
                                           });
                                           Navigator.of(context, rootNavigator: true).pop('dialog');
@@ -695,7 +704,7 @@ class CardScreenState extends State<CardScreen> {
                                 ),
                               ],
                             ),
-                          ),
+                          ),);}
                         ));
               },
             ),
@@ -1565,5 +1574,7 @@ class CardScreenState extends State<CardScreen> {
         ),
       ),
     );
+
+
   }
 }
