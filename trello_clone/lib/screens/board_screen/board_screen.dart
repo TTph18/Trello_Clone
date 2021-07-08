@@ -115,20 +115,21 @@ class _cardState extends State<_card> {
   late Cards card;
   late String name;
   List<tag> tags = [];
-  bool iconSeen = false;
-  DateTime dateStart = DateTime.utc(2001, 11, 1);
-
+  late bool iconSeen = false;
+  late DateTime dateStart;
+  late TimeOfDay timeStart;
+  late TimeOfDay timeEnd;
   ///Set year 2000 if user didn't chose time
-  DateTime dateEnd = DateTime.utc(2021, 6, 12, 10, 11, 12);
+  late DateTime dateEnd;
 
   ///Set year 2000 if user didn't chose time
   late bool isFinish = false;
-  bool iconDetail = false;
-  bool iconChecklist = false;
-  int numCom = 0;
-  int numFile = 0;
-  int numFinish = 4;
-  int numTotal = 4;
+  late bool iconDetail = false;
+  late bool iconChecklist = false;
+  late int numCom = 0;
+  late int numFile = 0;
+  late int numFinish = 4;
+  late int numTotal = 4;
   List<Image> avas = [];
 
   _cardState(this.name, this.card);
@@ -136,14 +137,16 @@ class _cardState extends State<_card> {
   @override
   void initState() {
     super.initState();
-
+    name = card.cardName;
+    dateStart = DateTime.utc(2001, 11, 1);
+    dateEnd = DateTime.utc(2021, 6, 12, 10, 11, 12);
+    isFinish = card.status;
     tags = [
       tag(Color(int.parse("0xff61bd4f"))),
       tag(Color(int.parse("0xfff2d600"))),
       tag(Color(int.parse("0xffffab4a"))),
     ];
     iconSeen = true;
-
     iconDetail = true;
     numCom = 2;
     numFile = 3;
@@ -252,7 +255,7 @@ class _cardState extends State<_card> {
         onTap: () {
           ///TODO: Link to card detail screen
           Route route =
-              MaterialPageRoute(builder: (context) => CardScreen(name));
+              MaterialPageRoute(builder: (context) => CardScreen(name, card));
           Navigator.push(context, route);
         },
         child: Ink(
@@ -654,8 +657,8 @@ class BoardScreenState extends State<BoardScreen> {
                     fit: BoxFit.cover,
                   ),
                 ),
-                child: FutureBuilder(
-                    future: futureLists,
+                child: StreamBuilder(
+                    stream: DatabaseService.streamLists(boards.boardID),
                     builder: (BuildContext context, AsyncSnapshot snapshot) {
                       if (!snapshot.hasData) {
                         return Container(
@@ -663,9 +666,10 @@ class BoardScreenState extends State<BoardScreen> {
                             child: CircularProgressIndicator());
                       } else {
                         listName.clear();
-                        listList = snapshot.data;
-                        for (var item in snapshot.data) {
-                          listName.add(item.listName);
+                        for (var item in snapshot.data.docs) {
+                          Lists _list = Lists.fromDocument(item);
+                          listList.add(_list);
+                          listName.add(_list.listName);
                         }
                       }
                       return FutureBuilder(
@@ -861,11 +865,12 @@ class BoardScreenState extends State<BoardScreen> {
                                                   fontWeight: FontWeight.bold),
                                             ),
                                             onPressed: () {
+                                              ///TODO: Cant update widget
+                                              DatabaseService.deleteList(
+                                                  boards.boardID,
+                                                  innerList.list.listID);
                                               setState(() {
-                                                ///TODO: Cant update widget
-                                                DatabaseService.deleteList(
-                                                    boards.boardID,
-                                                    innerList.list.listID);
+
                                               });
                                               Navigator.of(context).pop();
                                             },
@@ -1068,4 +1073,22 @@ class BoardScreenState extends State<BoardScreen> {
       _lists.insert(newListIndex, movedList);
     });
   }
+}
+TimeOfDay timeConvert(String normTime) {
+  int hour;
+  int minute;
+  String ampm = normTime.substring(normTime.length - 2);
+  String result = normTime.substring(0, normTime.indexOf(' '));
+  if (ampm == 'AM' && int.parse(result.split(":")[1]) != 12) {
+    hour = int.parse(result.split(':')[0]);
+    if (hour == 12) hour = 0;
+    minute = int.parse(result.split(":")[1]);
+  } else {
+    hour = int.parse(result.split(':')[0]) - 12;
+    if (hour <= 0) {
+      hour = 24 + hour;
+    }
+    minute = int.parse(result.split(":")[1]);
+  }
+  return TimeOfDay(hour: hour, minute: minute);
 }

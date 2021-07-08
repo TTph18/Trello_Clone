@@ -112,6 +112,13 @@ class DatabaseService {
     return snapshot.docs;
   }
 
+  static Stream streamLists(String boardID) {
+    var ref = FirebaseFirestore.instance
+        .collection('boards').doc(boardID).collection('lists')
+        .orderBy("position").snapshots();
+    return ref;
+  }
+
   // rename lists in board
   static Future<void> renameList(String boardID, String listID, String listName) async {
     await FirebaseFirestore.instance
@@ -414,6 +421,13 @@ class DatabaseService {
     return snapshot;
   }
 
+  Stream streamWorkspaces(String workspaceID) {
+    var ref = FirebaseFirestore.instance
+        .collection('workspaces').doc('workspaceID').snapshots().map((snap) =>Workspaces.fromDocument(snap));
+    return ref;
+  }
+
+
   //rename a workspace
   static Future<void> renameWorkspace(String workspaceID, String newName) async {
     await FirebaseFirestore.instance
@@ -569,6 +583,14 @@ class DatabaseService {
         .doc(boardID)
         .collection('labels')
         .doc(labelID).update({"labelName": labelName, "labelColor": labelColor});
+  }
+  // get a card data
+  static Future getCardData(String cardID) async {
+    var snapshot = await FirebaseFirestore.instance
+        .collection('cards')
+        .doc(cardID)
+        .get();
+    return snapshot;
   }
 
   // get lists card
