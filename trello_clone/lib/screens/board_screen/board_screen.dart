@@ -119,6 +119,7 @@ class _cardState extends State<_card> {
   late DateTime dateStart;
   late TimeOfDay timeStart;
   late TimeOfDay timeEnd;
+
   ///Set year 2000 if user didn't chose time
   late DateTime dateEnd;
 
@@ -483,8 +484,8 @@ class BoardScreenState extends State<BoardScreen> {
         return ListCard(
           list: listList[outerIndex],
           name: listName[outerIndex],
-          children:
-              List.generate(cards.length, (innerIndex) => cards[innerIndex]),
+          children: List.generate(listList[outerIndex].cardList.length,
+              (innerIndex) => cards[innerIndex]),
           isLast: false,
         );
       else
@@ -666,6 +667,7 @@ class BoardScreenState extends State<BoardScreen> {
                             child: CircularProgressIndicator());
                       } else {
                         listName.clear();
+                        listList.clear();
                         for (var item in snapshot.data.docs) {
                           Lists _list = Lists.fromDocument(item);
                           listList.add(_list);
@@ -692,15 +694,37 @@ class BoardScreenState extends State<BoardScreen> {
                             _lists = List.generate(
                               listName.length + 1,
                               (outerIndex) {
-                                if (outerIndex < listName.length)
+                                if (outerIndex < listName.length) {
+                                  var item = listList[outerIndex].cardNumber;
                                   return ListCard(
                                     list: listList[outerIndex],
                                     name: listName[outerIndex],
-                                    children: List.generate(cards.length,
-                                            (innerIndex) => cards[innerIndex]),
+                                    children: List.generate(item, (innerIndex) {
+                                      for (var item
+                                          in listList[outerIndex].cardList) {
+                                        if (item ==
+                                            cards[innerIndex].card.listID)
+                                          return cards[innerIndex];
+                                      }
+                                      return _card(
+                                          "",
+                                          Cards(
+                                              cardID: "",
+                                              cardName: "",
+                                              createdBy: "",
+                                              description: "",
+                                              startDate: "",
+                                              startTime: "",
+                                              dueDate: "",
+                                              dueTime: "",
+                                              assignedUser: [],
+                                              status: false,
+                                              listID: "",
+                                              boardID: ""));
+                                    }),
                                     isLast: false,
                                   );
-                                else
+                                } else
                                   return ListCard(
                                     list: new Lists(
                                         listID: "",
@@ -869,9 +893,7 @@ class BoardScreenState extends State<BoardScreen> {
                                               DatabaseService.deleteList(
                                                   boards.boardID,
                                                   innerList.list.listID);
-                                              setState(() {
-
-                                              });
+                                              setState(() {});
                                               Navigator.of(context).pop();
                                             },
                                           )
@@ -1074,6 +1096,7 @@ class BoardScreenState extends State<BoardScreen> {
     });
   }
 }
+
 TimeOfDay timeConvert(String normTime) {
   int hour;
   int minute;

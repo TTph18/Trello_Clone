@@ -52,6 +52,23 @@ class DatabaseService {
     }
     return wpList;
   }
+  static Stream streamWorkspaces()  async* {
+    List wpList = [];
+    String uid = FirebaseAuth.instance.currentUser!.uid;
+    var snapshot = await FirebaseFirestore.instance
+        .collection('users')
+        .where('userID', isEqualTo: uid)
+        .get();
+    List wpID = snapshot.docs.first["workspaceList"];
+    for(var temp in wpID) {
+      var _snapshot = await FirebaseFirestore.instance
+          .collection('workspaces')
+          .where('workspaceID', isEqualTo: temp)
+          .get();
+      wpList.add(_snapshot.docs.first);
+    }
+    yield wpList;
+  }
 
   //get current user boards in workspace
   static Future getBoardList(String workspaceID) async {
@@ -267,8 +284,6 @@ class DatabaseService {
       "background": "",
       'isPersonal': false,
       'workspaceID': workspaceID,
-      'listList' : FieldValue.arrayUnion([]),
-      'labelList' : FieldValue.arrayUnion([]),
       'listNumber' : 3,
     });
     //update boardID = document ID
@@ -374,6 +389,36 @@ class DatabaseService {
     return listUser;
   }
 
+  static Stream streamListUser(List<String> userIDList)  async* {
+    List listUser = [];
+    for(var item in userIDList) {
+      var snapshot = await FirebaseFirestore.instance
+          .collection('users')
+          .where('userID', isEqualTo: item)
+          .get();
+      listUser.add(snapshot.docs.first);
+    }
+    yield listUser;
+  }
+
+  static Stream streamWorkspaceListUser(String workspaceID)  async* {
+    List listUser = [];
+    var snapshot = await FirebaseFirestore.instance
+        .collection('workspaces')
+        .doc(workspaceID)
+        .get();
+    List userID = snapshot["userList"];
+    if (userID == []) { yield userID; }
+    for(var item in userID) {
+      var snapshot = await FirebaseFirestore.instance
+          .collection('users')
+          .where('userID', isEqualTo: item)
+          .get();
+      listUser.add(snapshot.docs.first);
+    }
+    yield listUser;
+  }
+
   //get all user data
   static Future getAllUsesrData() async {
       var snapshot = await FirebaseFirestore.instance
@@ -420,13 +465,6 @@ class DatabaseService {
         .get();
     return snapshot;
   }
-
-  Stream streamWorkspaces(String workspaceID) {
-    var ref = FirebaseFirestore.instance
-        .collection('workspaces').doc('workspaceID').snapshots().map((snap) =>Workspaces.fromDocument(snap));
-    return ref;
-  }
-
 
   //rename a workspace
   static Future<void> renameWorkspace(String workspaceID, String newName) async {
@@ -600,6 +638,14 @@ class DatabaseService {
           .where('boardID', isEqualTo: boardID)
           .get();
     return snapshot.docs;
+  }
+
+  static Stream streamCards(String boardID) {
+    var ref = FirebaseFirestore.instance
+        .collection('cards')
+        .where('boardID', isEqualTo: boardID)
+        .snapshots();
+    return ref;
   }
 
   //delete a board

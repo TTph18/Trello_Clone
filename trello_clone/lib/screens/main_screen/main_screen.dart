@@ -14,6 +14,7 @@ import 'package:trello_clone/screens/navigation/Navigation.dart';
 import 'package:trello_clone/services/database.dart';
 
 import '../../route_path.dart';
+import 'member_list.dart';
 
 class MainScreen extends StatefulWidget {
   @override
@@ -159,7 +160,9 @@ class GroupName extends StatelessWidget {
                   }
                   if (value == 1)
                     {
-                      Navigator.of(context).pushNamed(MEMBER_LIST);
+                      Route route =
+                      MaterialPageRoute(builder: (context) => MemberList(group));
+                      Navigator.push(context, route);
                     }
                   if (value == 2)
                   {
@@ -256,8 +259,8 @@ class _MainScreenState extends State<MainScreen> {
       body: Scaffold(
           body: Column(
             children: [
-              FutureBuilder(
-                future: DatabaseService.getUserWorkspaceList(),
+              StreamBuilder(
+                stream: DatabaseService.streamWorkspaces(),
                 builder: (BuildContext context, AsyncSnapshot snapshot) {
                   if (!snapshot.hasData)
                     return Container(

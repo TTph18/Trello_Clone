@@ -16,8 +16,6 @@ class CreateCardScreen extends StatefulWidget {
   CreateCardScreenState createState() => CreateCardScreenState();
 }
 
-
-
 class CreateCardScreenState extends State<CreateCardScreen> {
   final formKey = GlobalKey<FormState>();
   Boards nullBr = new Boards(
@@ -511,8 +509,8 @@ class CreateCardScreenState extends State<CreateCardScreen> {
                           children: [
                             selectedBoard == nullBr
                                 ? SizedBox()
-                                : FutureBuilder(
-                                    future: DatabaseService.getListUserData(selectedBoard.userList),
+                                : StreamBuilder(
+                                    stream: DatabaseService.streamListUser(selectedBoard.userList),
                                     builder: (BuildContext context,
                                         AsyncSnapshot snapshot) {
                                       if (!snapshot.hasData) {

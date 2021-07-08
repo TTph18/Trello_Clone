@@ -561,8 +561,8 @@ class CardScreenState extends State<CardScreen> {
                   ),
 
                   ///Member
-                  FutureBuilder(
-                      future: DatabaseService.getListUserData(card.assignedUser),
+                  StreamBuilder(
+                      stream: DatabaseService.streamListUser(card.assignedUser),
                       builder: (BuildContext context, AsyncSnapshot snapshot) {
                         if (!snapshot.hasData) {
                           return Container(alignment: FractionalOffset.center, child: CircularProgressIndicator());

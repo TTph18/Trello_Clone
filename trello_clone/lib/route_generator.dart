@@ -25,11 +25,6 @@ class RouteGenerator{
           settings: RouteSettings(name: MAIN_SCREEN),
           builder: (_) => MainScreen(),
         );
-      case MEMBER_LIST:
-        return MaterialPageRoute(
-          settings: RouteSettings(name: MEMBER_LIST),
-          builder: (_) => MemberList(),
-        );
       case NOTIFICATION_SCREEN:
         return MaterialPageRoute(
           settings: RouteSettings(name: NOTIFICATION_SCREEN),
