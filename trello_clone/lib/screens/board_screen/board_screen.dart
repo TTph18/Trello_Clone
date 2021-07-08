@@ -103,12 +103,12 @@ class tagList extends StatelessWidget {
 
 class _card extends StatefulWidget {
   final Cards card;
-  final String name;
+  final bool isNull;
 
-  _card(this.name, this.card);
+  _card(this.card, this.isNull);
 
   @override
-  _cardState createState() => _cardState(name, card);
+  _cardState createState() => _cardState(card);
 }
 
 class _cardState extends State<_card> {
@@ -133,7 +133,7 @@ class _cardState extends State<_card> {
   late int numTotal = 4;
   List<Image> avas = [];
 
-  _cardState(this.name, this.card);
+  _cardState(this.card);
 
   @override
   void initState() {
@@ -255,8 +255,8 @@ class _cardState extends State<_card> {
         ),
         onTap: () {
           ///TODO: Link to card detail screen
-          Route route =
-              MaterialPageRoute(builder: (context) => CardScreen(card.cardName, card));
+          Route route = MaterialPageRoute(
+              builder: (context) => CardScreen(card.cardName, card));
           Navigator.push(context, route);
         },
         child: Ink(
@@ -393,17 +393,31 @@ class BoardScreenState extends State<BoardScreen> {
   late Future<Boards> futureBoards;
   late Future<Users> futureUsers;
   late Future<List<Lists>> futureLists;
+
   late List<Lists> listList = [];
   late List<Cards> listCard = [];
   late Boards boards;
   late bool isShowDrawer;
   late List<String> listName = [];
-  late List<_card> cards;
+  late List<Cards> cardList = [];
+  late List<_card> cards = [];
   var controller = AnimateIconController();
   AssetImage bg = AssetImage("assets/images/BlueBG.png");
 
   BoardScreenState(this.boards, this.isShowDrawer);
-
+  Cards nullCard = new Cards(
+      cardID: "",
+      cardName: "",
+      createdBy: "",
+      description: "",
+      startDate: "",
+      startTime: "",
+      dueDate: "",
+      dueTime: "",
+      assignedUser: [],
+      status: false,
+      listID: "",
+      boardID: "");
   late List<ListCard> _lists;
   late List<bool> isTapNewCard = List.filled(_lists.length, false);
   TextEditingController newCardController = TextEditingController();
@@ -458,34 +472,21 @@ class BoardScreenState extends State<BoardScreen> {
       listList.add(new Lists(
           listID: "", listName: "", position: 0, cardList: [], cardNumber: 0));
     }
+    for (int i = 0; i < boards.cardNumber; i++) {
+      cards.add(_card(nullCard, true));
+    }
     for (int i = 0; i < listName.length + 1; i++)
       controllers.add(new ScrollController());
 
     isTapNewCard = List.filled(listName.length + 1, false);
     isTapNewList = false;
-    Cards nullCard = new Cards(
-        cardID: "",
-        cardName: "",
-        createdBy: "",
-        description: "",
-        startDate: "",
-        startTime: "",
-        dueDate: "",
-        dueTime: "",
-        assignedUser: [],
-        status: false,
-        listID: "",
-        boardID: "");
-    cards = [
-      _card("Thẻ 1", nullCard),
-    ];
+
     _lists = List.generate(listName.length + 1, (outerIndex) {
       if (outerIndex < listName.length)
         return ListCard(
           list: listList[outerIndex],
           name: listName[outerIndex],
-          children: List.generate(listList[outerIndex].cardList.length,
-              (innerIndex) => cards[innerIndex]),
+          children: [],
           isLast: false,
         );
       else
@@ -668,14 +669,16 @@ class BoardScreenState extends State<BoardScreen> {
                       } else {
                         listName.clear();
                         listList.clear();
+                        controllers.clear();
+                        _lists.clear();
                         for (var item in snapshot.data.docs) {
                           Lists _list = Lists.fromDocument(item);
                           listList.add(_list);
                           listName.add(_list.listName);
                         }
                       }
-                      return FutureBuilder(
-                          future: getCards(),
+                      return StreamBuilder(
+                          stream: DatabaseService.streamCards(boards.boardID),
                           builder:
                               (BuildContext context, AsyncSnapshot snapshot) {
                             if (!snapshot.hasData) {
@@ -683,11 +686,15 @@ class BoardScreenState extends State<BoardScreen> {
                                   alignment: FractionalOffset.center,
                                   child: CircularProgressIndicator());
                             } else {
-                              controllers.clear();
-                              _lists.clear();
-                              for (var item in snapshot.data) {
-                                cards.add(_card(item.cardName, item));
+                              cardList.clear();
+                              var i = 0;
+                              for (var item in snapshot.data.docs) {
+                                Cards temp = Cards.fromDocument(item);
+                                cardList.add(temp);
+                                cards.insert(i, new _card(temp, false));
+                                i++;
                               }
+                              i = 0;
                             }
                             for (int i = 0; i < listName.length + 1; i++)
                               controllers.add(new ScrollController());
@@ -696,14 +703,20 @@ class BoardScreenState extends State<BoardScreen> {
                               (outerIndex) {
                                 if (outerIndex < listName.length) {
                                   var item = listList[outerIndex].cardNumber;
+                                  var list = getCardList(
+                                      listList[outerIndex], cardList);
+                                  for (int i = 0; i < list.length; i++) {
+                                    cards.insert(i, new _card(list[i], false));
+                                  }
                                   return ListCard(
                                     list: listList[outerIndex],
                                     name: listName[outerIndex],
-                                    children: List.generate(item, (innerIndex) {
-                                      for (var item in listList[outerIndex].cardList) {
-                                        if (item == cards[innerIndex].card.listID)
-                                          break;
-                                    } return cards[innerIndex];}),
+                                    children:
+                                        listList[outerIndex].cardNumber == 0
+                                            ? []
+                                            : List.generate(item, (innerIndex) {
+                                                return cards[innerIndex];
+                                              }),
                                     isLast: false,
                                   );
                                 } else
@@ -871,7 +884,6 @@ class BoardScreenState extends State<BoardScreen> {
                                                   fontWeight: FontWeight.bold),
                                             ),
                                             onPressed: () {
-                                              ///TODO: Cant update widget
                                               DatabaseService.deleteList(
                                                   boards.boardID,
                                                   innerList.list.listID);
@@ -1096,4 +1108,17 @@ TimeOfDay timeConvert(String normTime) {
     minute = int.parse(result.split(":")[1]);
   }
   return TimeOfDay(hour: hour, minute: minute);
+}
+
+List<Cards> getCardList(Lists list, List<Cards> listcard) {
+  List<Cards> temp = [];
+  for (int i = 0; i < listcard.length; i++) {
+    if (list.listID == listcard[i].listID){
+      temp.add(listcard[i]);
+      continue;
+    }
+    else
+      continue;
+  }
+  return temp;
 }

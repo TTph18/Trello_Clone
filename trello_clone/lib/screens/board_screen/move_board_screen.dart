@@ -23,7 +23,7 @@ class MoveBoardScreenState extends State<MoveBoardScreen> {
       background: "",
       isPersonal: false,
       workspaceID: "",
-      listNumber: 0);
+      listNumber: 0, cardNumber: 0, description: "");
 
   late Boards selectedBoard;
   late Lists selectedList = new Lists(

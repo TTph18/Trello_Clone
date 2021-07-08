@@ -8,9 +8,10 @@ import 'package:trello_clone/models/workspaces.dart';
 class DatabaseService {
   final FirebaseAuth _firebaseAuth = FirebaseAuth.instance;
 
-  Stream<String?> get onAuthStateChanged => _firebaseAuth.authStateChanges().map(
-        (User? user) => user?.uid,
-  );
+  Stream<String?> get onAuthStateChanged =>
+      _firebaseAuth.authStateChanges().map(
+            (User? user) => user?.uid,
+          );
 
   //current user data
   static Future<DocumentSnapshot> getCurrentUserData() async {
@@ -23,14 +24,15 @@ class DatabaseService {
   }
 
   //add a new user
-  static Future<void> addUser(String userID, String email, String userName, String profileName) async {
+  static Future<void> addUser(
+      String userID, String email, String userName, String profileName) async {
     await FirebaseFirestore.instance.collection('users').add({
       'userID': userID,
       'email': email,
       "avatar": "",
       "profileName": profileName,
       'userName': userName,
-      'workspaceList' : []
+      'workspaceList': []
     });
   }
 
@@ -43,16 +45,17 @@ class DatabaseService {
         .where('userID', isEqualTo: uid)
         .get();
     List wpID = snapshot.docs.first["workspaceList"];
-    for(var temp in wpID) {
+    for (var temp in wpID) {
       var _snapshot = await FirebaseFirestore.instance
           .collection('workspaces')
           .where('workspaceID', isEqualTo: temp)
           .get();
-        wpList.add(_snapshot.docs.first);
+      wpList.add(_snapshot.docs.first);
     }
     return wpList;
   }
-  static Stream streamWorkspaces()  async* {
+
+  static Stream streamWorkspaces() async* {
     List wpList = [];
     String uid = FirebaseAuth.instance.currentUser!.uid;
     var snapshot = await FirebaseFirestore.instance
@@ -60,7 +63,7 @@ class DatabaseService {
         .where('userID', isEqualTo: uid)
         .get();
     List wpID = snapshot.docs.first["workspaceList"];
-    for(var temp in wpID) {
+    for (var temp in wpID) {
       var _snapshot = await FirebaseFirestore.instance
           .collection('workspaces')
           .where('workspaceID', isEqualTo: temp)
@@ -79,8 +82,10 @@ class DatabaseService {
         .where('workspaceID', isEqualTo: workspaceID)
         .get();
     List brID = snapshot.docs.first["boardList"];
-    if (brID == []) { return brList; }
-    for(var temp in brID) {
+    if (brID == []) {
+      return brList;
+    }
+    for (var temp in brID) {
       var _snapshot = await FirebaseFirestore.instance
           .collection('boards')
           .where('boardID', isEqualTo: temp)
@@ -91,30 +96,57 @@ class DatabaseService {
     return brList;
   }
 
+  //get current user boards in workspace
+  static Stream streamListBoard(String workspaceID) async* {
+    String uid = FirebaseAuth.instance.currentUser!.uid;
+    List brList = [];
+    var snapshot = await FirebaseFirestore.instance
+        .collection('workspaces')
+        .where('workspaceID', isEqualTo: workspaceID)
+        .get();
+    List brID = snapshot.docs.first["boardList"];
+    if (brID == []) {
+      yield brList;
+    }
+    for (var temp in brID) {
+      var _snapshot = await FirebaseFirestore.instance
+          .collection('boards')
+          .where('boardID', isEqualTo: temp)
+          .where('userList', arrayContains: uid)
+          .get();
+      brList.add(_snapshot.docs.first);
+    }
+    yield brList;
+  }
+
   //add a list
   static Future<void> addList(String boardID, String listName) async {
-    await FirebaseFirestore.instance.collection('boards')
-        .doc(boardID).get().then((value) async {
-    int listNumber = value['listNumber'];
-    final docRef = await FirebaseFirestore.instance.collection('boards')
-        .doc(boardID)
-        .collection('lists')
-        .add({
-      'listName': listName,
-      'cardList': [],
-      "cardNumber": 0,
-      "position": listNumber + 1
-    });
-    //update listID = document ID
-    FirebaseFirestore.instance
-        .collection('lists')
-        .doc(docRef.id)
-        .update({"listID": docRef.id});
-    //update listID = document ID
-    FirebaseFirestore.instance
+    await FirebaseFirestore.instance
         .collection('boards')
         .doc(boardID)
-        .update({"listNumber": listNumber + 1});
+        .get()
+        .then((value) async {
+      int listNumber = value['listNumber'];
+      final docRef = await FirebaseFirestore.instance
+          .collection('boards')
+          .doc(boardID)
+          .collection('lists')
+          .add({
+        'listName': listName,
+        'cardList': [],
+        "cardNumber": 0,
+        "position": listNumber + 1
+      });
+      //update listID = document ID
+      FirebaseFirestore.instance
+          .collection('lists')
+          .doc(docRef.id)
+          .update({"listID": docRef.id});
+      //update listID = document ID
+      FirebaseFirestore.instance
+          .collection('boards')
+          .doc(boardID)
+          .update({"listNumber": listNumber + 1});
     });
   }
 
@@ -131,13 +163,17 @@ class DatabaseService {
 
   static Stream streamLists(String boardID) {
     var ref = FirebaseFirestore.instance
-        .collection('boards').doc(boardID).collection('lists')
-        .orderBy("position").snapshots();
+        .collection('boards')
+        .doc(boardID)
+        .collection('lists')
+        .orderBy("position")
+        .snapshots();
     return ref;
   }
 
   // rename lists in board
-  static Future<void> renameList(String boardID, String listID, String listName) async {
+  static Future<void> renameList(
+      String boardID, String listID, String listName) async {
     await FirebaseFirestore.instance
         .collection('boards')
         .doc(boardID)
@@ -147,11 +183,13 @@ class DatabaseService {
   }
 
   static Future<void> deleteList(String boardID, String listID) async {
-    await FirebaseFirestore.instance.collection('boards')
+    await FirebaseFirestore.instance
+        .collection('boards')
         .doc(boardID)
         .collection('lists')
         .doc(listID)
-        .get().then((value) async {
+        .get()
+        .then((value) async {
       int deletePos = value['position'];
       await FirebaseFirestore.instance
           .collection('boards')
@@ -159,28 +197,26 @@ class DatabaseService {
           .get()
           .then((value) async {
         int listNumber = value['listNumber'];
-        for (int i = deletePos; i <= listNumber - 1; i++){
-          var doc = await FirebaseFirestore.instance.collection('boards')
+        for (int i = deletePos; i <= listNumber - 1; i++) {
+          var doc = await FirebaseFirestore.instance
+              .collection('boards')
               .doc(boardID)
               .collection('lists')
-              .where('position', isEqualTo : i + 1)
+              .where('position', isEqualTo: i + 1)
               .get()
-              .then((value) =>
-                value.docs.forEach((element) {
-                  String id = element['listID'];
-                  FirebaseFirestore.instance
-                      .collection('lists')
-                      .doc(id)
-                      .update({"position": i});
-                })
-          );
+              .then((value) => value.docs.forEach((element) {
+                    String id = element['listID'];
+                    FirebaseFirestore.instance
+                        .collection('lists')
+                        .doc(id)
+                        .update({"position": i});
+                  }));
         }
-        FirebaseFirestore.instance.collection('boards')
+        FirebaseFirestore.instance
+            .collection('boards')
             .doc(boardID)
             .update({'listNumber': listNumber - 1});
-          }
-          );
-
+      });
     });
     await FirebaseFirestore.instance
         .collection('boards')
@@ -191,7 +227,8 @@ class DatabaseService {
   }
 
   //move a list to other board
-  static Future<void> moveListToABoard(String oldBoardID, String newBoardID, Lists curentlist) async {
+  static Future<void> moveListToABoard(
+      String oldBoardID, String newBoardID, Lists curentlist) async {
     await FirebaseFirestore.instance
         .collection('boards')
         .doc(newBoardID)
@@ -200,18 +237,24 @@ class DatabaseService {
       int listNumber = value['listNumber'] + 1;
       await FirebaseFirestore.instance
           .collection('boards')
-          .doc(newBoardID).update({'listNumber': listNumber});
-      final docRef = await FirebaseFirestore.instance.collection('boards')
-          .doc(newBoardID).collection('lists')
+          .doc(newBoardID)
+          .update({'listNumber': listNumber});
+      final docRef = await FirebaseFirestore.instance
+          .collection('boards')
+          .doc(newBoardID)
+          .collection('lists')
           .add({
         'listName': curentlist.listName,
         'cardNumber': curentlist.cardNumber,
         "position": listNumber,
-        "cardList": curentlist.cardList});
+        "cardList": curentlist.cardList
+      });
       //update new listID = document ID
       await FirebaseFirestore.instance
           .collection('boards')
-          .doc(newBoardID).collection('lists').doc(docRef.id)
+          .doc(newBoardID)
+          .collection('lists')
+          .doc(docRef.id)
           .update({"listID": docRef.id});
     });
     await FirebaseFirestore.instance
@@ -220,10 +263,11 @@ class DatabaseService {
         .get()
         .then((e) async {
       int _listNumber = e['listNumber'] - 1;
-      if(_listNumber<0) _listNumber = 0;
+      if (_listNumber < 0) _listNumber = 0;
       await FirebaseFirestore.instance
           .collection('boards')
-          .doc(oldBoardID).update({'listNumber': _listNumber});
+          .doc(oldBoardID)
+          .update({'listNumber': _listNumber});
       //remove list from old board
       await FirebaseFirestore.instance
           .collection('boards')
@@ -235,7 +279,8 @@ class DatabaseService {
   }
 
   //move a list to other position
-  static Future<void> moveListPosition(String boardID, String listID, int oldPosition, int newPosition) async {
+  static Future<void> moveListPosition(
+      String boardID, String listID, int oldPosition, int newPosition) async {
     await FirebaseFirestore.instance
         .collection('boards')
         .doc(boardID)
@@ -243,12 +288,12 @@ class DatabaseService {
         .where('position', isEqualTo: newPosition)
         .get()
         .then((value) => value.docs.forEach((element) {
-      String id = element['listID'];
-      FirebaseFirestore.instance
-          .collection('lists')
-          .doc(id)
-          .update({"position": oldPosition});
-    }));
+              String id = element['listID'];
+              FirebaseFirestore.instance
+                  .collection('lists')
+                  .doc(id)
+                  .update({"position": oldPosition});
+            }));
     await FirebaseFirestore.instance
         .collection('boards')
         .doc(boardID)
@@ -268,9 +313,7 @@ class DatabaseService {
 
   // get lists in board
   static Future getAllBoards() async {
-    var snapshot = await FirebaseFirestore.instance
-        .collection('boards')
-        .get();
+    var snapshot = await FirebaseFirestore.instance.collection('boards').get();
     return snapshot.docs;
   }
 
@@ -284,44 +327,55 @@ class DatabaseService {
       "background": "",
       'isPersonal': false,
       'workspaceID': workspaceID,
-      'listNumber' : 3,
+      'listNumber': 3, 'cardNumber':0, 'description' : ""
     });
     //update boardID = document ID
     var snap = await FirebaseFirestore.instance
         .collection('boards')
         .doc(docRef.id)
         .update({"boardID": docRef.id});
-    //add board uid to wp 
+    //add board uid to wp
     var snapshot = await FirebaseFirestore.instance
         .collection('workspaces')
         .doc(workspaceID)
-        .update({"boardList": FieldValue.arrayUnion([docRef.id]),});
+        .update({
+      "boardList": FieldValue.arrayUnion([docRef.id]),
+    });
     initialize3List(docRef.id);
     initialize5Labels(docRef.id);
   }
 
   //initialize a default board: 3 lists, 6 labels
   static Future<void> initialize3List(String boardID) async {
-    final docRef1 = await FirebaseFirestore.instance.collection('boards')
-        .doc(boardID).collection('lists')
-        .add({'listName': "Done", 'cardList' : [], 'position': 3});
-    await FirebaseFirestore.instance.collection('boards')
+    final docRef1 = await FirebaseFirestore.instance
+        .collection('boards')
+        .doc(boardID)
+        .collection('lists')
+        .add({'listName': "Done", 'cardList': [], 'position': 3, 'cardNumber': 0});
+    await FirebaseFirestore.instance
+        .collection('boards')
         .doc(boardID)
         .collection('lists')
         .doc(docRef1.id)
         .update({"listID": docRef1.id});
-    final docRef2 = await FirebaseFirestore.instance.collection('boards')
-        .doc(boardID).collection('lists')
-        .add({'listName': "Doing", 'cardList' : [], 'position': 2});
-    await FirebaseFirestore.instance.collection('boards')
+    final docRef2 = await FirebaseFirestore.instance
+        .collection('boards')
+        .doc(boardID)
+        .collection('lists')
+        .add({'listName': "Doing", 'cardList': [], 'position': 2, 'cardNumber':0});
+    await FirebaseFirestore.instance
+        .collection('boards')
         .doc(boardID)
         .collection('lists')
         .doc(docRef2.id)
         .update({"listID": docRef2.id});
-    final docRef3 = await FirebaseFirestore.instance.collection('boards')
-        .doc(boardID).collection('lists')
-        .add({'listName': "To do", 'cardList' : [], 'position': 1});
-    await FirebaseFirestore.instance.collection('boards')
+    final docRef3 = await FirebaseFirestore.instance
+        .collection('boards')
+        .doc(boardID)
+        .collection('lists')
+        .add({'listName': "To do", 'cardList': [], 'position': 1, 'cardNumber':0});
+    await FirebaseFirestore.instance
+        .collection('boards')
         .doc(boardID)
         .collection('lists')
         .doc(docRef3.id)
@@ -329,69 +383,83 @@ class DatabaseService {
   }
 
   static Future<void> initialize5Labels(String boardID) async {
-    final docRef1 = await FirebaseFirestore.instance.collection('boards')
-        .doc(boardID).collection('labels')
-        .add({'labelName': "", 'color' : "0xff0079bf"});
-    await FirebaseFirestore.instance.collection('boards')
+    final docRef1 = await FirebaseFirestore.instance
+        .collection('boards')
+        .doc(boardID)
+        .collection('labels')
+        .add({'labelName': "", 'color': "0xff0079bf"});
+    await FirebaseFirestore.instance
+        .collection('boards')
         .doc(boardID)
         .collection('labels')
         .doc(docRef1.id)
         .update({"labelID": docRef1.id});
 
-    final docRef2 = await FirebaseFirestore.instance.collection('boards')
-        .doc(boardID).collection('labels')
-        .add({'labelName': "", 'color' : "0xffc377e0"});
-    await FirebaseFirestore.instance.collection('boards')
+    final docRef2 = await FirebaseFirestore.instance
+        .collection('boards')
+        .doc(boardID)
+        .collection('labels')
+        .add({'labelName': "", 'color': "0xffc377e0"});
+    await FirebaseFirestore.instance
+        .collection('boards')
         .doc(boardID)
         .collection('labels')
         .doc(docRef2.id)
         .update({"labelID": docRef2.id});
 
-    final docRef3 = await FirebaseFirestore.instance.collection('boards')
-        .doc(boardID).collection('labels')
-        .add({'labelName': "", 'color' : "0xffeb5a46"});
-    await FirebaseFirestore.instance.collection('boards')
+    final docRef3 = await FirebaseFirestore.instance
+        .collection('boards')
+        .doc(boardID)
+        .collection('labels')
+        .add({'labelName': "", 'color': "0xffeb5a46"});
+    await FirebaseFirestore.instance
+        .collection('boards')
         .doc(boardID)
         .collection('labels')
         .doc(docRef3.id)
         .update({"labelID": docRef3.id});
 
-    final docRef4 = await FirebaseFirestore.instance.collection('boards')
-        .doc(boardID).collection('labels')
-        .add({'labelName': "", 'color' : "0xff61bd4f"});
-    await FirebaseFirestore.instance.collection('boards')
+    final docRef4 = await FirebaseFirestore.instance
+        .collection('boards')
+        .doc(boardID)
+        .collection('labels')
+        .add({'labelName': "", 'color': "0xff61bd4f"});
+    await FirebaseFirestore.instance
+        .collection('boards')
         .doc(boardID)
         .collection('labels')
         .doc(docRef4.id)
         .update({"labelID": docRef4.id});
 
-    final docRef5 = await FirebaseFirestore.instance.collection('boards')
-        .doc(boardID).collection('labels')
-        .add({'labelName': "", 'color' : "0xfff2d600"});
-    await FirebaseFirestore.instance.collection('boards')
+    final docRef5 = await FirebaseFirestore.instance
+        .collection('boards')
+        .doc(boardID)
+        .collection('labels')
+        .add({'labelName': "", 'color': "0xfff2d600"});
+    await FirebaseFirestore.instance
+        .collection('boards')
         .doc(boardID)
         .collection('labels')
         .doc(docRef5.id)
         .update({"labelID": docRef5.id});
-
   }
 
   //get list user data
   static Future getListUserData(List<String> userIDList) async {
     List listUser = [];
-    for(var item in userIDList) {
-        var snapshot = await FirebaseFirestore.instance
-            .collection('users')
-            .where('userID', isEqualTo: item)
-            .get();
-        listUser.add(snapshot.docs.first);
+    for (var item in userIDList) {
+      var snapshot = await FirebaseFirestore.instance
+          .collection('users')
+          .where('userID', isEqualTo: item)
+          .get();
+      listUser.add(snapshot.docs.first);
     }
     return listUser;
   }
 
-  static Stream streamListUser(List<String> userIDList)  async* {
+  static Stream streamListUser(List<String> userIDList) async* {
     List listUser = [];
-    for(var item in userIDList) {
+    for (var item in userIDList) {
       var snapshot = await FirebaseFirestore.instance
           .collection('users')
           .where('userID', isEqualTo: item)
@@ -401,15 +469,17 @@ class DatabaseService {
     yield listUser;
   }
 
-  static Stream streamWorkspaceListUser(String workspaceID)  async* {
+  static Stream streamWorkspaceListUser(String workspaceID) async* {
     List listUser = [];
     var snapshot = await FirebaseFirestore.instance
         .collection('workspaces')
         .doc(workspaceID)
         .get();
     List userID = snapshot["userList"];
-    if (userID == []) { yield userID; }
-    for(var item in userID) {
+    if (userID == []) {
+      yield userID;
+    }
+    for (var item in userID) {
       var snapshot = await FirebaseFirestore.instance
           .collection('users')
           .where('userID', isEqualTo: item)
@@ -421,9 +491,7 @@ class DatabaseService {
 
   //get all user data
   static Future getAllUsesrData() async {
-      var snapshot = await FirebaseFirestore.instance
-          .collection('users')
-          .get();
+    var snapshot = await FirebaseFirestore.instance.collection('users').get();
     return snapshot.docs;
   }
 
@@ -437,13 +505,15 @@ class DatabaseService {
   }
 
   //add a workspace
-  static Future<void> addWorkspace(String workspaceName, List<String> userList) async {
+  static Future<void> addWorkspace(
+      String workspaceName, List<String> userList) async {
     String uid = FirebaseAuth.instance.currentUser!.uid;
-    final docRef = await FirebaseFirestore.instance.collection('workspaces').add({
+    final docRef =
+        await FirebaseFirestore.instance.collection('workspaces').add({
       'workspaceName': workspaceName,
       'createdBy': uid,
       "userList": userList,
-      'boardList' : [],
+      'boardList': [],
     });
     //update workspaceID = document ID
     var snap = await FirebaseFirestore.instance
@@ -451,10 +521,10 @@ class DatabaseService {
         .doc(docRef.id)
         .update({"workspaceID": docRef.id});
     //update workspaceID in user
-    var snapshot =await FirebaseFirestore.instance
-        .collection('users')
-        .doc(uid)
-        .update({"workspaceList": FieldValue.arrayUnion([docRef.id])});
+    var snapshot =
+        await FirebaseFirestore.instance.collection('users').doc(uid).update({
+      "workspaceList": FieldValue.arrayUnion([docRef.id])
+    });
   }
 
   //get a wp data
@@ -467,7 +537,8 @@ class DatabaseService {
   }
 
   //rename a workspace
-  static Future<void> renameWorkspace(String workspaceID, String newName) async {
+  static Future<void> renameWorkspace(
+      String workspaceID, String newName) async {
     await FirebaseFirestore.instance
         .collection('workspaces')
         .doc(workspaceID)
@@ -482,12 +553,14 @@ class DatabaseService {
     await FirebaseFirestore.instance
         .collection('users')
         .doc(uid)
-        .get().then((value) {
+        .get()
+        .then((value) {
       workspaceList = value['workspaceList'].cast<String>();
       workspaceList.remove(workspaceID);
       FirebaseFirestore.instance
           .collection('users')
-          .doc(uid).update({"workspaceList": workspaceList});
+          .doc(uid)
+          .update({"workspaceList": workspaceList});
     });
     //delete workspace
     await FirebaseFirestore.instance
@@ -503,25 +576,25 @@ class DatabaseService {
     await FirebaseFirestore.instance
         .collection('boards')
         .doc(boardID)
-        .get().then((value) {
+        .get()
+        .then((value) {
       oldWorkspaceID = value['workspaceID'].toString();
     });
     //delete board
-    await FirebaseFirestore.instance
-        .collection('boards')
-        .doc(boardID)
-        .delete();
+    await FirebaseFirestore.instance.collection('boards').doc(boardID).delete();
     //delete board from wp
     List<String> boardList;
     await FirebaseFirestore.instance
         .collection('workspaces')
         .doc(oldWorkspaceID)
-        .get().then((value) {
-          boardList = value['boardList'].cast<String>();
-          boardList.remove(boardID);
-          FirebaseFirestore.instance
-              .collection('workspaces')
-              .doc(oldWorkspaceID).update({"boardList": boardList});
+        .get()
+        .then((value) {
+      boardList = value['boardList'].cast<String>();
+      boardList.remove(boardID);
+      FirebaseFirestore.instance
+          .collection('workspaces')
+          .doc(oldWorkspaceID)
+          .update({"boardList": boardList});
     });
   }
 
@@ -532,21 +605,22 @@ class DatabaseService {
     await FirebaseFirestore.instance
         .collection('boards')
         .doc(boardID)
-        .get().then((value) {
+        .get()
+        .then((value) {
       userList = value['userList'].cast<String>();
       userList.remove(userID);
       FirebaseFirestore.instance
           .collection('boards')
-          .doc(boardID).update({"userList": userList});
+          .doc(boardID)
+          .update({"userList": userList});
     });
   }
 
   //move a board to other workspace
   static Future<void> addUserToBoard(String boardID, String userID) async {
-    await FirebaseFirestore.instance
-        .collection('boards')
-        .doc(boardID)
-        .update(({"userList": FieldValue.arrayUnion([userID])}));
+    await FirebaseFirestore.instance.collection('boards').doc(boardID).update(({
+          "userList": FieldValue.arrayUnion([userID])
+        }));
   }
 
   //move a board to other workspace
@@ -556,26 +630,31 @@ class DatabaseService {
     await FirebaseFirestore.instance
         .collection('boards')
         .doc(boardID)
-        .get().then((value) {
-        oldWorkspaceID = value['workspaceID'].toString();
+        .get()
+        .then((value) {
+      oldWorkspaceID = value['workspaceID'].toString();
     });
     //delete board id from old wp
     List<String> boardList;
     await FirebaseFirestore.instance
         .collection('workspaces')
         .doc(oldWorkspaceID)
-        .get().then((value) {
+        .get()
+        .then((value) {
       boardList = value['boardList'].cast<String>();
       boardList.remove(boardID);
       FirebaseFirestore.instance
           .collection('workspaces')
-          .doc(oldWorkspaceID).update({"boardList": boardList});
+          .doc(oldWorkspaceID)
+          .update({"boardList": boardList});
     });
     //update board id in new wp
     await FirebaseFirestore.instance
         .collection('workspaces')
         .doc(newWorkspaceID)
-        .update({"boardList": FieldValue.arrayUnion([boardID])});
+        .update({
+      "boardList": FieldValue.arrayUnion([boardID])
+    });
     //update new wp id in board
     await FirebaseFirestore.instance
         .collection('boards')
@@ -589,12 +668,14 @@ class DatabaseService {
     await FirebaseFirestore.instance
         .collection('boards')
         .doc(boardID)
-        .get().then((value) {
+        .get()
+        .then((value) {
       userList = value['userList'].cast<String>();
       userList.remove(uid);
       FirebaseFirestore.instance
           .collection('workspaces')
-          .doc(boardID).update({"userList": userList});
+          .doc(boardID)
+          .update({"userList": userList});
     });
   }
 
@@ -615,28 +696,29 @@ class DatabaseService {
     return snapshot.docs;
   }
 
-  static Future updateLabel(String boardID, String labelID, String labelName, String labelColor) async {
+  static Future updateLabel(String boardID, String labelID, String labelName,
+      String labelColor) async {
     var snapshot = await FirebaseFirestore.instance
         .collection('boards')
         .doc(boardID)
         .collection('labels')
-        .doc(labelID).update({"labelName": labelName, "labelColor": labelColor});
+        .doc(labelID)
+        .update({"labelName": labelName, "labelColor": labelColor});
   }
+
   // get a card data
   static Future getCardData(String cardID) async {
-    var snapshot = await FirebaseFirestore.instance
-        .collection('cards')
-        .doc(cardID)
-        .get();
+    var snapshot =
+        await FirebaseFirestore.instance.collection('cards').doc(cardID).get();
     return snapshot;
   }
 
   // get lists card
   static Future getListCard(String boardID) async {
-      var snapshot = await FirebaseFirestore.instance
-          .collection('cards')
-          .where('boardID', isEqualTo: boardID)
-          .get();
+    var snapshot = await FirebaseFirestore.instance
+        .collection('cards')
+        .where('boardID', isEqualTo: boardID)
+        .get();
     return snapshot.docs;
   }
 
@@ -655,40 +737,50 @@ class DatabaseService {
     await FirebaseFirestore.instance
         .collection('cards')
         .doc(cardID)
-        .get().then((value) {
+        .get()
+        .then((value) {
       oldListID = value['listID'].toString();
     });
     //delete card
-    await FirebaseFirestore.instance
-        .collection('cards')
-        .doc(cardID)
-        .delete();
+    await FirebaseFirestore.instance.collection('cards').doc(cardID).delete();
     //delete card from list
     List<String> cardList;
     await FirebaseFirestore.instance
         .collection('workspaces')
         .doc(oldListID)
-        .get().then((value) {
+        .get()
+        .then((value) {
       cardList = value['cardList'].cast<String>();
       cardList.remove(cardID);
       FirebaseFirestore.instance
           .collection('lists')
-          .doc(oldListID).update({"cardList": cardList});
+          .doc(oldListID)
+          .update({"cardList": cardList});
     });
   }
 
   //add a card
-  static Future<void> addCard(String boardID, String listID, String cardName, String description, String userID, List<String> assignedUser, String startDate, String dueDate, String startTime, String dueTime) async {
+  static Future<void> addCard(
+      String boardID,
+      String listID,
+      String cardName,
+      String description,
+      String userID,
+      List<String> assignedUser,
+      String startDate,
+      String dueDate,
+      String startTime,
+      String dueTime) async {
     String uid = FirebaseAuth.instance.currentUser!.uid;
     final docRef = await FirebaseFirestore.instance.collection('cards').add({
       'cardName': cardName,
-      'boardID' : boardID,
+      'boardID': boardID,
       'createdBy': uid,
-      'description' : description,
+      'description': description,
       'assignedUser': assignedUser,
       'listID': listID,
-      'labelList' : [],
-      'status' : true,
+      'labelList': [],
+      'status': true,
       'startDate': startDate,
       'dueDate': dueDate,
       'startTime': startTime,
@@ -700,6 +792,19 @@ class DatabaseService {
         .doc(boardID)
         .collection('lists')
         .doc(listID)
-        .update({"cardList": FieldValue.arrayUnion([docRef.id])});
+        .update({
+      "cardList": FieldValue.arrayUnion([docRef.id])
+    });
+    await FirebaseFirestore.instance
+        .collection('boards')
+        .doc(boardID)
+        .get()
+        .then((value) async {
+      int cardNumber = value['cardNumber'] + 1;
+      final docRef = await FirebaseFirestore.instance
+          .collection('boards')
+          .doc(boardID)
+          .update({'cardNumber': cardNumber});
+    });
   }
 }

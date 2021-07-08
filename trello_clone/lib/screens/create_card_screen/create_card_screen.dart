@@ -26,14 +26,15 @@ class CreateCardScreenState extends State<CreateCardScreen> {
       background: "",
       isPersonal: false,
       workspaceID: "",
-      listNumber: 0);
+      listNumber: 0, cardNumber: 0, description: "");
   late Boards selectedBoard = nullBr;
   late List<Workspaces> group = [];
   late Future<List<Users>> futureUserList;
   late List<BoardItem> boardItems = [];
 
   List<String> boardList = ["Tên bảng 1", "Tên bảng 2", "Tên bảng 3"];
-  late Lists selectedList = Lists(listID: "", listName: "", cardList: [], position: 1, cardNumber: 0);
+  late Lists selectedList =
+      Lists(listID: "", listName: "", cardList: [], position: 1, cardNumber: 0);
   late List<Lists> listList = [];
   late List<Users> users = [];
 
@@ -52,7 +53,8 @@ class CreateCardScreenState extends State<CreateCardScreen> {
   void initState() {
     super.initState();
     futureUserList = getListUser();
-    selectedList = Lists(listID: "", listName: "", cardList: [], position: 1, cardNumber: 0);
+    selectedList = Lists(
+        listID: "", listName: "", cardList: [], position: 1, cardNumber: 0);
   }
 
   var cardNameTxtCtrl = TextEditingController();
@@ -104,7 +106,7 @@ class CreateCardScreenState extends State<CreateCardScreen> {
           break;
         default:
           startDate = "";
-          endDate ="";
+          endDate = "";
           startDateTxtCtrl.text = "";
           endDateTxtCtrl.text = "";
       }
@@ -153,7 +155,7 @@ class CreateCardScreenState extends State<CreateCardScreen> {
           break;
         default:
           startTime = "";
-          endTime ="";
+          endTime = "";
           startTimeTxtCtrl.text = "";
           endTimeTxtCtrl.text = "";
       }
@@ -173,6 +175,7 @@ class CreateCardScreenState extends State<CreateCardScreen> {
     "2 ngày trước"
   ];
   String uid = FirebaseAuth.instance.currentUser!.uid;
+
   ///String value to set for startDate, endDate TextButton
   String startDateStr = "";
   String endDateStr = "";
@@ -197,10 +200,20 @@ class CreateCardScreenState extends State<CreateCardScreen> {
               onPressed: () {
                 List<String> userListID = [];
 
-                for (var item in pickedUsers){
+                for (var item in pickedUsers) {
                   userListID.add(item.userID);
                 }
-                DatabaseService.addCard(selectedBoard.boardID, selectedList.listID, cardNameTxtCtrl.text, descriptionTxtCtrl.text, uid, userListID, startDate, endDate, startTime, endTime);
+                DatabaseService.addCard(
+                    selectedBoard.boardID,
+                    selectedList.listID,
+                    cardNameTxtCtrl.text,
+                    descriptionTxtCtrl.text,
+                    uid,
+                    userListID,
+                    startDate,
+                    endDate,
+                    startTime,
+                    endTime);
                 Navigator.of(context).pushNamed(MAIN_SCREEN);
               },
             ),
@@ -421,7 +434,7 @@ class CreateCardScreenState extends State<CreateCardScreen> {
                       onChanged: (value) {
                         setState(() {
                           selectedList = listList[listList.indexWhere(
-                                  (element) => element.listID == value)];
+                              (element) => element.listID == value)];
                         });
                       },
                       selectedItemBuilder: (BuildContext context) {
@@ -510,7 +523,8 @@ class CreateCardScreenState extends State<CreateCardScreen> {
                             selectedBoard == nullBr
                                 ? SizedBox()
                                 : StreamBuilder(
-                                    stream: DatabaseService.streamListUser(selectedBoard.userList),
+                                    stream: DatabaseService.streamListUser(
+                                        selectedBoard.userList),
                                     builder: (BuildContext context,
                                         AsyncSnapshot snapshot) {
                                       if (!snapshot.hasData) {
@@ -519,7 +533,7 @@ class CreateCardScreenState extends State<CreateCardScreen> {
                                             child: CircularProgressIndicator());
                                       } else {
                                         users.clear();
-                                        for (var item in snapshot.data){
+                                        for (var item in snapshot.data) {
                                           Users temp = Users.fromDocument(item);
                                           users.add(temp);
                                         }
@@ -560,10 +574,14 @@ class CreateCardScreenState extends State<CreateCardScreen> {
                                                   onSelected: (value) {
                                                     setState(() {
                                                       bool isSelected = false;
-                                                      for (var item in pickedUsers){
-                                                        if(value.userID == item.userID) isSelected = true;
+                                                      for (var item
+                                                          in pickedUsers) {
+                                                        if (value.userID ==
+                                                            item.userID)
+                                                          isSelected = true;
                                                       }
-                                                      if(!isSelected) pickedUsers.add(value);
+                                                      if (!isSelected)
+                                                        pickedUsers.add(value);
                                                     });
                                                   },
                                                   icon: Icon(
@@ -957,8 +975,13 @@ class CreateCardScreenState extends State<CreateCardScreen> {
                                                           ///Save null to database
                                                         } else {
                                                           setState(() {
-                                                            startDate = selectedDate.toString();
-                                                            startTime = selectedTime.format(context);
+                                                            startDate =
+                                                                selectedDate
+                                                                    .toString();
+                                                            startTime =
+                                                                selectedTime
+                                                                    .format(
+                                                                        context);
                                                             String selectedDay =
                                                                 selectedDate.day
                                                                     .toString();
@@ -1233,7 +1256,6 @@ class CreateCardScreenState extends State<CreateCardScreen> {
                                                           ///Save null to database
                                                         } else {
                                                           setState(() {
-
                                                             String selectedDay =
                                                                 selectedDate.day
                                                                     .toString();

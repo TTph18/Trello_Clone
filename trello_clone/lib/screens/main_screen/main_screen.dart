@@ -209,8 +209,8 @@ class GroupInfo extends StatelessWidget {
     return Column(
       children: [
         GroupName(this.group),
-        FutureBuilder(
-            future: DatabaseService.getBoardList(group.workspaceID),
+        StreamBuilder(
+            stream: DatabaseService.streamListBoard(group.workspaceID),
             builder: (BuildContext context, AsyncSnapshot snapshot) {
               if (!snapshot.hasData) {
                 hasData = false;

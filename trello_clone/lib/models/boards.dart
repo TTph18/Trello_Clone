@@ -11,8 +11,9 @@ class Boards {
   final String workspaceID;
   final List<String> userList;
   final int listNumber;
-
-  Boards({required this.boardID, required this.userList, required this.boardName, required this.createdBy, required this.background, required this.isPersonal, required this.workspaceID, required this.listNumber});
+  final int cardNumber;
+  final String description;
+  Boards({required this.boardID, required this.userList, required this.boardName, required this.createdBy, required this.background, required this.isPersonal, required this.workspaceID, required this.listNumber, required this.cardNumber, required this.description});
 
   factory Boards.fromDocument(DocumentSnapshot document) {
     return Boards(
@@ -23,7 +24,9 @@ class Boards {
         isPersonal: document['isPersonal'],
         background: document['background'],
         workspaceID: document['workspaceID'],
-        listNumber : document['listNumber']
+        listNumber : document['listNumber'],
+        cardNumber : document['cardNumber'],
+      description: document['description']
     );
   }
 }
