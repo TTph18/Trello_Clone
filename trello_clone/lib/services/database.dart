@@ -302,11 +302,21 @@ class DatabaseService {
         .update({'position': newPosition});
   }
 
-  // get lists in board
+  // get board
   static Future getBoardData(String boardID) async {
     var snapshot = await FirebaseFirestore.instance
         .collection('boards')
         .doc(boardID)
+        .get();
+    return snapshot;
+  }
+  static Future getListData(String boardID, String listID) async {
+    var snapshot = await FirebaseFirestore
+        .instance
+        .collection('boards')
+        .doc(boardID)
+        .collection('lists')
+        .doc(listID)
         .get();
     return snapshot;
   }

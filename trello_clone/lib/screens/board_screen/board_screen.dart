@@ -6,6 +6,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/painting.dart';
 import 'package:flutter/widgets.dart';
+import 'package:intl/intl.dart';
 
 // ignore: import_of_legacy_library_into_null_safe
 import 'package:trello_clone/drag_and_drop/drag_and_drop_item.dart';
@@ -140,8 +141,8 @@ class _cardState extends State<_card> {
   void initState() {
     super.initState();
     name = card.cardName;
-    dateStart = DateTime.utc(2001, 11, 1);
-    dateEnd = DateTime.utc(2021, 6, 12, 10, 11, 12);
+    dateStart = card.startDate != "" ?  DateFormat("yyyy-MM-dd").parse(card.startDate) : DateTime.utc(1111, 11, 1);
+    dateEnd = card.dueDate != "" ? DateFormat("yyyy-MM-dd").parse(card.dueDate) : DateTime.utc(1111, 11, 1);
     isFinish = card.status;
     tags = [
       tag(Color(int.parse("0xff61bd4f"))),
@@ -313,6 +314,7 @@ Widget CreateDateString(DateTime dateStart, DateTime dateEnd, bool isFinish) {
   contents.add(
     Icon(
       Icons.access_time,
+      color: Colors.white,
       size: 17,
     ),
   );
@@ -335,7 +337,7 @@ Widget CreateDateString(DateTime dateStart, DateTime dateEnd, bool isFinish) {
   } else
     datestr =
         "Ngày " + dateEnd.day.toString() + " tháng " + dateEnd.month.toString();
-  contents.add(Text(datestr));
+  contents.add(Text(dateStart.year == 1111 ? "" : datestr, style: TextStyle(color: Colors.white),));
 
   /// Design
   return Padding(
@@ -365,7 +367,7 @@ Widget CreateChecklistItem(int finish, int total) {
 
   /// Text
   String contentstr = finish.toString() + "/" + total.toString();
-  contents.add(Text(contentstr));
+  contents.add(Text(contentstr, style: TextStyle(color: Colors.white)));
 
   /// Design
   return Padding(
