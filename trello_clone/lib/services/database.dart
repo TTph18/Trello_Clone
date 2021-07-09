@@ -26,7 +26,7 @@ class DatabaseService {
   //add a new user
   static Future<void> addUser(
       String userID, String email, String userName, String profileName) async {
-    await FirebaseFirestore.instance.collection('users').add({
+    await FirebaseFirestore.instance.collection('users').doc(userID).set({
       'userID': userID,
       'email': email,
       "avatar": "",

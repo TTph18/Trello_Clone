@@ -26,12 +26,15 @@ Future<void> signOut() async {
 }
 
 Future<String?> register(String email, String password, String userName, String profileName) async {
-  var newUID, newEmail;
+
   try {
     await FirebaseAuth.instance
         .createUserWithEmailAndPassword(email: email, password: password)
-        .then((value) {newUID=value.user!.uid; newEmail=value.user!.email;});
-    DatabaseService.addUser(newUID, newEmail, userName, profileName);
+        .then((value)  {
+          var newUID = value.user!.uid;
+          var newEmail = value.user!.email;
+        DatabaseService.addUser(newUID, newEmail!, userName, profileName);
+        });
     return "Registered";
   } on FirebaseAuthException catch (e) {
     if (e.code == 'weak-password') {

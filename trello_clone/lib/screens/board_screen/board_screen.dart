@@ -121,6 +121,7 @@ class _cardState extends State<_card> {
   late DateTime dateStart;
   late TimeOfDay timeStart;
   late TimeOfDay timeEnd;
+  late List<String> assignedUsers;
 
   ///Set year 2000 if user didn't chose time
   late DateTime dateEnd;
@@ -141,8 +142,13 @@ class _cardState extends State<_card> {
   void initState() {
     super.initState();
     name = card.cardName;
-    dateStart = card.startDate != "" ?  DateFormat("yyyy-MM-dd").parse(card.startDate) : DateTime.utc(1111, 11, 1);
-    dateEnd = card.dueDate != "" ? DateFormat("yyyy-MM-dd").parse(card.dueDate) : DateTime.utc(1111, 11, 1);
+    assignedUsers = card.assignedUser;
+    dateStart = card.startDate != ""
+        ? DateFormat("yyyy-MM-dd").parse(card.startDate)
+        : DateTime.utc(1111, 11, 1);
+    dateEnd = card.dueDate != ""
+        ? DateFormat("yyyy-MM-dd").parse(card.dueDate)
+        : DateTime.utc(1111, 11, 1);
     isFinish = card.status;
     tags = [
       tag(Color(int.parse("0xff61bd4f"))),
@@ -337,7 +343,10 @@ Widget CreateDateString(DateTime dateStart, DateTime dateEnd, bool isFinish) {
   } else
     datestr =
         "Ngày " + dateEnd.day.toString() + " tháng " + dateEnd.month.toString();
-  contents.add(Text(dateStart.year == 1111 ? "" : datestr, style: TextStyle(color: Colors.white),));
+  contents.add(Text(
+    dateStart.year == 1111 ? "" : datestr,
+    style: TextStyle(color: Colors.white),
+  ));
 
   /// Design
   return Padding(
@@ -429,7 +438,6 @@ class BoardScreenState extends State<BoardScreen> {
   late bool isTapNewList = false;
   TextEditingController newListController = TextEditingController();
   String uid = FirebaseAuth.instance.currentUser!.uid;
-
 
   late List<ScrollController> controllers = [];
 
@@ -581,23 +589,28 @@ class BoardScreenState extends State<BoardScreen> {
                         onPressed: () {
                           if (isTapNewList) {
                             if (newListController.text != "") {
-                              DatabaseService.addList(
-                                  boards.boardID, newListController.text);
                               setState(
                                 () {
                                   futureLists = getLists();
                                   listName.add(newListController.text);
                                   isTapNewList = false;
-                                  newListController.text = "";
                                 },
                               );
+                              DatabaseService.addList(
+                                  boards.boardID, newListController.text);
+                              setState(() {
+                                newListController.text = "";
+                              });
                             }
                           }
                           int index = isTapNewCard
                               .indexWhere((element) => element == true);
                           if (index != -1) {
                             if (newCardController.text != "") {
-                              DatabaseService.addCard(boards.boardID, listList[index].listID, newCardController.text, "", uid, [], "", "", "", "");
+                              DatabaseService.addCard(
+                                  boards.boardID,
+                                  listList[index].listID,
+                                  newCardController.text, "", uid, [], "", "", "", "");
                               setState(
                                 () {
                                   isTapNewCard[index] = false;
@@ -837,11 +850,13 @@ class BoardScreenState extends State<BoardScreen> {
                               duration: const Duration(milliseconds: 300),
                             );
                           } else if (value == 2) {
-                            DatabaseService.deleteList(boards.boardID, innerList.list.listID);
+                            DatabaseService.deleteList(
+                                boards.boardID, innerList.list.listID);
                             setState(() {
                               futureLists = getLists();
-                              Route route = MaterialPageRoute(builder: (context) =>
-                                  MoveBoardScreen(boards, innerList.list));
+                              Route route = MaterialPageRoute(
+                                  builder: (context) =>
+                                      MoveBoardScreen(boards, innerList.list));
                               Navigator.push(context, route);
                             });
                           } else {
@@ -1110,11 +1125,10 @@ TimeOfDay timeConvert(String normTime) {
 List<Cards> getCardList(Lists list, List<Cards> listcard) {
   List<Cards> temp = [];
   for (int i = 0; i < listcard.length; i++) {
-    if (list.listID == listcard[i].listID){
+    if (list.listID == listcard[i].listID) {
       temp.add(listcard[i]);
       continue;
-    }
-    else
+    } else
       continue;
   }
   return temp;
