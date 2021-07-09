@@ -18,7 +18,7 @@ class avatar extends StatelessWidget {
         shape: BoxShape.circle,
         border: Border.all(color: borderColor),
         image: new DecorationImage(
-          fit: BoxFit.fill,
+          fit: BoxFit.cover,
           image: ava.image,
         ),
       ),

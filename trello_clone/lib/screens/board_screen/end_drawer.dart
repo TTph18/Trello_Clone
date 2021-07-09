@@ -1054,7 +1054,7 @@ class memberContentState extends State<memberContent> {
                                               children: <Widget>[
                                                 FutureBuilder(
                                                     future: DatabaseService
-                                                        .getAllUsesrData(),
+                                                        .getAllUsersData(),
                                                     builder:
                                                         (BuildContext context,
                                                             AsyncSnapshot

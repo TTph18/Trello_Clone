@@ -1,10 +1,14 @@
+import 'dart:io';
 import 'dart:ui';
+import 'package:path/path.dart';
 import 'package:animated_icon_button/animated_icon_button.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:trello_clone/models/user.dart';
 import 'package:trello_clone/route_path.dart';
 import 'package:trello_clone/services/authentication_service.dart';
@@ -262,22 +266,18 @@ class NavigationMainState extends State<NavigationMain> {
                                           newPasswordValidation = "Mật khẩu phải nhiều hơn 6 ký tự";
                                         });
                                         return;
+                                      } else {
+                                        setState(() {
+                                          newPasswordValidation = "";
+                                        });
                                       }
-                                      else
-                                        {
-                                          setState(() {
-                                            newPasswordValidation = "";
-                                          });
-                                        }
 
                                       if (newPasswordController.text != confirmPasswordController.text) {
                                         setState(() {
                                           confirmPasswordValidation = "Mật khẩu xác nhận không đúng";
                                         });
                                         return;
-                                      }
-                                      else
-                                      {
+                                      } else {
                                         setState(() {
                                           confirmPasswordValidation = "";
                                         });
@@ -289,9 +289,7 @@ class NavigationMainState extends State<NavigationMain> {
                                           oldPasswordValidation = "Mật khẩu không đúng";
                                         });
                                         return;
-                                      }
-                                      else
-                                      {
+                                      } else {
                                         setState(() {
                                           oldPasswordValidation = "";
                                         });
@@ -302,9 +300,9 @@ class NavigationMainState extends State<NavigationMain> {
                                       var user = await FirebaseAuth.instance.currentUser!;
                                       print(user);
                                       //Pass in the password to updatePassword.
-                                      user.updatePassword(newPasswordController.text).then((_){
+                                      user.updatePassword(newPasswordController.text).then((_) {
                                         print("Successfully changed password");
-                                      }).catchError((error){
+                                      }).catchError((error) {
                                         print("Password can't be changed" + error.toString());
                                       });
                                       Navigator.of(context).pop();
@@ -443,7 +441,30 @@ class _NavigationState extends State<Navigation> {
                       return Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          avatar(70, 70, Colors.grey, Image.network(snapshot.data!['avatar'])),
+                          InkWell(
+                            onTap: () async {
+                              final pickedFile = await ImagePicker().getImage(source: ImageSource.gallery);
+                              File _imageFile = File(pickedFile!.path);
+                              Reference ref = FirebaseStorage.instance.ref().child("image1" + DateTime.now().toString().replaceAll(' ', ''));
+                              UploadTask uploadTask = ref.putFile(_imageFile);
+                              print("IMAGEEE");
+                              final TaskSnapshot downloadUrl = (await uploadTask);
+                              String url = await downloadUrl.ref.getDownloadURL();
+                              FirebaseFirestore.instance.collection('users').doc(uid).update({'avatar': url});
+
+                              setState(() {
+                                //
+                              });
+                            },
+                            child: avatar(
+                              70,
+                              70,
+                              Colors.grey,
+                              Image.network(
+                                snapshot.data!['avatar'],
+                              ),
+                            ),
+                          ),
                           SizedBox(
                             height: 13,
                           ),
