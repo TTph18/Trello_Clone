@@ -313,12 +313,12 @@ class DatabaseService {
   }
 
   //add a board
-  static Future<void> addBoard(String boardName, String workspaceID) async {
+  static Future<void> addBoard(String boardName, String workspaceID, List<String> userList) async {
     String uid = FirebaseAuth.instance.currentUser!.uid;
     final docRef = await FirebaseFirestore.instance.collection('boards').add({
       'boardName': boardName,
       'createdBy': uid,
-      "userList": FieldValue.arrayUnion([uid]),
+      "userList": userList,
       "background": "",
       'isPersonal': false,
       'workspaceID': workspaceID,

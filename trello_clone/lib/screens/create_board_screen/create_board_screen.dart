@@ -39,7 +39,7 @@ class CreateBoardScreenState extends State<CreateBoardScreen> {
               onPressed: () {
                 if (formKey.currentState!.validate()) {
                   DatabaseService.addBoard(
-                      nameTxtCtrl.text, selectedGroup!.workspaceID);
+                      nameTxtCtrl.text, selectedGroup!.workspaceID, selectedGroup!.userList);
                   Navigator.of(context).pushNamed(MAIN_SCREEN);
                 }
               },
