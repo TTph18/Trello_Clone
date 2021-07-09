@@ -67,6 +67,7 @@ class CreateWorkspaceScreenState extends State<CreateWorkspaceScreen> {
                   usersIDList.add(item.userID);
                 }
                 if (formKey.currentState!.validate()) {
+                  usersIDList.add(currentUser.userID);
                   DatabaseService.addWorkspace(nameTxtCtrl.text, usersIDList);
                   Navigator.of(context).pushNamed(MAIN_SCREEN);
                 }
@@ -112,7 +113,6 @@ class CreateWorkspaceScreenState extends State<CreateWorkspaceScreen> {
                         users = snapshot.data[0];
                         currentUser = snapshot.data[1];
                         users.removeWhere((element) => element.userID == currentUser.userID);
-                        selectedUser.add(currentUser);
                       }
                       return ChipsInput(
                         key: _chipKey,
