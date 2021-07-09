@@ -122,6 +122,7 @@ class _cardState extends State<_card> {
   late TimeOfDay timeStart;
   late TimeOfDay timeEnd;
   late List<String> assignedUsers;
+  late List<Users> cardUsers;
 
   ///Set year 2000 if user didn't chose time
   late DateTime dateEnd;
@@ -135,6 +136,7 @@ class _cardState extends State<_card> {
   late int numFinish = 4;
   late int numTotal = 4;
   List<Image> avas = [];
+  String uid = FirebaseAuth.instance.currentUser!.uid;
 
   _cardState(this.card);
 
@@ -143,6 +145,7 @@ class _cardState extends State<_card> {
     super.initState();
     name = card.cardName;
     assignedUsers = card.assignedUser;
+    isFinish = card.status;
     dateStart = card.startDate != ""
         ? DateFormat("yyyy-MM-dd").parse(card.startDate)
         : DateTime.utc(1111, 11, 1);
@@ -155,10 +158,13 @@ class _cardState extends State<_card> {
       tag(Color(int.parse("0xfff2d600"))),
       tag(Color(int.parse("0xffffab4a"))),
     ];
-    iconSeen = true;
-    iconDetail = true;
+    card.assignedUser.contains(uid) ? iconSeen = true : iconSeen = false;
+    card.description =="" ? iconDetail= false : iconDetail = true;
     numCom = 2;
-    numFile = 3;
+    numFile = 0;
+
+    for(int i = 0; i< card.assignedUser.length; i++){}
+
     avas = [
       Image.asset('assets/images/BlueBG.png'),
       Image.asset('assets/images/BlueBG.png'),
@@ -310,11 +316,11 @@ Widget CreateDateString(DateTime dateStart, DateTime dateEnd, bool isFinish) {
   var contents = <Widget>[];
   var color = const Color(0xffFFFFFF);
   if (dateEnd.year > 2000) if (isFinish)
-    color = const Color(0xff00AF00);
+    color = const Color(0xff61bd4f);
   else if (dateEnd.isBefore(DateTime.now()))
-    color = const Color(0xffFF0000);
+    color = const Color(0xffeb5a46);
   else if (dateEnd.isBefore(DateTime.now().add(Duration(days: 1))))
-    color = const Color(0xffFFFF00);
+    color = const Color(0xffcdcd08);
 
   /// Icons
   contents.add(
@@ -364,13 +370,14 @@ Widget CreateDateString(DateTime dateStart, DateTime dateEnd, bool isFinish) {
 Widget CreateChecklistItem(int finish, int total) {
   var contents = <Widget>[];
   var color = const Color(0xffFFFFFF);
-  if (finish == total) color = const Color(0xff00AF00);
+  if (finish == total) color = const Color(0xff61bd4f);
 
   /// Icons
   contents.add(
     Icon(
       Icons.check_box_outlined,
       size: 17,
+      color: Colors.white,
     ),
   );
 
@@ -592,13 +599,17 @@ class BoardScreenState extends State<BoardScreen> {
                               setState(
                                 () {
                                   futureLists = getLists();
-                                  listName.add(newListController.text);
                                   isTapNewList = false;
                                 },
                               );
                               DatabaseService.addList(
                                   boards.boardID, newListController.text);
                               setState(() {
+                                for (int i = 0; i < boards.listNumber; i++) {
+                                  listName.add("");
+                                  listList.add(new Lists(
+                                      listID: "", listName: "", position: 0, cardList: [], cardNumber: 0));
+                                }
                                 newListController.text = "";
                               });
                             }
@@ -695,15 +706,10 @@ class BoardScreenState extends State<BoardScreen> {
                                   alignment: FractionalOffset.center,
                                   child: CircularProgressIndicator());
                             } else {
-                              cardList.clear();
-                              var i = 0;
-                              for (var item in snapshot.data.docs) {
-                                Cards temp = Cards.fromDocument(item);
-                                cardList.add(temp);
-                                cards.insert(i, new _card(temp, false));
-                                i++;
+                              cardList = snapshot.data;
+                              for (int i = 0; i < cardList.length; i++) {
+                                cards.insert(i, new _card(cardList[i], false));
                               }
-                              i = 0;
                             }
                             for (int i = 0; i < listName.length + 1; i++)
                               controllers.add(new ScrollController());
@@ -850,8 +856,6 @@ class BoardScreenState extends State<BoardScreen> {
                               duration: const Duration(milliseconds: 300),
                             );
                           } else if (value == 2) {
-                            DatabaseService.deleteList(
-                                boards.boardID, innerList.list.listID);
                             setState(() {
                               futureLists = getLists();
                               Route route = MaterialPageRoute(

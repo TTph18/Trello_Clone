@@ -28,7 +28,6 @@ class CardScreen extends StatefulWidget {
 
 class CardScreenState extends State<CardScreen> {
   late Cards card;
-  late Future futureCard;
   late String cardName;
 
   late Boards boards = Boards(
@@ -296,11 +295,6 @@ class CardScreenState extends State<CardScreen> {
 
   List<TextEditingController> commentContentTxtCtrlList = [];
 
-  Future getCurrentCard() async {
-    var doc = await DatabaseService.getCardData(card.cardID);
-    Cards _card = Cards.fromDocument(doc);
-    return _card;
-  }
 
   Future getCurrentBoard(String boardID) async {
     var doc = await DatabaseService.getBoardData(boardID);
@@ -357,11 +351,11 @@ class CardScreenState extends State<CardScreen> {
         .update({"dueTime": selectedEndTime.format(context)});
   }
 
-  _updateStatus() {
+  _updateStatus(bool? _status) {
     FirebaseFirestore.instance
         .collection('cards')
         .doc(card.cardID)
-        .update({"status": false});
+        .update({"status": _status});
   }
 
   _updateAsignedUser() {
@@ -392,7 +386,6 @@ class CardScreenState extends State<CardScreen> {
     });
     futureBoards = getCurrentBoard(card.boardID);
     futureLists = getCurrentList(card.boardID, card.listID);
-    futureCard = getCurrentCard();
 
     for (Users user in users) {
       var foundUser =
@@ -475,27 +468,29 @@ class CardScreenState extends State<CardScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return FutureBuilder(
-        future: Future.wait([futureCard, futureBoards]),
+    return StreamBuilder(
+        stream: DatabaseService.streamCardData(card.cardID),
         builder: (BuildContext context, AsyncSnapshot snapshot) {
           if (!snapshot.hasData) {
             return Container(
                 alignment: FractionalOffset.center,
                 child: CircularProgressIndicator());
           } else {
-            boards = snapshot.data[1];
-            boardName = boards.boardName;
+            card = snapshot.data;
+            status = card.status;
           }
           return FutureBuilder(
-              future: futureLists,
+              future: Future.wait([futureLists,futureBoards]),
               builder: (BuildContext context, AsyncSnapshot snapshot) {
                 if (!snapshot.hasData) {
                   return Container(
                       alignment: FractionalOffset.center,
                       child: CircularProgressIndicator());
                 } else {
-                  lists = snapshot.data;
+                  lists = snapshot.data[0];
                   cardlistName = lists.listName;
+                  boards = snapshot.data[1];
+                  boardName =  boards.boardName;
                 }
                 return Scaffold(
                   resizeToAvoidBottomInset: true,
@@ -533,6 +528,8 @@ class CardScreenState extends State<CardScreen> {
                             xChangeTaskListName = -1;
                             FocusScope.of(context).unfocus();
                           } else {
+                            Navigator.of(context)
+                                .pop();
                             Route route = MaterialPageRoute(
                                 builder: (context) =>
                                     BoardScreen(boards, false));
@@ -1335,9 +1332,7 @@ class CardScreenState extends State<CardScreen> {
                                             Checkbox(
                                                 value: status,
                                                 onChanged: (value) {
-                                                  setState(() {
-                                                    status = value;
-                                                  });
+                                                  _updateStatus(value);
                                                 }),
                                           ],
                                         ),

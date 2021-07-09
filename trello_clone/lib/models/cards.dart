@@ -15,7 +15,7 @@ class Cards {
   final String dueDate;
   final String dueTime;
   final List<String> assignedUser;
-  final bool status; //true: not due | false: is due
+  final bool status; //true: finish | false: not finish
 
   Cards({required this.cardID, required this.cardName, required this.createdBy, required this.description, required this.startDate, required this.startTime, required this.dueDate, required this.dueTime, required this.assignedUser, required this.status,required this.listID, required this.boardID});
 

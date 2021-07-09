@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:provider/provider.dart';
+import 'package:trello_clone/models/cards.dart';
 import 'package:trello_clone/models/lists.dart';
 import 'package:trello_clone/models/user.dart';
 import 'package:trello_clone/models/workspaces.dart';
@@ -103,33 +104,36 @@ class DatabaseService {
 
   //add a list
   static Future<void> addList(String boardID, String listName) async {
+    var doc = await FirebaseFirestore.instance
+        .collection('boards')
+        .doc(boardID)
+        .get();
+
+    int listNumber = doc.get('listNumber');
+    final docRef = await FirebaseFirestore.instance
+        .collection('boards')
+        .doc(boardID)
+        .collection('lists')
+        .add({
+      'listID': "",
+      'listName': listName,
+      'cardList': [],
+      "cardNumber": 0,
+      "position": listNumber + 1
+    });
+
+    //update listID = document ID
+    await FirebaseFirestore.instance.collection('boards')
+        .doc(boardID)
+        .collection('lists')
+        .doc(docRef.id)
+        .update({"listID": docRef.id});
+
+    //update listID = document ID
     await FirebaseFirestore.instance
         .collection('boards')
         .doc(boardID)
-        .get()
-        .then((value) async {
-      int listNumber = value['listNumber'];
-      final docRef = await FirebaseFirestore.instance
-          .collection('boards')
-          .doc(boardID)
-          .collection('lists')
-          .add({
-        'listName': listName,
-        'cardList': [],
-        "cardNumber": 0,
-        "position": listNumber + 1
-      });
-      //update listID = document ID
-      FirebaseFirestore.instance
-          .collection('lists')
-          .doc(docRef.id)
-          .update({"listID": docRef.id});
-      //update listID = document ID
-      FirebaseFirestore.instance
-          .collection('boards')
-          .doc(boardID)
-          .update({"listNumber": listNumber + 1});
-    });
+        .update({"listNumber": listNumber + 1});
   }
 
   // get lists in board
@@ -168,41 +172,44 @@ class DatabaseService {
   }
 
   static Future<void> deleteList(String boardID, String listID) async {
-    await FirebaseFirestore.instance
+    var doc = await FirebaseFirestore.instance
         .collection('boards')
         .doc(boardID)
         .collection('lists')
         .doc(listID)
-        .get()
-        .then((value) async {
-      int deletePos = value['position'];
-      FirebaseFirestore.instance
+        .get();
+
+    int deletePos = doc.get('position');
+
+    var boards = await FirebaseFirestore.instance
+        .collection('boards')
+        .doc(boardID)
+        .get();
+
+    int listNumber = boards.get('listNumber');
+
+    for (int i = deletePos; i <= listNumber - 1; i++) {
+      var boardlist = await FirebaseFirestore.instance
           .collection('boards')
           .doc(boardID)
-          .get()
-          .then((value) async {
-        int listNumber = value['listNumber'];
-        for (int i = deletePos; i <= listNumber - 1; i++) {
-           FirebaseFirestore.instance
-              .collection('boards')
-              .doc(boardID)
-              .collection('lists')
-              .where('position', isEqualTo: i + 1)
-              .get()
-              .then((value) => value.docs.forEach((element) {
-                    String id = element['listID'];
-                    FirebaseFirestore.instance
-                        .collection('lists')
-                        .doc(id)
-                        .update({"position": i});
-                  }));
-        }
-        FirebaseFirestore.instance
-            .collection('boards')
-            .doc(boardID)
-            .update({'listNumber': listNumber - 1});
-      });
-    });
+          .collection('lists')
+          .where('position', isEqualTo: i + 1)
+          .get();
+
+      String id = boardlist.docs.first.get('listID');
+
+      await FirebaseFirestore.instance.collection('boards')
+          .doc(boardID)
+          .collection('lists')
+          .doc(id)
+          .update({"position": i});
+    }
+
+    await FirebaseFirestore.instance
+        .collection('boards')
+        .doc(boardID)
+        .update({'listNumber': listNumber - 1});
+
     await FirebaseFirestore.instance
         .collection('boards')
         .doc(boardID)
@@ -548,13 +555,10 @@ class DatabaseService {
   static Future<void> deleteBoard(String boardID) async {
     var oldWorkspaceID;
     //get old wp id
-    await FirebaseFirestore.instance
+    DocumentSnapshot doc = await FirebaseFirestore.instance
         .collection('boards')
         .doc(boardID)
-        .get()
-        .then((value) {
-      oldWorkspaceID = value['workspaceID'].toString();
-    });
+        .get();
     //delete board
     await FirebaseFirestore.instance.collection('boards').doc(boardID).delete();
     //delete board from wp
@@ -706,11 +710,15 @@ class DatabaseService {
   }
 
   // get a card data
-  static Future getCardData(String cardID) async {
+  static Stream streamCardData(String cardID)  {
     var snapshot =
-        await FirebaseFirestore.instance.collection('cards').doc(cardID).get();
+         FirebaseFirestore.instance.collection('cards')
+             .doc(cardID)
+             .snapshots()
+             .map((event) => Cards.fromDocument(event));
     return snapshot;
   }
+  
 
   // get lists card
   static Future getListCard(String boardID) async {
@@ -726,7 +734,8 @@ class DatabaseService {
         .collection('cards')
         .where('boardID', isEqualTo: boardID)
         .snapshots();
-    return ref;
+    return ref.map((list) =>
+        list.docs.map((doc) => Cards.fromDocument(doc)).toList());
   }
 
 //delete a board
@@ -758,47 +767,46 @@ class DatabaseService {
   //delete a board
   static Future<void> deleteCard(String cardID) async {
     //get old list, board id
-    FirebaseFirestore.instance
+    var doc = await FirebaseFirestore.instance
         .collection('cards')
         .doc(cardID)
+        .get();
+
+    var oldBoardID = doc.get('boardID').toString();
+    var oldListID = doc.get('listID').toString();
+
+    List<String> cardList;
+    await FirebaseFirestore.instance.collection('boards')
+        .doc(oldBoardID)
+        .collection('lists')
+        .doc(oldListID)
         .get()
         .then((value) {
-      var oldListID;
-      var oldBoardID;
-      oldBoardID = value['boardID'].toString();
-      oldListID = value['listID'].toString();
-      //delete card id from list
-      List<String> cardList;
-      FirebaseFirestore.instance.collection('boards')
-           .doc(oldBoardID)
-          .collection('lists')
-          .doc(oldListID)
-          .get()
-          .then((value) {
-        cardList = value['cardList'].cast<String>();
-        cardList.remove(cardID);
-        FirebaseFirestore.instance.collection('boards')
-            .doc(oldBoardID)
-            .collection('lists')
-            .doc(oldListID)
-            .update({"cardList": cardList});
-      });
-      //update card number in list
-      FirebaseFirestore.instance.collection('boards')
+    cardList = value['cardList'].cast<String>();
+    cardList.remove(cardID);
+    FirebaseFirestore.instance.collection('boards')
+        .doc(oldBoardID)
+        .collection('lists')
+        .doc(oldListID)
+        .update({"cardList": cardList});
+    });
+
+    //update card number in list
+    await FirebaseFirestore.instance.collection('boards')
+        .doc(oldBoardID)
+        .collection('lists')
+        .doc(oldListID)
+        .get()
+        .then((value) async {
+      int cardNumber = value['cardNumber'] - 1;
+      if(cardNumber<0) cardNumber = 0;
+      await FirebaseFirestore.instance.collection('boards')
           .doc(oldBoardID)
           .collection('lists')
           .doc(oldListID)
-          .get()
-          .then((value) async {
-        int cardNumber = value['cardNumber'] - 1;
-        if(cardNumber<0) cardNumber = 0;
-        await FirebaseFirestore.instance.collection('boards')
-            .doc(oldBoardID)
-            .collection('lists')
-            .doc(oldListID)
-            .update({'cardNumber': cardNumber});
-      });
+          .update({'cardNumber': cardNumber});
     });
+
     //delete card
      await FirebaseFirestore.instance.collection('cards').doc(cardID).delete();
   }
