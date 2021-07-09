@@ -503,7 +503,7 @@ class DatabaseService {
   }
 
   //get all user data
-  static Future getAllUsesrData() async {
+  static Future getAllUsersData() async {
     var snapshot = await FirebaseFirestore.instance.collection('users').get();
     return snapshot.docs;
   }

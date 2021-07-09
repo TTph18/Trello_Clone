@@ -24,7 +24,7 @@ class CreateWorkspaceScreenState extends State<CreateWorkspaceScreen> {
   String uid = FirebaseAuth.instance.currentUser!.uid;
   List<Users> users = [];
   Future<List<Users>> getListUser() async {
-    var doc = await DatabaseService.getAllUsesrData();
+    var doc = await DatabaseService.getAllUsersData();
     List<Users> temp = [];
     for (var item in doc) {
       Users _user = Users.fromDocument(item);
@@ -130,14 +130,14 @@ class CreateWorkspaceScreenState extends State<CreateWorkspaceScreen> {
                           if (query.isNotEmpty) {
                             var lowercaseQuery = query.toLowerCase();
                             return users.where((profile) {
-                              return profile.userName
+                              return profile.profileName
                                       .toLowerCase()
                                       .contains(query.toLowerCase());
                             }).toList(growable: false)
-                              ..sort((a, b) => a.userName
+                              ..sort((a, b) => a.profileName
                                   .toLowerCase()
                                   .indexOf(lowercaseQuery)
-                                  .compareTo(b.userName
+                                  .compareTo(b.profileName
                                       .toLowerCase()
                                       .indexOf(lowercaseQuery)));
                           }
@@ -169,7 +169,7 @@ class CreateWorkspaceScreenState extends State<CreateWorkspaceScreen> {
                             leading: CircleAvatar(
                               backgroundImage: NetworkImage(profile.avatar),
                             ),
-                            title: Text(profile.userName),
+                            title: Text(profile.profileName),
                             onTap: () {
                               state.selectSuggestion(profile);
                               selectedUser.add(profile);
