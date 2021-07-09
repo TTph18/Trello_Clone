@@ -718,7 +718,32 @@ class DatabaseService {
              .map((event) => Cards.fromDocument(event));
     return snapshot;
   }
-  
+
+  // get checklists
+  static Stream streamCheckLists(String cardID)  {
+    var snapshot =
+    FirebaseFirestore.instance.collection('cards')
+        .doc(cardID)
+        .collection('checklists')
+        .snapshots()
+        .map((list) =>
+        list.docs.map((doc) => CheckLists.fromDocument(doc)).toList());
+    return snapshot;
+  }
+
+  // get tasks
+  static Stream streamTasks(String checklistID, String cardID)  {
+    var snapshot =
+    FirebaseFirestore.instance.collection('cards')
+        .doc(cardID)
+        .collection('checklists')
+        .doc(checklistID)
+        .collection('tasks')
+        .snapshots()
+        .map((list) =>
+        list.docs.map((doc) => Tasks.fromDocument(doc)).toList());
+    return snapshot;
+  }
 
   // get lists card
   static Future getListCard(String boardID) async {
@@ -738,31 +763,6 @@ class DatabaseService {
         list.docs.map((doc) => Cards.fromDocument(doc)).toList());
   }
 
-//delete a board
-  static Future<void> reduceCardNumberInBoard(String cardID) async {
-    //get old list, board id
-    FirebaseFirestore.instance
-        .collection('cards')
-        .doc(cardID)
-        .get()
-        .then((value) async {
-      var oldBoardID;
-      oldBoardID = value['boardID'].toString();
-      //update card number in board
-      FirebaseFirestore.instance
-          .collection('boards')
-          .doc(oldBoardID)
-          .get()
-          .then((value) async {
-        int cardNumber = value['cardNumber'] - 1;
-        if (cardNumber < 0) cardNumber = 0;
-        await FirebaseFirestore.instance
-            .collection('boards')
-            .doc(oldBoardID)
-            .update({'cardNumber': cardNumber});
-      });
-    });
-  }
 
   //delete a board
   static Future<void> deleteCard(String cardID) async {

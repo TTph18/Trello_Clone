@@ -535,9 +535,55 @@ class BoardScreenState extends State<BoardScreen> {
             boards = snapshot.data[0];
             boardOwner = snapshot.data[1];
           } else
-            return Container(
-                alignment: FractionalOffset.center,
-                child: CircularProgressIndicator());
+            return Scaffold(
+              key: _scaffoldKey,
+              backgroundColor: const Color.fromRGBO(0, 121, 190, 1.0),
+              appBar: AppBar(
+                title: isTapNewList
+                    ? Text("Thêm danh sách")
+                    : isTapNewCard.contains(true)
+                    ? Text("Thêm thẻ")
+                    : isTapChangeListName.contains(true)
+                    ? Text("Chỉnh sửa tên danh sách")
+                    : Text(boards.boardName),
+                backgroundColor: const Color.fromRGBO(0, 64, 126, 1.0),
+                leading: (isTapNewList ||
+                    isTapNewCard.contains(true) ||
+                    isTapChangeListName.contains(true))
+                    ? IconButton(
+                    onPressed: () {
+                      setState(
+                            () {
+                          if (isTapNewList) {
+                            isTapNewList = false;
+                            newListController.text = "";
+                          }
+                          int index = isTapNewCard
+                              .indexWhere((element) => element == true);
+                          if (index != -1) {
+                            isTapNewCard[index] = false;
+                            newCardController.text = "";
+                          }
+                          index = isTapChangeListName
+                              .indexWhere((element) => element == true);
+                          if (index != -1) {
+                            isTapChangeListName[index] = false;
+                            changeListNameController.text = "";
+                          }
+                        },
+                      );
+                    },
+                    icon: Icon(Icons.close))
+                    : Builder(
+                  builder: (BuildContext context) {
+                    return IconButton(
+                      icon: const Icon(Icons.arrow_back),
+                      onPressed: () {
+                        Navigator.of(context).pushNamed(MAIN_SCREEN);
+                      },
+                    );
+                  },
+                )));
           return Scaffold(
             key: _scaffoldKey,
             backgroundColor: const Color.fromRGBO(0, 121, 190, 1.0),

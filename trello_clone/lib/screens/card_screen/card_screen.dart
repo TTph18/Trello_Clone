@@ -358,7 +358,7 @@ class CardScreenState extends State<CardScreen> {
         .update({"status": _status});
   }
 
-  _updateAsignedUser() {
+  _updateAssignedUser() {
     FirebaseFirestore.instance
         .collection('cards')
         .doc(card.cardID)
@@ -624,17 +624,14 @@ class CardScreenState extends State<CardScreen> {
                                                       ),
                                                       onPressed: () {
                                                         setState(() async {
-                                                          DatabaseService
-                                                              .reduceCardNumberInBoard(
-                                                                  card.cardID);
                                                           await DatabaseService
                                                               .deleteCard(
                                                                   card.cardID);
                                                         });
-                                                        Navigator.of(context)
-                                                            .pop();
-                                                        Navigator.of(context)
-                                                            .pop();
+                                                        Route route = MaterialPageRoute(
+                                                            builder: (context) =>
+                                                                BoardScreen(boards, false));
+                                                        Navigator.push(context, route);
                                                       },
                                                     )
                                                   ],
