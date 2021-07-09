@@ -11,25 +11,13 @@ class CreateBoardScreen extends StatefulWidget {
 class CreateBoardScreenState extends State<CreateBoardScreen> {
   final formKey = GlobalKey<FormState>();
   var nameTxtCtrl = TextEditingController();
-  late Future<List<Workspaces>> futureGroupList;
   Workspaces? selectedGroup;
   List<Workspaces> groupList = [];
   String? selectedPermission = "Không gian làm việc";
   List<String> permissionList = ["Riêng tư", "Không gian làm việc"];
 
-  Future<List<Workspaces>> getGroupList() async {
-    var doc = await DatabaseService.getUserWorkspaceList();
-    List<Workspaces> temp = [];
-    for (var item in doc) {
-      Workspaces _wp = Workspaces.fromDocument(item);
-      temp.add(_wp);
-    }
-    return temp;
-  }
-
   void initState() {
     super.initState();
-    futureGroupList = getGroupList();
   }
 
   @override
@@ -84,19 +72,17 @@ class CreateBoardScreenState extends State<CreateBoardScreen> {
                   return null;
                 },
               ),
-              FutureBuilder(
-                  future: Future.wait([futureGroupList]),
+              StreamBuilder(
+                  stream: DatabaseService.streamWorkspaces(),
                   builder: (BuildContext context, AsyncSnapshot snapshot) {
                     if (!snapshot.hasData) {
                       return Container(
                           alignment: FractionalOffset.center,
                           child: CircularProgressIndicator());
                     }
-                    else
-                    {
-                      groupList = snapshot.data[0];
+                    else {
+                      groupList = snapshot.data;
                     }
-
                     return DropdownButtonFormField<Workspaces>(
                         hint: Align(
                           alignment: Alignment.centerLeft,
@@ -119,9 +105,7 @@ class CreateBoardScreenState extends State<CreateBoardScreen> {
                         contentPadding: EdgeInsets.only(top: 15, bottom: 4),
                       ),
                       onChanged: (newValue) {
-                        setState(() {
-                          selectedGroup = newValue;
-                        });
+                        selectedGroup = newValue!;
                       },
                       selectedItemBuilder: (BuildContext context) {
                         return groupList.map<Widget>((Workspaces item) {

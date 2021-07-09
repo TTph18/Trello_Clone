@@ -36,32 +36,14 @@ class DatabaseService {
     });
   }
 
-  //get current user workspace list
-  static Future getUserWorkspaceList() async {
-    List wpList = [];
-    String uid = FirebaseAuth.instance.currentUser!.uid;
-    var snapshot = await FirebaseFirestore.instance
-        .collection('users')
-        .where('userID', isEqualTo: uid)
-        .get();
-    List wpID = snapshot.docs.first["workspaceList"];
-    for (var temp in wpID) {
-      var _snapshot = await FirebaseFirestore.instance
-          .collection('workspaces')
-          .where('workspaceID', isEqualTo: temp)
-          .get();
-      wpList.add(_snapshot.docs.first);
-    }
-    return wpList;
-  }
-
   static Stream streamWorkspaces()  {
     String uid = FirebaseAuth.instance.currentUser!.uid;
       var snapshot = FirebaseFirestore.instance
           .collection('workspaces')
           .where('userList', arrayContains: uid)
           .snapshots();
-    return snapshot;
+    return snapshot.map((list) =>
+        list.docs.map((doc) => Workspaces.fromDocument(doc)).toList());
   }
 
   static Stream streamUser()  {

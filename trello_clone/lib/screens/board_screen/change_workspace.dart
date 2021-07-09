@@ -29,8 +29,8 @@ class ChangeWorkspaceState extends State<ChangeWorkspace> {
 
   @override
   Widget build(BuildContext context) {
-    return FutureBuilder(
-        future: DatabaseService.getUserWorkspaceList(),
+    return StreamBuilder(
+        stream: DatabaseService.streamWorkspaces(),
         builder: (BuildContext context, AsyncSnapshot snapshot) {
           if (!snapshot.hasData)
             return Scaffold(
@@ -44,11 +44,7 @@ class ChangeWorkspaceState extends State<ChangeWorkspace> {
                       icon: Icon(Icons.close)),
                   title: Text("Đổi không gian làm việc"),));
           else {
-            userWorkspaces.clear();
-            for (DocumentSnapshot item in snapshot.data) {
-              Workspaces _wp = Workspaces.fromDocument(item);
-              userWorkspaces.add(_wp);
-            }
+            userWorkspaces = snapshot.data;
           }
           return Scaffold(
             appBar: AppBar(
