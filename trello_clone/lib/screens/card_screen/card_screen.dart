@@ -428,8 +428,9 @@ class CardScreenState extends State<CardScreen> {
                                                   style: TextStyle(fontWeight: FontWeight.bold),
                                                 ),
                                                 onPressed: () {
-                                                  setState(() {
-                                                    DatabaseService.deleteCard(card.cardID);
+                                                  setState(() async {
+                                                    DatabaseService.reduceCardNumberInBoard(card.cardID);
+                                                    await DatabaseService.deleteCard(card.cardID);
                                                   });
                                                   Navigator.of(context).pop();
                                                   Navigator.of(context).pop();
