@@ -1,4 +1,3 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
@@ -28,17 +27,18 @@ class CreateCardScreenState extends State<CreateCardScreen> {
       workspaceID: "",
       listNumber: 0, cardNumber: 0, description: "");
   late Boards selectedBoard = nullBr;
-  late List<Workspaces> group = [];
+  late List<Workspaces> workspaceList = [];
   late Future<List<Users>> futureUserList;
   late List<BoardItem> boardItems = [];
 
-  List<String> boardList = ["Tên bảng 1", "Tên bảng 2", "Tên bảng 3"];
-  late Lists selectedList =
-      Lists(listID: "", listName: "", cardList: [], position: 1, cardNumber: 0);
+  List<String> boardList = [];
+  late Lists selectedList;
+  final GlobalKey<FormFieldState> _cardListSelectKey = GlobalKey<FormFieldState>();
   late List<Lists> listList = [];
   late List<Users> users = [];
 
   List<Users> pickedUsers = [];
+
   Future<List<Users>> getListUser() async {
     var doc = await DatabaseService.getListUserData(selectedBoard.userList);
     List<Users> temp = [];
@@ -238,10 +238,10 @@ class CreateCardScreenState extends State<CreateCardScreen> {
                             alignment: FractionalOffset.center,
                             child: CircularProgressIndicator());
                       } else {
-                        group.clear();
+                        workspaceList.clear();
                         for (var item in snapshot.data) {
                           Workspaces _wp = Workspaces.fromDocument(item);
-                          group.add(_wp);
+                          workspaceList.add(_wp);
                         }
                       }
                       return FutureBuilder(
@@ -254,7 +254,7 @@ class CreateCardScreenState extends State<CreateCardScreen> {
                                   child: CircularProgressIndicator());
                             } else {
                               boardItems.clear();
-                              for (var _item in group) {
+                              for (var _item in workspaceList) {
                                 boardItems.add(new BoardItem(
                                     wpname: _item.workspaceName,
                                     type: "sep",
@@ -302,6 +302,7 @@ class CreateCardScreenState extends State<CreateCardScreen> {
                                               element.boards.boardID == value)]
                                       .boards);
                                 });
+                                _cardListSelectKey.currentState!.reset();
                               },
                               selectedItemBuilder: (BuildContext context) {
                                 return boardItems.map((BoardItem item) {
@@ -417,6 +418,7 @@ class CreateCardScreenState extends State<CreateCardScreen> {
                       }
                     }
                     return DropdownButtonFormField(
+                      key: _cardListSelectKey,
                       icon: Icon(Icons.keyboard_arrow_down),
                       hint: Align(
                         alignment: Alignment.centerLeft,
