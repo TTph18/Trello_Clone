@@ -64,6 +64,15 @@ class DatabaseService {
     return snapshot;
   }
 
+  static Stream streamUser()  {
+    String uid = FirebaseAuth.instance.currentUser!.uid;
+    var snapshot = FirebaseFirestore.instance
+        .collection('users')
+        .doc(uid)
+        .snapshots();
+    return snapshot;
+  }
+
   //get current user boards in workspace
   static Future getBoardList(String workspaceID) async {
     String uid = FirebaseAuth.instance.currentUser!.uid;

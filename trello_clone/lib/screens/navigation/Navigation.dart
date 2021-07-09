@@ -7,7 +7,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:trello_clone/models/user.dart';
 import 'package:trello_clone/route_path.dart';
-import 'package:trello_clone/services/database.dart';
 import 'package:trello_clone/widgets/reuse_widget/avatar.dart';
 import 'package:trello_clone/widgets/reuse_widget/custom_list_tile.dart';
 
@@ -44,10 +43,7 @@ class AccountInfo extends StatelessWidget {
               children: <Widget>[
                 Align(
                   alignment: Alignment.centerLeft,
-                  child: Text(user.userName,
-                      textAlign: TextAlign.left,
-                      style:
-                          TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+                  child: Text(user.userName, textAlign: TextAlign.left, style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
                 ),
                 Align(
                   alignment: Alignment.centerLeft,
@@ -81,48 +77,41 @@ class NavigationMain extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    changeNameController.value = TextEditingValue(text: 'Old name');
     FirebaseAuth auth = FirebaseAuth.instance;
-
+    String uid = auth.currentUser!.uid;
+    var curUser = FirebaseFirestore.instance.collection('users').doc(uid).snapshots();
     signOut() async {
       await auth.signOut();
     }
-
-    ///TODO: get username
-    if (hasData) {}
-    return FutureBuilder(
-        future: DatabaseService.getUserWorkspaceList(),
-        builder: (BuildContext context, AsyncSnapshot snapshot) {
-          if (snapshot.hasData) {
-            hasData = true;
-          } else {
-            hasData = false;
-            return Container(
-                alignment: FractionalOffset.center,
-                child: CircularProgressIndicator());
-          }
-          return Column(
-            children: <Widget>[
-              CustomListTile(Icons.dashboard, "Bảng", () => {}),
-              Divider(
-                thickness: 2,
+    return Column(
+      children: <Widget>[
+        CustomListTile(Icons.dashboard, "Bảng", () => {}),
+        Divider(
+          thickness: 2,
+        ),
+        CustomListTile(
+          Icons.title,
+          "Sửa tên hiển thị",
+          () => showDialog<String>(
+            context: context,
+            builder: (BuildContext context) => AlertDialog(
+              title: const Text(
+                'Sửa tên hiển thị',
+                style: TextStyle(fontWeight: FontWeight.bold),
               ),
-              CustomListTile(
-                Icons.title,
-                "Sửa tên hiển thị",
-                () => showDialog<String>(
-                  context: context,
-                  builder: (BuildContext context) => AlertDialog(
-                    title: const Text(
-                      'Sửa tên hiển thị',
-                      style: TextStyle(fontWeight: FontWeight.bold),
-                    ),
-                    content: Container(
-                      width: MediaQuery.of(context).size.width * 0.8,
-                      child: Column(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          TextField(
+              content: Container(
+                width: MediaQuery.of(context).size.width * 0.8,
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    StreamBuilder<DocumentSnapshot>(
+                        stream: curUser,
+                        builder: (context, AsyncSnapshot<DocumentSnapshot> snapshot) {
+                          if (snapshot.connectionState == ConnectionState.active) {
+                            // get sections from the document
+                            changeNameController.text = snapshot.data!['profileName'];
+                          }
+                          return TextField(
                             controller: changeNameController,
                             decoration: InputDecoration(
                               alignLabelWithHint: true,
@@ -132,125 +121,122 @@ class NavigationMain extends StatelessWidget {
                               ),
                               labelText: "Tên hiển thị",
                             ),
+                          );
+                        }),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.end,
+                      children: [
+                        TextButton(
+                          onPressed: () {
+                            Navigator.of(context).pop();
+                          },
+                          child: Text(
+                            "HỦY",
+                            style: TextStyle(fontWeight: FontWeight.bold),
                           ),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.end,
-                            children: [
-                              TextButton(
-                                onPressed: () {
-                                  Navigator.of(context).pop();
-                                },
-                                child: Text(
-                                  "HỦY",
-                                  style: TextStyle(fontWeight: FontWeight.bold),
-                                ),
-                              ),
-                              TextButton(
-                                onPressed: () {
-                                  ///TODO: Change username
-                                  Navigator.of(context).pop();
-                                },
-                                child: Text("SỬA"),
-                              ),
-                            ],
-                          )
-                        ],
-                      ),
-                    ),
-                  ),
+                        ),
+                        TextButton(
+                          onPressed: () {
+                            ///Change username
+                            FirebaseFirestore.instance.collection('users').doc(uid).update({'profileName': changeNameController.text});
+                            Navigator.of(context).pop();
+                          },
+                          child: Text("SỬA"),
+                        ),
+                      ],
+                    )
+                  ],
                 ),
               ),
-              CustomListTile(
-                Icons.shield,
-                "Đổi mật khẩu",
-                () => showDialog<String>(
-                  context: context,
-                  builder: (BuildContext context) => AlertDialog(
-                    title: const Text(
-                      'Đổi mật khẩu',
-                      style: TextStyle(fontWeight: FontWeight.bold),
-                    ),
-                    content: SingleChildScrollView(
-                      child: Container(
-                        width: MediaQuery.of(context).size.width * 0.8,
-                        child: Column(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            TextField(
-                              controller: oldPasswordController,
-                              obscureText: true,
-                              decoration: InputDecoration(
-                                alignLabelWithHint: true,
-                                labelStyle: TextStyle(
-                                  fontSize: 22.0,
-                                  height: 0.9,
-                                ),
-                                labelText: "Mật khẩu cũ",
-                              ),
-                            ),
-                            TextField(
-                              controller: newPasswordcontroller,
-                              obscureText: true,
-                              decoration: InputDecoration(
-                                alignLabelWithHint: true,
-                                labelStyle: TextStyle(
-                                  fontSize: 22.0,
-                                  height: 0.9,
-                                ),
-                                labelText: "Mật khẩu mới",
-                              ),
-                            ),
-                            TextField(
-                              controller: confirmPasswordController,
-                              obscureText: true,
-                              decoration: InputDecoration(
-                                alignLabelWithHint: true,
-                                labelStyle: TextStyle(
-                                  fontSize: 22.0,
-                                  height: 0.9,
-                                ),
-                                labelText: "Xác nhận mật khẩu mới",
-                              ),
-                            ),
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.end,
-                              children: [
-                                TextButton(
-                                  onPressed: () {
-                                    Navigator.of(context).pop();
-                                  },
-                                  child: Text(
-                                    "HỦY",
-                                    style:
-                                        TextStyle(fontWeight: FontWeight.bold),
-                                  ),
-                                ),
-                                TextButton(
-                                  onPressed: () {
-                                    ///TODO: Change user's password
-                                    Navigator.of(context).pop();
-                                  },
-                                  child: Text("ĐỔI"),
-                                ),
-                              ],
-                            )
-                          ],
+            ),
+          ),
+        ),
+        CustomListTile(
+          Icons.shield,
+          "Đổi mật khẩu",
+          () => showDialog<String>(
+            context: context,
+            builder: (BuildContext context) => AlertDialog(
+              title: const Text(
+                'Đổi mật khẩu',
+                style: TextStyle(fontWeight: FontWeight.bold),
+              ),
+              content: SingleChildScrollView(
+                child: Container(
+                  width: MediaQuery.of(context).size.width * 0.8,
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      TextField(
+                        controller: oldPasswordController,
+                        obscureText: true,
+                        decoration: InputDecoration(
+                          alignLabelWithHint: true,
+                          labelStyle: TextStyle(
+                            fontSize: 22.0,
+                            height: 0.9,
+                          ),
+                          labelText: "Mật khẩu cũ",
                         ),
                       ),
-                    ),
+                      TextField(
+                        controller: newPasswordcontroller,
+                        obscureText: true,
+                        decoration: InputDecoration(
+                          alignLabelWithHint: true,
+                          labelStyle: TextStyle(
+                            fontSize: 22.0,
+                            height: 0.9,
+                          ),
+                          labelText: "Mật khẩu mới",
+                        ),
+                      ),
+                      TextField(
+                        controller: confirmPasswordController,
+                        obscureText: true,
+                        decoration: InputDecoration(
+                          alignLabelWithHint: true,
+                          labelStyle: TextStyle(
+                            fontSize: 22.0,
+                            height: 0.9,
+                          ),
+                          labelText: "Xác nhận mật khẩu mới",
+                        ),
+                      ),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.end,
+                        children: [
+                          TextButton(
+                            onPressed: () {
+                              Navigator.of(context).pop();
+                            },
+                            child: Text(
+                              "HỦY",
+                              style: TextStyle(fontWeight: FontWeight.bold),
+                            ),
+                          ),
+                          TextButton(
+                            onPressed: () {
+                              ///TODO: Change user's password
+                              Navigator.of(context).pop();
+                            },
+                            child: Text("ĐỔI"),
+                          ),
+                        ],
+                      )
+                    ],
                   ),
                 ),
               ),
-              CustomListTile(
-                  Icons.logout,
-                  "Đăng xuất",
-                  () {
-                    signOut();
-                    Navigator.of(context).pushNamed(LOGIN);
-                  }),
-            ],
-          );
-        });
+            ),
+          ),
+        ),
+        CustomListTile(Icons.logout, "Đăng xuất", () {
+          signOut();
+          Navigator.of(context).pushNamed(LOGIN);
+        }),
+      ],
+    );
   }
 }
 
@@ -259,19 +245,19 @@ class NavigationAccount extends StatelessWidget {
 
   List<Users> users = [
     Users(
-        userID: "12345",
-        userName: "name1",
-        profileName: "Name 1",
-        email: '123456@gmail.com',
-        avatar: 'assets/images/BlueBG.png',
-        ),
+      userID: "12345",
+      userName: "name1",
+      profileName: "Name 1",
+      email: '123456@gmail.com',
+      avatar: 'assets/images/BlueBG.png',
+    ),
     Users(
-        userID: "12345",
-        userName: "name2",
-        profileName: "Name 2",
-        email: '123456@gmail.com',
-        avatar: 'assets/images/BlueBG.png',
-        ),
+      userID: "12345",
+      userName: "name2",
+      profileName: "Name 2",
+      email: '123456@gmail.com',
+      avatar: 'assets/images/BlueBG.png',
+    ),
   ];
 
   @override
@@ -339,66 +325,100 @@ class _NavigationState extends State<Navigation> {
 
   @override
   Widget build(BuildContext context) {
-    if (hasData) {}
+    FirebaseAuth auth = FirebaseAuth.instance;
+    String uid = auth.currentUser!.uid;
+    var curUser = FirebaseFirestore.instance.collection('users').doc(uid).snapshots();
     return Drawer(
       child: Column(
         children: <Widget>[
-          FutureBuilder(
-              future: DatabaseService.getCurrentUserData(),
-              builder: (BuildContext context, AsyncSnapshot snapshot) {
-                if (snapshot.hasData) {
-                  hasData = true;
-                } else
-                  return Container(
-                      alignment: FractionalOffset.center,
-                      child: CircularProgressIndicator());
-                Users currentUser = Users.fromDocument(snapshot.data);
-                return DrawerHeader(
-                  decoration: BoxDecoration(
-                    color: Colors.blue,
-                  ),
-                  child: Padding(
-                    padding: const EdgeInsets.fromLTRB(0, 4.0, 0, 0),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        avatar(70, 70, Colors.grey,
-                            Image.asset(currentUser.avatar)),
-                        SizedBox(
-                          height: 13,
-                        ),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(currentUser.profileName.toString(),
+          DrawerHeader(
+            decoration: BoxDecoration(
+              color: Colors.blue,
+            ),
+            child: Padding(
+              padding: const EdgeInsets.fromLTRB(0, 4.0, 0, 0),
+              child: StreamBuilder<DocumentSnapshot>(
+                  stream: curUser,
+                  builder: (context, AsyncSnapshot<DocumentSnapshot> snapshot) {
+                    if (snapshot.connectionState == ConnectionState.active) {
+                      // get sections from the document
+                      //changeNameController.text = snapshot.data!['profileName'];
+                      return Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          avatar(70, 70, Colors.grey, Image.network(snapshot.data!['avatar'])),
+                          SizedBox(
+                            height: 13,
+                          ),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(snapshot.data!['profileName'],
+                                      textAlign: TextAlign.left, style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.white)),
+                                  SizedBox(
+                                    height: 6,
+                                  ),
+                                  Text(
+                                    '@' + snapshot.data!['userName'],
                                     textAlign: TextAlign.left,
-                                    style: TextStyle(
-                                        fontSize: 16,
-                                        fontWeight: FontWeight.bold,
-                                        color: Colors.white)),
-                                SizedBox(
-                                  height: 6,
-                                ),
-                                Text(
-                                  '@' + currentUser.userName.toString(),
-                                  textAlign: TextAlign.left,
-                                  style: TextStyle(
-                                      fontSize: 16,
-                                      fontStyle: FontStyle.italic,
-                                      color: Colors.white),
-                                ),
-                              ],
-                            ),
-                            AnimatedIconButton(
+                                    style: TextStyle(fontSize: 16, fontStyle: FontStyle.italic, color: Colors.white),
+                                  ),
+                                ],
+                              ),
+                              AnimatedIconButton(
+                                  size: 25,
+                                  onPressed: () => {
+                                        setState(() {
+                                          isMain = !isMain;
+                                        })
+                                      },
+                                  icons: [
+                                    AnimatedIconItem(
+                                      icon: Icon(Icons.keyboard_arrow_down),
+                                    ),
+                                    AnimatedIconItem(
+                                      icon: Icon(Icons.keyboard_arrow_up),
+                                    ),
+                                  ])
+                            ],
+                          ),
+                        ],
+                      );
+                    } else
+                      return Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          avatar(70, 70, Colors.grey, Image.asset("asset/images/BlueBG.png")),
+                          SizedBox(
+                            height: 13,
+                          ),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text("", textAlign: TextAlign.left, style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.white)),
+                                  SizedBox(
+                                    height: 6,
+                                  ),
+                                  Text(
+                                    '@',
+                                    textAlign: TextAlign.left,
+                                    style: TextStyle(fontSize: 16, fontStyle: FontStyle.italic, color: Colors.white),
+                                  ),
+                                ],
+                              ),
+                              AnimatedIconButton(
                                 size: 25,
                                 onPressed: () => {
-                                      setState(() {
-                                        isMain = !isMain;
-                                      })
-                                    },
+                                  setState(() {
+                                    isMain = !isMain;
+                                  })
+                                },
                                 icons: [
                                   AnimatedIconItem(
                                     icon: Icon(Icons.keyboard_arrow_down),
@@ -406,14 +426,15 @@ class _NavigationState extends State<Navigation> {
                                   AnimatedIconItem(
                                     icon: Icon(Icons.keyboard_arrow_up),
                                   ),
-                                ])
-                          ],
-                        ),
-                      ],
-                    ),
-                  ),
-                );
-              }),
+                                ],
+                              )
+                            ],
+                          ),
+                        ],
+                      );
+                  }),
+            ),
+          ),
           isMain ? NavigationMain() : NavigationAccount(),
         ],
       ),

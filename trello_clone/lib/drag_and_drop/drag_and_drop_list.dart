@@ -177,14 +177,14 @@ class DragAndDropList implements DragAndDropListInterface {
               mainAxisSize: MainAxisSize.max,
               children: <Widget>[
                 contentsWhenEmpty ??
-                    SizedBox(height: 1,),
+                    SizedBox(height: 0,),
                 DragAndDropItemTarget(
                   parent: this,
                   parameters: parameters,
                   onReorderOrAdd: parameters.onItemDropOnLastTarget!,
                   child: lastTarget ??
                       Container(
-                        height: 1,//parameters.lastItemTargetHeight,
+                        height: 20,//parameters.lastItemTargetHeight,
                       ),
                 ),
               ],
