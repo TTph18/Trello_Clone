@@ -7,6 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:trello_clone/models/user.dart';
 import 'package:trello_clone/route_path.dart';
+import 'package:trello_clone/services/authentication_service.dart';
 import 'package:trello_clone/widgets/reuse_widget/avatar.dart';
 import 'package:trello_clone/widgets/reuse_widget/custom_list_tile.dart';
 
@@ -71,7 +72,7 @@ class NavigationMainState extends State<NavigationMain> {
   TextEditingController changeNameController = TextEditingController();
   bool _validate = false;
   TextEditingController oldPasswordController = TextEditingController();
-  TextEditingController newPasswordcontroller = TextEditingController();
+  TextEditingController newPasswordController = TextEditingController();
   TextEditingController confirmPasswordController = TextEditingController();
   List<String> grNames = ["Nhóm 1", "Nhóm 2"];
   late bool hasData = false;
@@ -89,6 +90,9 @@ class NavigationMainState extends State<NavigationMain> {
       await auth.signOut();
     }
 
+    String oldPasswordValidation = "";
+    String newPasswordValidation = "";
+    String confirmPasswordValidation = "";
     return Column(
       children: <Widget>[
         CustomListTile(Icons.dashboard, "Bảng", () => {}),
@@ -178,78 +182,148 @@ class NavigationMainState extends State<NavigationMain> {
           "Đổi mật khẩu",
           () => showDialog<String>(
             context: context,
-            builder: (BuildContext context) => AlertDialog(
-              title: const Text(
-                'Đổi mật khẩu',
-                style: TextStyle(fontWeight: FontWeight.bold),
-              ),
-              content: SingleChildScrollView(
-                child: Container(
-                  width: MediaQuery.of(context).size.width * 0.8,
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      TextField(
-                        controller: oldPasswordController,
-                        obscureText: true,
-                        decoration: InputDecoration(
-                          alignLabelWithHint: true,
-                          labelStyle: TextStyle(
-                            fontSize: 22.0,
-                            height: 0.9,
-                          ),
-                          labelText: "Mật khẩu cũ",
-                        ),
-                      ),
-                      TextField(
-                        controller: newPasswordcontroller,
-                        obscureText: true,
-                        decoration: InputDecoration(
-                          alignLabelWithHint: true,
-                          labelStyle: TextStyle(
-                            fontSize: 22.0,
-                            height: 0.9,
-                          ),
-                          labelText: "Mật khẩu mới",
-                        ),
-                      ),
-                      TextField(
-                        controller: confirmPasswordController,
-                        obscureText: true,
-                        decoration: InputDecoration(
-                          alignLabelWithHint: true,
-                          labelStyle: TextStyle(
-                            fontSize: 22.0,
-                            height: 0.9,
-                          ),
-                          labelText: "Xác nhận mật khẩu mới",
-                        ),
-                      ),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.end,
+            builder: (BuildContext context) => StatefulBuilder(
+              builder: (context, setState) {
+                return AlertDialog(
+                  title: const Text(
+                    'Đổi mật khẩu',
+                    style: TextStyle(fontWeight: FontWeight.bold),
+                  ),
+                  content: SingleChildScrollView(
+                    child: Container(
+                      width: MediaQuery.of(context).size.width * 0.8,
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
                         children: [
-                          TextButton(
-                            onPressed: () {
-                              Navigator.of(context).pop();
-                            },
-                            child: Text(
-                              "HỦY",
-                              style: TextStyle(fontWeight: FontWeight.bold),
+                          TextField(
+                            controller: oldPasswordController,
+                            obscureText: true,
+                            decoration: InputDecoration(
+                              alignLabelWithHint: true,
+                              labelStyle: TextStyle(
+                                fontSize: 22.0,
+                                height: 0.9,
+                              ),
+                              labelText: "Mật khẩu cũ",
+                              errorText: oldPasswordValidation != "" ? oldPasswordValidation : null,
                             ),
                           ),
-                          TextButton(
-                            onPressed: () {
-                              ///TODO: Change user's password
-                              Navigator.of(context).pop();
-                            },
-                            child: Text("ĐỔI"),
+                          TextField(
+                            controller: newPasswordController,
+                            obscureText: true,
+                            decoration: InputDecoration(
+                              alignLabelWithHint: true,
+                              labelStyle: TextStyle(
+                                fontSize: 22.0,
+                                height: 0.9,
+                              ),
+                              labelText: "Mật khẩu mới",
+                              errorText: newPasswordValidation != "" ? newPasswordValidation : null,
+                            ),
                           ),
+                          TextField(
+                            controller: confirmPasswordController,
+                            obscureText: true,
+                            decoration: InputDecoration(
+                              alignLabelWithHint: true,
+                              labelStyle: TextStyle(
+                                fontSize: 22.0,
+                                height: 0.9,
+                              ),
+                              labelText: "Xác nhận mật khẩu mới",
+                              errorText: confirmPasswordValidation != "" ? confirmPasswordValidation : null,
+                            ),
+                          ),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.end,
+                            children: [
+                              TextButton(
+                                onPressed: () {
+                                  newPasswordValidation = "";
+                                  oldPasswordValidation = "";
+                                  confirmPasswordValidation = "";
+                                  newPasswordController.text = "";
+                                  oldPasswordController.text = "";
+                                  confirmPasswordController.text = "";
+                                  Navigator.of(context).pop();
+                                },
+                                child: Text(
+                                  "HỦY",
+                                  style: TextStyle(fontWeight: FontWeight.bold),
+                                ),
+                              ),
+                              StreamBuilder<DocumentSnapshot>(
+                                stream: curUser,
+                                builder: (context, snapshot) {
+                                  return TextButton(
+                                    onPressed: () async {
+                                      if (newPasswordController.text.length < 6) {
+                                        setState(() {
+                                          newPasswordValidation = "Mật khẩu phải nhiều hơn 6 ký tự";
+                                        });
+                                        return;
+                                      }
+                                      else
+                                        {
+                                          setState(() {
+                                            newPasswordValidation = "";
+                                          });
+                                        }
+
+                                      if (newPasswordController.text != confirmPasswordController.text) {
+                                        setState(() {
+                                          confirmPasswordValidation = "Mật khẩu xác nhận không đúng";
+                                        });
+                                        return;
+                                      }
+                                      else
+                                      {
+                                        setState(() {
+                                          confirmPasswordValidation = "";
+                                        });
+                                      }
+
+                                      String? shouldNavigate = await signIn(snapshot.data!['email'], oldPasswordController.text);
+                                      if (shouldNavigate != "Signed In") {
+                                        setState(() {
+                                          oldPasswordValidation = "Mật khẩu không đúng";
+                                        });
+                                        return;
+                                      }
+                                      else
+                                      {
+                                        setState(() {
+                                          oldPasswordValidation = "";
+                                        });
+                                      }
+
+                                      ///Change user's password
+                                      //Create an instance of the current user.
+                                      var user = await FirebaseAuth.instance.currentUser!;
+                                      print(user);
+                                      //Pass in the password to updatePassword.
+                                      user.updatePassword(newPasswordController.text).then((_){
+                                        print("Successfully changed password");
+                                      }).catchError((error){
+                                        print("Password can't be changed" + error.toString());
+                                      });
+                                      Navigator.of(context).pop();
+                                      newPasswordController.text = "";
+                                      oldPasswordController.text = "";
+                                      confirmPasswordController.text = "";
+                                    },
+                                    child: Text("ĐỔI"),
+                                  );
+                                },
+                              ),
+                            ],
+                          )
                         ],
-                      )
-                    ],
+                      ),
+                    ),
                   ),
-                ),
-              ),
+                );
+              },
             ),
           ),
         ),
@@ -350,6 +424,7 @@ class _NavigationState extends State<Navigation> {
     FirebaseAuth auth = FirebaseAuth.instance;
     String uid = auth.currentUser!.uid;
     var curUser = FirebaseFirestore.instance.collection('users').doc(uid).snapshots();
+    print(uid);
     return Drawer(
       child: Column(
         children: <Widget>[
@@ -413,7 +488,7 @@ class _NavigationState extends State<Navigation> {
                       return Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          avatar(70, 70, Colors.grey, Image.asset("asset/images/BlueBG.png")),
+                          avatar(70, 70, Colors.grey, Image.asset("assets/images/BlueBG.png")),
                           SizedBox(
                             height: 13,
                           ),
