@@ -161,14 +161,17 @@ class DatabaseService {
     return snapshot.docs;
   }
 
-  static Stream streamLists(String boardID) {
-    var ref = FirebaseFirestore.instance
-        .collection('boards')
-        .doc(boardID)
-        .collection('lists')
-        .orderBy("position")
-        .snapshots();
-    return ref;
+  static Stream? streamLists(String boardID) {
+    if ( boardID.isNotEmpty){
+      var ref = FirebaseFirestore.instance
+          .collection('boards')
+          .doc(boardID)
+          .collection('lists')
+          .orderBy("position")
+          .snapshots();
+      return ref;
+    }
+    else return null;
   }
 
   // rename lists in board

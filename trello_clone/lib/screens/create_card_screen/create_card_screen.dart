@@ -388,8 +388,8 @@ class CreateCardScreenState extends State<CreateCardScreen> {
             ///Card list selection
             Padding(
               padding: const EdgeInsets.only(left: 20, right: 20, top: 20),
-              child: FutureBuilder(
-                  future: DatabaseService.getlistList(selectedBoard.boardID),
+              child: StreamBuilder(
+                  stream: DatabaseService.streamLists(selectedBoard.boardID),
                   builder: (BuildContext context, AsyncSnapshot snapshot) {
                     if (!snapshot.hasData) {
                       return DropdownButtonFormField(
@@ -411,7 +411,7 @@ class CreateCardScreenState extends State<CreateCardScreen> {
                       );
                     } else {
                       listList.clear();
-                      for (var item in snapshot.data) {
+                      for (var item in snapshot.data.docs) {
                         Lists _list = Lists.fromDocument(item);
                         listList.add(_list);
                       }
