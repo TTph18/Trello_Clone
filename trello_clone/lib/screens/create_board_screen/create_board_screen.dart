@@ -84,17 +84,20 @@ class CreateBoardScreenState extends State<CreateBoardScreen> {
                   return null;
                 },
               ),
-              FutureBuilder(
-                  future: Future.wait([futureGroupList]),
+              StreamBuilder(
+                  stream: DatabaseService.streamWorkspaces(),
                   builder: (BuildContext context, AsyncSnapshot snapshot) {
                     if (!snapshot.hasData) {
                       return Container(
                           alignment: FractionalOffset.center,
                           child: CircularProgressIndicator());
                     }
-                    else
-                    {
-                      groupList = snapshot.data[0];
+                    else {
+                      groupList.clear();
+                      for(var item in snapshot.data.docs){
+                        Workspaces _wp = Workspaces.fromDocument(item);
+                        groupList.add(_wp);
+                      }
                     }
 
                     return DropdownButtonFormField<Workspaces>(
