@@ -65,19 +65,15 @@ class MoveCardScreenState extends State<MoveCardScreen> {
             SizedBox(
               width: MediaQuery.of(context).size.width * 0.9,
               child: ButtonTheme(
-                child: FutureBuilder(
-                    future: DatabaseService.getUserWorkspaceList(),
+                child: StreamBuilder(
+                    stream: DatabaseService.streamWorkspaces(),
                     builder: (BuildContext context, AsyncSnapshot snapshot) {
                       if (!snapshot.hasData) {
                         return Container(
                             alignment: FractionalOffset.center,
                             child: CircularProgressIndicator());
                       } else {
-                        group.clear();
-                        for (var item in snapshot.data) {
-                          Workspaces _wp = Workspaces.fromDocument(item);
-                          group.add(_wp);
-                        }
+                        group = snapshot.data;
                       }
                       return FutureBuilder(
                           future: DatabaseService.getAllBoards(),

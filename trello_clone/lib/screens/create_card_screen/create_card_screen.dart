@@ -238,11 +238,7 @@ class CreateCardScreenState extends State<CreateCardScreen> {
                             alignment: FractionalOffset.center,
                             child: CircularProgressIndicator());
                       } else {
-                        workspaceList.clear();
-                        for (var item in snapshot.data.docs) {
-                          Workspaces _wp = Workspaces.fromDocument(item);
-                          workspaceList.add(_wp);
-                        }
+                        workspaceList = snapshot.data;
                       }
                       return FutureBuilder(
                           future: DatabaseService.getAllBoards(),

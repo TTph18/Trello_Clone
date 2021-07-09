@@ -269,10 +269,10 @@ class _MainScreenState extends State<MainScreen> {
                     child: ListView.builder(
                       physics: ClampingScrollPhysics(),
                       shrinkWrap: true,
-                      itemCount: snapshot.data.docs.length,
+                      itemCount: snapshot.data.length,
                       itemBuilder: (BuildContext context, int index) {
                         Workspaces _wp =
-                            Workspaces.fromDocument(snapshot.data.docs[index]);
+                            snapshot.data[index];
                         return GroupInfo(_wp);
                       },
                     ),
