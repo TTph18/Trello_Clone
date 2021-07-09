@@ -1,6 +1,7 @@
 import 'dart:ui';
 
 import 'package:animate_icons/animate_icons.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/painting.dart';
@@ -425,6 +426,8 @@ class BoardScreenState extends State<BoardScreen> {
   TextEditingController changeListNameController = TextEditingController();
   late bool isTapNewList = false;
   TextEditingController newListController = TextEditingController();
+  String uid = FirebaseAuth.instance.currentUser!.uid;
+
 
   late List<ScrollController> controllers = [];
 
@@ -594,7 +597,7 @@ class BoardScreenState extends State<BoardScreen> {
                               .indexWhere((element) => element == true);
                           if (index != -1) {
                             if (newCardController.text != "") {
-                              ///TODO: Add new card to list [index]
+                              DatabaseService.addCard(boards.boardID, listList[index].listID, newCardController.text, "", uid, [], "", "", "", "");
                               setState(
                                 () {
                                   Route route = MaterialPageRoute(
