@@ -62,9 +62,14 @@ class AccountInfo extends StatelessWidget {
   }
 }
 
-class NavigationMain extends StatelessWidget {
-  TextEditingController changeNameController = TextEditingController();
+class NavigationMain extends StatefulWidget {
+  @override
+  State<StatefulWidget> createState() => NavigationMainState();
+}
 
+class NavigationMainState extends State<NavigationMain> {
+  TextEditingController changeNameController = TextEditingController();
+  bool _validate = false;
   TextEditingController oldPasswordController = TextEditingController();
   TextEditingController newPasswordcontroller = TextEditingController();
   TextEditingController confirmPasswordController = TextEditingController();
@@ -83,6 +88,7 @@ class NavigationMain extends StatelessWidget {
     signOut() async {
       await auth.signOut();
     }
+
     return Column(
       children: <Widget>[
         CustomListTile(Icons.dashboard, "Bảng", () => {}),
@@ -94,60 +100,76 @@ class NavigationMain extends StatelessWidget {
           "Sửa tên hiển thị",
           () => showDialog<String>(
             context: context,
-            builder: (BuildContext context) => AlertDialog(
-              title: const Text(
-                'Sửa tên hiển thị',
-                style: TextStyle(fontWeight: FontWeight.bold),
-              ),
-              content: Container(
-                width: MediaQuery.of(context).size.width * 0.8,
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    StreamBuilder<DocumentSnapshot>(
-                        stream: curUser,
-                        builder: (context, AsyncSnapshot<DocumentSnapshot> snapshot) {
-                          if (snapshot.connectionState == ConnectionState.active) {
-                            // get sections from the document
-                            changeNameController.text = snapshot.data!['profileName'];
-                          }
-                          return TextField(
-                            controller: changeNameController,
-                            decoration: InputDecoration(
-                              alignLabelWithHint: true,
-                              labelStyle: TextStyle(
-                                fontSize: 22.0,
-                                height: 0.9,
-                              ),
-                              labelText: "Tên hiển thị",
-                            ),
-                          );
-                        }),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.end,
+            builder: (BuildContext context) => StatefulBuilder(
+              builder: (context, setState) {
+                return AlertDialog(
+                  title: const Text(
+                    'Sửa tên hiển thị',
+                    style: TextStyle(fontWeight: FontWeight.bold),
+                  ),
+                  content: Container(
+                    width: MediaQuery.of(context).size.width * 0.8,
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
                       children: [
-                        TextButton(
-                          onPressed: () {
-                            Navigator.of(context).pop();
-                          },
-                          child: Text(
-                            "HỦY",
-                            style: TextStyle(fontWeight: FontWeight.bold),
-                          ),
-                        ),
-                        TextButton(
-                          onPressed: () {
-                            ///Change username
-                            FirebaseFirestore.instance.collection('users').doc(uid).update({'profileName': changeNameController.text});
-                            Navigator.of(context).pop();
-                          },
-                          child: Text("SỬA"),
-                        ),
+                        StreamBuilder<DocumentSnapshot>(
+                            stream: curUser,
+                            builder: (context, AsyncSnapshot<DocumentSnapshot> snapshot) {
+                              if (snapshot.connectionState == ConnectionState.active) {
+                                // get sections from the document
+                                changeNameController.text = _validate ? "" : snapshot.data!['profileName'];
+                              }
+                              return TextField(
+                                controller: changeNameController,
+                                decoration: InputDecoration(
+                                  alignLabelWithHint: true,
+                                  labelStyle: TextStyle(
+                                    fontSize: 22.0,
+                                    height: 0.9,
+                                  ),
+                                  labelText: "Tên hiển thị",
+                                  errorText: _validate ? 'Tên hiển thị không được rỗng' : null,
+                                ),
+                              );
+                            }),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.end,
+                          children: [
+                            TextButton(
+                              onPressed: () {
+                                setState(() {
+                                  _validate = false;
+                                });
+                                Navigator.of(context).pop();
+                              },
+                              child: Text(
+                                "HỦY",
+                                style: TextStyle(fontWeight: FontWeight.bold),
+                              ),
+                            ),
+                            TextButton(
+                              onPressed: () {
+                                setState(() {
+                                  if (changeNameController.text == "") {
+                                    _validate = true;
+                                  } else
+                                    _validate = false;
+                                });
+                                if (_validate) return;
+
+                                ///Change username
+                                FirebaseFirestore.instance.collection('users').doc(uid).update({'profileName': changeNameController.text});
+                                Navigator.of(context).pop();
+                              },
+                              child: Text("SỬA"),
+                            ),
+                          ],
+                        )
                       ],
-                    )
-                  ],
-                ),
-              ),
+                    ),
+                  ),
+                );
+              },
             ),
           ),
         ),
