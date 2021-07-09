@@ -221,7 +221,7 @@ class DatabaseService {
             .update({'listNumber': listNumber - 1});
       });
     });
-    FirebaseFirestore.instance
+    await FirebaseFirestore.instance
         .collection('boards')
         .doc(boardID)
         .collection('lists')
@@ -533,10 +533,6 @@ class DatabaseService {
         .collection('workspaces')
         .doc(docRef.id)
         .update({"workspaceID": docRef.id});
-    //update workspaceID in user
-    await FirebaseFirestore.instance.collection('users').doc(uid).update({
-      "workspaceList": FieldValue.arrayUnion([docRef.id])
-    });
   }
 
   //get a wp data
@@ -559,21 +555,6 @@ class DatabaseService {
 
   //delete a workspace
   static Future<void> deleteWorkspace(String workspaceID) async {
-    String uid = FirebaseAuth.instance.currentUser!.uid;
-    //delete workspace from user
-    List<String> workspaceList;
-    await FirebaseFirestore.instance
-        .collection('users')
-        .doc(uid)
-        .get()
-        .then((value) {
-      workspaceList = value['workspaceList'].cast<String>();
-      workspaceList.remove(workspaceID);
-      FirebaseFirestore.instance
-          .collection('users')
-          .doc(uid)
-          .update({"workspaceList": workspaceList});
-    });
     //delete workspace
     await FirebaseFirestore.instance
         .collection('workspaces')

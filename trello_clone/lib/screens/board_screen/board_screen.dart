@@ -587,8 +587,6 @@ class BoardScreenState extends State<BoardScreen> {
                                 () {
                                   futureLists = getLists();
                                   listName.add(newListController.text);
-
-                                  ///TODO: Cant update widget
                                   isTapNewList = false;
                                   newListController.text = "";
                                 },
@@ -602,10 +600,6 @@ class BoardScreenState extends State<BoardScreen> {
                               DatabaseService.addCard(boards.boardID, listList[index].listID, newCardController.text, "", uid, [], "", "", "", "");
                               setState(
                                 () {
-                                  Route route = MaterialPageRoute(
-                                      builder: (context) =>
-                                          BoardScreen(boards, true));
-                                  Navigator.push(context, route);
                                   isTapNewCard[index] = false;
                                   newListController.text = "";
                                 },
@@ -615,15 +609,13 @@ class BoardScreenState extends State<BoardScreen> {
                           index = isTapChangeListName
                               .indexWhere((element) => element == true);
                           if (index != -1) {
-                            if (newCardController.text != "") {
-                              //TODO: Rename list - ERROR
+                            if (changeListNameController.text != "") {
                               DatabaseService.renameList(
                                   boards.boardID,
-                                  _lists[index].list.listID,
-                                  newCardController.text);
+                                  listList[index].listID,
+                                  changeListNameController.text);
                               setState(
                                 () {
-                                  ///TODO: Reload list name [index]
                                   isTapChangeListName[index] = false;
                                 },
                               );
@@ -845,12 +837,13 @@ class BoardScreenState extends State<BoardScreen> {
                               duration: const Duration(milliseconds: 300),
                             );
                           } else if (value == 2) {
-                            Route route = MaterialPageRoute(
-
-                                ///TODO: Cant delete list in old board
-                                builder: (context) =>
-                                    MoveBoardScreen(boards, innerList.list));
-                            Navigator.push(context, route);
+                            DatabaseService.deleteList(boards.boardID, innerList.list.listID);
+                            setState(() {
+                              futureLists = getLists();
+                              Route route = MaterialPageRoute(builder: (context) =>
+                                  MoveBoardScreen(boards, innerList.list));
+                              Navigator.push(context, route);
+                            });
                           } else {
                             showDialog<String>(
                               context: context,

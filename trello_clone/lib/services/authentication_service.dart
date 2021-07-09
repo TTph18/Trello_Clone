@@ -11,6 +11,10 @@ Future<String?> signIn(String email, String password) async {
       print(e.toString());
       return "Tài khoản không tồn tại";
     }
+    if (e.code == 'wrong-password' ) {
+      print(e.toString());
+      return "Mật khẩu sai";
+    }
   } catch (e) {
     print(e.toString());
     return e.toString();

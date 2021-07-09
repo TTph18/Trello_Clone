@@ -357,6 +357,20 @@ class CardScreenState extends State<CardScreen> {
         .update({"dueTime": selectedEndTime.format(context)});
   }
 
+  _updateStatus() {
+    FirebaseFirestore.instance
+        .collection('cards')
+        .doc(card.cardID)
+        .update({"status": false});
+  }
+
+  _updateAsignedUser() {
+    FirebaseFirestore.instance
+        .collection('cards')
+        .doc(card.cardID)
+        .update({"description": descriptionTxtCtrl.text});
+  }
+
   @override
   void initState() {
     super.initState();
