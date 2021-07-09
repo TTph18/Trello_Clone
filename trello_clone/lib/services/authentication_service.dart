@@ -26,7 +26,6 @@ Future<void> signOut() async {
 }
 
 Future<String?> register(String email, String password, String userName, String profileName) async {
-
   try {
     await FirebaseAuth.instance
         .createUserWithEmailAndPassword(email: email, password: password)
