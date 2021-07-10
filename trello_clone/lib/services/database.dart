@@ -613,14 +613,14 @@ class DatabaseService {
     List<String> userList;
     //get old wp id
     await FirebaseFirestore.instance
-        .collection('boards')
+        .collection('workspaces')
         .doc(workspaceID)
         .get()
         .then((value) {
       userList = value['userList'].cast<String>();
       userList.remove(userID);
       FirebaseFirestore.instance
-          .collection('boards')
+          .collection('workspaces')
           .doc(workspaceID)
           .update({"userList": userList});
     });

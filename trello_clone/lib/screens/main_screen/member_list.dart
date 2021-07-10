@@ -8,9 +8,11 @@ import 'package:trello_clone/services/database.dart';
 import 'package:trello_clone/widgets/reuse_widget/avatar.dart';
 
 class MemberInfo extends StatelessWidget {
+  Function callback;
+
   Workspaces workspaces;
   Users user;
-  MemberInfo(this.user, this.workspaces);
+  MemberInfo(this.user, this.workspaces, this.callback);
   String uid = FirebaseAuth.instance.currentUser!.uid;
 
   @override
@@ -43,8 +45,9 @@ class MemberInfo extends StatelessWidget {
               IconButton(
                   onPressed: () {
                     DatabaseService.deleteUserInWorkspace(user.userID, workspaces.workspaceID);
+                    callback();
                   },
-                  icon: Icon(Icons.close, color: (uid != workspaces.createdBy || user.userID != workspaces.createdBy) ? Colors.transparent : Colors.black)),
+                  icon: Icon(Icons.close, color: (user.userID != workspaces.createdBy) ? Colors.black : Colors.transparent)),
             ],
           ),
         ],
@@ -237,7 +240,7 @@ class MemberListState extends State<MemberList> {
                     child: ListView.builder(
                       itemCount: WorkspaceUsers.length,
                       itemBuilder: (context, index) {
-                        return MemberInfo(WorkspaceUsers[index], workspaces);
+                        return MemberInfo(WorkspaceUsers[index], workspaces, refresh);
                       },
                     ),
                   ),
