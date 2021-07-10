@@ -738,26 +738,19 @@ class DatabaseService {
     FirebaseFirestore.instance.collection('cards')
         .doc(cardID)
         .collection('checklists')
-        .snapshots()
-        .map((list) =>
+        .snapshots();
+    return snapshot.map((list) =>
         list.docs.map((doc) => CheckLists.fromDocument(doc)).toList());
-    return snapshot;
   }
 
-  // get tasks
-  static Stream streamTasks(String checklistID, String cardID)  {
-    var snapshot =
-    FirebaseFirestore.instance.collection('cards')
+  // get checklists
+  static Future getCheckLists(String cardID) async {
+    var snapshot = FirebaseFirestore.instance.collection('cards')
         .doc(cardID)
         .collection('checklists')
-        .doc(checklistID)
-        .collection('tasks')
-        .snapshots()
-        .map((list) =>
-        list.docs.map((doc) => Tasks.fromDocument(doc)).toList());
+        .get();
     return snapshot;
   }
-
   // get lists card
   static Future getListCard(String boardID) async {
     var snapshot = await FirebaseFirestore.instance
@@ -849,7 +842,7 @@ class DatabaseService {
       'startDate': startDate,
       'dueDate': dueDate,
       'startTime': startTime,
-      'dueTime': dueTime
+      'dueTime': dueTime, 'checklistNumber' : 0
     });
     //add card uid to list
     FirebaseFirestore.instance
