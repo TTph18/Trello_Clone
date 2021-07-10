@@ -234,53 +234,53 @@ class DatabaseService {
   //move a list to other board
   static Future<void> moveListToABoard(
       String oldBoardID, String newBoardID, Lists curentlist) async {
+    var doc = await FirebaseFirestore.instance
+        .collection('boards')
+        .doc(newBoardID)
+        .get();
+    int listNumber = doc['listNumber'] + 1;
     await FirebaseFirestore.instance
         .collection('boards')
         .doc(newBoardID)
-        .get()
-        .then((value) async {
-      int listNumber = value['listNumber'] + 1;
-      await FirebaseFirestore.instance
-          .collection('boards')
-          .doc(newBoardID)
-          .update({'listNumber': listNumber});
-      final docRef = await FirebaseFirestore.instance
-          .collection('boards')
-          .doc(newBoardID)
-          .collection('lists')
-          .add({
-        'listName': curentlist.listName,
-        'cardNumber': curentlist.cardNumber,
-        "position": listNumber,
-        "cardList": curentlist.cardList
-      });
-      //update new listID = document ID
-      await FirebaseFirestore.instance
-          .collection('boards')
-          .doc(newBoardID)
-          .collection('lists')
-          .doc(docRef.id)
-          .update({"listID": docRef.id});
+        .update({'listNumber': listNumber});
+
+    final docRef = await FirebaseFirestore.instance
+        .collection('boards')
+        .doc(newBoardID)
+        .collection('lists')
+        .add({
+      'listName': curentlist.listName,
+      'cardNumber': curentlist.cardNumber,
+      "position": listNumber,
+      "cardList": curentlist.cardList
     });
+
+    //update new listID = document ID
     await FirebaseFirestore.instance
         .collection('boards')
+        .doc(newBoardID)
+        .collection('lists')
+        .doc(docRef.id)
+        .update({"listID": docRef.id});
+
+    var _doc = await FirebaseFirestore.instance
+        .collection('boards')
         .doc(oldBoardID)
-        .get()
-        .then((e) async {
-      int _listNumber = e['listNumber'] - 1;
-      if (_listNumber < 0) _listNumber = 0;
-      await FirebaseFirestore.instance
-          .collection('boards')
-          .doc(oldBoardID)
-          .update({'listNumber': _listNumber});
-      //remove list from old board
-      await FirebaseFirestore.instance
-          .collection('boards')
-          .doc(oldBoardID)
-          .collection('lists')
-          .doc(curentlist.listID)
-          .delete();
-    });
+        .get();
+    int _listNumber = _doc['listNumber'] - 1;
+    if (_listNumber < 0) _listNumber = 0;
+    FirebaseFirestore.instance
+        .collection('boards')
+        .doc(oldBoardID)
+        .update({'listNumber': _listNumber});
+
+    //remove list from old board
+    FirebaseFirestore.instance
+        .collection('boards')
+        .doc(oldBoardID)
+        .collection('lists')
+        .doc(curentlist.listID)
+        .delete();
   }
 
   //move a list to other position
@@ -743,6 +743,27 @@ class DatabaseService {
         list.docs.map((doc) => CheckLists.fromDocument(doc)).toList());
   }
 
+  // get checklists unfinish
+  static Future addCheckLists(String cardID, String title)  async {
+    final docRef =
+        await
+    FirebaseFirestore.instance.collection('cards')
+        .doc(cardID)
+        .collection('checklists')
+        .add({
+      'title': title,
+      'content': [],
+      "status": [],
+    });
+    var doc = await FirebaseFirestore.instance.collection('cards').doc(cardID).get();
+    int checklistnumber = doc.get('checklistNumber');
+    await FirebaseFirestore.instance.collection('cards')
+        .doc(cardID)
+        .update({
+      'checklistNumber': checklistnumber + 1,
+    });
+  }
+
   // get checklists
   static Future getCheckLists(String cardID) async {
     var snapshot = FirebaseFirestore.instance.collection('cards')
@@ -796,7 +817,6 @@ class DatabaseService {
         .doc(oldListID)
         .update({"cardList": cardList});
     });
-
     //update card number in list
     await FirebaseFirestore.instance.collection('boards')
         .doc(oldBoardID)
@@ -812,6 +832,13 @@ class DatabaseService {
           .doc(oldListID)
           .update({'cardNumber': cardNumber});
     });
+    var boards = await FirebaseFirestore.instance.collection('boards')
+        .doc(oldBoardID).get().then((value) async {
+      int card = value['cardNumber'] - 1;
+      if(card<0) card = 0;
+      await FirebaseFirestore.instance.collection('boards')
+        .doc(oldBoardID)
+        .update({'cardNumber': card});});
 
     //delete card
      await FirebaseFirestore.instance.collection('cards').doc(cardID).delete();

@@ -613,19 +613,14 @@ class CardScreenState extends State<CardScreen> {
                                                             ),
                                                             onPressed: () {
                                                               setState(
-                                                                  () async {
-                                                                await DatabaseService
+                                                                  ()  {
+                                                                DatabaseService
                                                                     .deleteCard(
                                                                         card.cardID);
+                                                                Navigator.of(context).pop();
+                                                                Navigator.of(context).pop();
                                                               });
-                                                              Route route = MaterialPageRoute(
-                                                                  builder: (context) =>
-                                                                      BoardScreen(
-                                                                          boards,
-                                                                          false));
-                                                              Navigator.push(
-                                                                  context,
-                                                                  route);
+
                                                             },
                                                           )
                                                         ],
