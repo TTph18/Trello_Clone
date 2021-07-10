@@ -460,6 +460,7 @@ class CardScreenState extends State<CardScreen> {
                             child: CircularProgressIndicator());
                       } else {
                        taskListNames = snapshot.data;
+                       if(taskListNames.isNotEmpty){
                        for (int i = 0 ; i<taskListNames.length;i++) {
                            tasks[i] = taskListNames[i].content;
                          }
@@ -472,6 +473,7 @@ class CardScreenState extends State<CardScreen> {
                            controllers[i].add(new TextEditingController.fromValue(
                                TextEditingValue(text: tasks[i][j])));
                          }
+                       }
                        }
                       }
                       return Scaffold(
