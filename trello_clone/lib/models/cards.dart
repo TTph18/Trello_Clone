@@ -14,10 +14,11 @@ class Cards {
   final String startTime;
   final String dueDate;
   final String dueTime;
+  final int checklistNumber;
   final List<String> assignedUser;
   final bool status; //true: finish | false: not finish
 
-  Cards({required this.cardID, required this.cardName, required this.createdBy, required this.description, required this.startDate, required this.startTime, required this.dueDate, required this.dueTime, required this.assignedUser, required this.status,required this.listID, required this.boardID});
+  Cards({required this.cardID, required this.cardName, required this.createdBy, required this.description, required this.startDate, required this.startTime, required this.dueDate, required this.dueTime, required this.assignedUser, required this.status,required this.listID, required this.boardID, required this.checklistNumber});
 
   factory Cards.fromDocument(DocumentSnapshot document) {
     return Cards(
@@ -33,6 +34,7 @@ class Cards {
       startTime: document['startTime'],
       assignedUser: document['assignedUser'].cast<String>(),
       status: document['status'],
+      checklistNumber: document['checklistNumber'],
     );
   }
 }
@@ -58,29 +60,17 @@ class Comments {
 class CheckLists {
   final String title;
   final String checklistID;
+  final List<String> content;
+  final List<bool> status;
 
-  CheckLists({required this.title, required this.checklistID});
+  CheckLists({required this.title, required this.checklistID, required this.content, required this.status});
 
   factory CheckLists.fromDocument(DocumentSnapshot document) {
     return CheckLists(
       title: document['title'],
       checklistID: document['checklistID'],
-    );
-  }
-}
-
-class Tasks {
-  final String checklistID;
-  final String content;
-  final String status;
-
-  Tasks({required this.checklistID, required this.content, required this.status});
-
-  factory Tasks.fromDocument(DocumentSnapshot document) {
-    return Tasks(
-        checklistID: document['checklistID'],
-        content: document['content'],
-        status: document['status']
+      content: document['content'].cast<String>(),
+      status: document['status'].cast<bool>()
     );
   }
 }

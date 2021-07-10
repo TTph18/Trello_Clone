@@ -436,7 +436,7 @@ class BoardScreenState extends State<BoardScreen> {
       assignedUser: [],
       status: false,
       listID: "",
-      boardID: "");
+      boardID: "", checklistNumber: 0);
   late List<ListCard> _lists;
   late List<bool> isTapNewCard = List.filled(_lists.length, false);
   TextEditingController newCardController = TextEditingController();
