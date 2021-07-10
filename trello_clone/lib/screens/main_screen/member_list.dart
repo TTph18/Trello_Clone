@@ -5,6 +5,7 @@ import 'package:trello_clone/models/user.dart';
 import 'package:flutter_chips_input/flutter_chips_input.dart';
 import 'package:trello_clone/models/workspaces.dart';
 import 'package:trello_clone/services/database.dart';
+import 'package:trello_clone/widgets/reuse_widget/avatar.dart';
 
 class MemberInfo extends StatelessWidget {
   Workspaces workspaces;
@@ -21,17 +22,7 @@ class MemberInfo extends StatelessWidget {
         children: <Widget>[
           Row(
             children: [
-              Container(
-                width: 40,
-                height: 40,
-                decoration: new BoxDecoration(
-                  shape: BoxShape.circle,
-                  image: new DecorationImage(
-                    fit: BoxFit.fill,
-                    image: NetworkImage(user.avatar),
-                  ),
-                ),
-              ),
+              avatar(40, 40, Colors.grey, Image.network(user.avatar)),
               SizedBox(
                 width: 20,
               ),

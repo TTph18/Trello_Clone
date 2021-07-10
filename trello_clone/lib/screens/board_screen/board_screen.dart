@@ -5,6 +5,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/painting.dart';
+import 'package:flutter/rendering.dart';
 import 'package:flutter/widgets.dart';
 import 'package:intl/intl.dart';
 
@@ -244,7 +245,7 @@ class _cardState extends State<_card> {
     if (numTotal > 0) contentItem.add(CreateChecklistItem(numFinish, numTotal));
     contents.add(Padding(
         padding: const EdgeInsets.fromLTRB(0, 8, 0, 0),
-        child: Wrap(spacing: 4, runSpacing: 4, children: contentItem)));
+        child: Align(child: Wrap(spacing: 4, runSpacing: 4, children: contentItem), alignment: Alignment.topLeft,)));
 
     /// Avatar line
     contentItem = <Widget>[];

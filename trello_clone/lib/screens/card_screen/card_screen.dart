@@ -489,10 +489,10 @@ class CardScreenState extends State<CardScreen> {
                                   FocusScope.of(context).unfocus();
                                 } else {
                                   Navigator.of(context).pop();
-                                  Route route = MaterialPageRoute(
-                                      builder: (context) =>
-                                          BoardScreen(boards, false));
-                                  Navigator.push(context, route);
+                                  //Route route = MaterialPageRoute(
+                                  //    builder: (context) =>
+                                  //        BoardScreen(boards, false));
+                                  //Navigator.push(context, route);
                                 }
                               },
                             ),

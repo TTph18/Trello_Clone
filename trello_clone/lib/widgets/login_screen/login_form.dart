@@ -17,7 +17,13 @@ class _LoginFormState extends State<LoginForm> {
 
   @override
   Widget build(BuildContext context) {
-    return Form(
+    return Expanded(
+        child: Center(
+        child: SingleChildScrollView(
+        scrollDirection: Axis.vertical,
+        child: Column(
+        children: [
+        Form(
         key: _loginFormKey,
         child: Padding(
             padding: const EdgeInsets.fromLTRB(20.0, 10.0, 20.0, 0),
@@ -125,7 +131,7 @@ class _LoginFormState extends State<LoginForm> {
                 )
             )
         )
-    );
+    ),],),),),);
   }
 
   showAlertDialog(BuildContext context) {
