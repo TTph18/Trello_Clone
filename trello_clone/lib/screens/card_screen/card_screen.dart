@@ -613,12 +613,14 @@ class CardScreenState extends State<CardScreen> {
                                                             ),
                                                             onPressed: () {
                                                               setState(
-                                                                  () async {
-                                                                await DatabaseService
+                                                                  ()  {
+                                                                DatabaseService
                                                                     .deleteCard(
                                                                         card.cardID);
+                                                                Navigator.of(context).pop();
+                                                                Navigator.of(context).pop();
                                                               });
-                                                              Navigator.of(context).pop();
+
                                                             },
                                                           )
                                                         ],

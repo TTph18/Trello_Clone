@@ -1,5 +1,3 @@
-import 'dart:math' as math;
-
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -112,7 +110,7 @@ class GroupName extends StatelessWidget {
                       context: context,
                       builder: (BuildContext context) => AlertDialog(
                         title: const Text(
-                          'Sửa tên nhóm',
+                          'Sửa tên không gian làm việc',
                           style: TextStyle(fontWeight: FontWeight.bold),
                         ),
                         content: Container(
@@ -128,7 +126,7 @@ class GroupName extends StatelessWidget {
                                     fontSize: 22.0,
                                     height: 0.9,
                                   ),
-                                  labelText: "Tên nhóm",
+                                  labelText: "Tên không gian làm việc",
                                 ),
                               ),
                               Row(
@@ -167,7 +165,7 @@ class GroupName extends StatelessWidget {
                   if (value == 2)
                   {
                     if(uid != group.createdBy){
-                      showAlertDialog(context, "Bạn không có quyền xóa nhóm này!");
+                      showAlertDialog(context, "Bạn không có quyền xóa không gian làm việc này!");
                     } else {
                       DatabaseService.deleteWorkspace(group.workspaceID);
                     }
@@ -176,15 +174,15 @@ class GroupName extends StatelessWidget {
                 itemBuilder: (context) => [
                   PopupMenuItem(
                     value: 0,
-                    child: Text('Sửa tên nhóm'),
+                    child: Text('Sửa tên không gian làm việc'),
                   ),
                   PopupMenuItem(
                     value: 1,
-                    child: Text('Thành viên nhóm'),
+                    child: Text('Thành viên không gian làm việc'),
                   ),
                   PopupMenuItem(
                     value: 2,
-                    child: Text('Xóa nhóm'),
+                    child: Text('Xóa không gian làm việc'),
                   ),
                 ],
               ),

@@ -101,7 +101,6 @@ class MemberListState extends State<MemberList> {
                   return Container(
                       alignment: FractionalOffset.center,
                       child: CircularProgressIndicator());
-                users.clear();
                 for (var item in snapshot.data) {
                   users.add(item);
                 }
