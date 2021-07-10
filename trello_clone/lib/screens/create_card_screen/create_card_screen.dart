@@ -560,12 +560,12 @@ class CreateCardScreenState extends State<CreateCardScreen> {
                                                         leading: CircleAvatar(
                                                           radius: 25,
                                                           backgroundImage:
-                                                              AssetImage(
+                                                          NetworkImage(
                                                                   users[index]
                                                                       .avatar),
                                                         ),
                                                         title: Text(
-                                                            '${users[index].userName}'),
+                                                            '${users[index].profileName}'),
                                                       ),
                                                     ),
                                                   ),
@@ -580,6 +580,8 @@ class CreateCardScreenState extends State<CreateCardScreen> {
                                                       }
                                                       if (!isSelected)
                                                         pickedUsers.add(value);
+                                                      else
+                                                        pickedUsers.removeWhere((element) => element.userID == value.userID);
                                                     });
                                                   },
                                                   icon: Icon(
@@ -610,7 +612,7 @@ class CreateCardScreenState extends State<CreateCardScreen> {
                                                           return CircleAvatar(
                                                             radius: 25,
                                                             backgroundImage:
-                                                                AssetImage(
+                                                                NetworkImage(
                                                                     pickedUsers[
                                                                             index]
                                                                         .avatar),
