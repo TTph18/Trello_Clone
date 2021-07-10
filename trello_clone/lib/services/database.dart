@@ -634,8 +634,14 @@ class DatabaseService {
   }
 
   static Future<void> addUserToWorkspace(String workspaceID, List listUserID) async {
+    List<String> ids = [];
+    for (Users item in listUserID)
+      {
+        ids.add(item.userID);
+      }
+
     await FirebaseFirestore.instance.collection('workspaces').doc(workspaceID).update(({
-      "userList": FieldValue.arrayUnion(listUserID)
+      "userList": FieldValue.arrayUnion(ids)
     }));
   }
 

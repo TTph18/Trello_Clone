@@ -44,11 +44,7 @@ class MemberInfo extends StatelessWidget {
                   onPressed: () {
                     DatabaseService.deleteUserInWorkspace(user.userID, workspaces.workspaceID);
                   },
-                  icon: Icon(Icons.close,
-                      color: (uid != workspaces.createdBy ||
-                              user.userID != workspaces.createdBy)
-                          ? Colors.transparent
-                          : Colors.black)),
+                  icon: Icon(Icons.close, color: (uid != workspaces.createdBy || user.userID != workspaces.createdBy) ? Colors.transparent : Colors.black)),
             ],
           ),
         ],
@@ -76,6 +72,16 @@ class MemberListState extends State<MemberList> {
 
   MemberListState(this.workspaces);
 
+  Future<List<Users>> getListUser() async {
+    var doc = await DatabaseService.getAllUsersData();
+    List<Users> temp = [];
+    for (var item in doc) {
+      Users _user = Users.fromDocument(item);
+      temp.add(_user);
+    }
+    return temp;
+  }
+
   @override
   void initState() {
     futureUserList = getListUser();
@@ -85,160 +91,141 @@ class MemberListState extends State<MemberList> {
   Widget build(BuildContext context) {
     return StreamBuilder(
         stream: DatabaseService.streamListUser(workspaces.userList),
-        builder: (BuildContext context, AsyncSnapshot snapshot) {
-          if (!snapshot.hasData)
-            return Container(
-                alignment: FractionalOffset.center,
-                child: CircularProgressIndicator());
-          for (var item in snapshot.data) {
+        builder: (BuildContext context1, AsyncSnapshot snapshot1) {
+          if (!snapshot1.hasData) return Container(alignment: FractionalOffset.center, child: CircularProgressIndicator());
+          WorkspaceUsers = [];
+          for (var item in snapshot1.data) {
             Users _user = Users.fromDocument(item);
             WorkspaceUsers.add(_user);
           }
           return FutureBuilder(
               future: futureUserList,
-              builder: (BuildContext context, AsyncSnapshot snapshot) {
-                if (!snapshot.hasData)
-                  return Container(
-                      alignment: FractionalOffset.center,
-                      child: CircularProgressIndicator());
+              builder: (BuildContext context2, AsyncSnapshot snapshot) {
+                if (!snapshot.hasData) return Container(alignment: FractionalOffset.center, child: CircularProgressIndicator());
+                users = [];
                 for (var item in snapshot.data) {
-                  users.add(item);
+                  if (!WorkspaceUsers.contains(users)) users.add(item);
                 }
+                print("NUM USERRRR1: " + users.length.toString());
                 users.removeWhere((element) => element.userID == uid);
-                selectedUsers.clear();
+
+                print("NUM USERRRR2: " + users.length.toString());
                 return Scaffold(
                   appBar: AppBar(
                     title: Text("Thành viên"),
                     actions: [
                       IconButton(
                         onPressed: () => showDialog<String>(
-                          context: context,
-                          builder: (BuildContext context) => AlertDialog(
-                            title: const Text(
-                              'Thêm thành viên',
-                              style: TextStyle(fontWeight: FontWeight.bold),
-                            ),
-                            content: Column(
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                SingleChildScrollView(
-                                  child: Column(
-                                    children: <Widget>[
-                                      ChipsInput(
-                                        key: _chipKey,
-                                        keyboardAppearance: Brightness.dark,
-                                        textCapitalization:
-                                            TextCapitalization.words,
-                                        // maxChips: 5,
-                                        textStyle: const TextStyle(
-                                            height: 1.5, fontSize: 20),
-                                        decoration: const InputDecoration(
-                                          // hintText: formControl.hint,
-                                          labelText: 'Tài khoản hoặc email',
-                                        ),
-                                        findSuggestions: (String query) {
-                                          print("Query: '$query'");
-                                          if (query.isNotEmpty) {
-                                            var lowercaseQuery =
-                                                query.toLowerCase();
-                                            return users.where((profile) {
-                                              return profile.userName
-                                                      .toLowerCase()
-                                                      .contains(query
-                                                          .toLowerCase()) ||
-                                                  profile.email
-                                                      .toLowerCase()
-                                                      .contains(
-                                                          query.toLowerCase());
-                                            }).toList(growable: false)
-                                              ..sort((a, b) => a.userName
-                                                  .toLowerCase()
-                                                  .indexOf(lowercaseQuery)
-                                                  .compareTo(b.userName
-                                                      .toLowerCase()
-                                                      .indexOf(
-                                                          lowercaseQuery)));
-                                          }
-                                          return users;
-                                        },
-                                        onChanged: (data) {
-                                          // print(data);
-                                        },
-                                        chipBuilder:
-                                            (context, state, dynamic profile) {
-                                          return InputChip(
-                                            key: ObjectKey(profile),
-                                            label: Text(profile.userName),
-                                            avatar: CircleAvatar(
-                                              backgroundImage:
-                                                  NetworkImage(profile.avatar),
+                            context: context,
+                            builder: (BuildContext context) {
+                              return AlertDialog(
+                                title: const Text(
+                                  'Thêm thành viên',
+                                  style: TextStyle(fontWeight: FontWeight.bold),
+                                ),
+                                content: Column(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    SingleChildScrollView(
+                                      child: Column(
+                                        children: <Widget>[
+                                          ChipsInput(
+                                            key: _chipKey,
+                                            keyboardAppearance: Brightness.dark,
+                                            textCapitalization: TextCapitalization.words,
+                                            // maxChips: 5,
+                                            textStyle: const TextStyle(height: 1.5, fontSize: 20),
+                                            decoration: const InputDecoration(
+                                              // hintText: formControl.hint,
+                                              labelText: 'Tài khoản hoặc email',
                                             ),
-                                            onDeleted: () {
-                                              state.deleteChip(profile);
-                                              selectedUsers.remove(profile);
+                                            findSuggestions: (String query) {
+                                              if (query.isNotEmpty) {
+                                                var lowercaseQuery = query.toLowerCase();
+                                                return users.where((profile) {
+                                                  return profile.userName.toLowerCase().contains(query.toLowerCase()) ||
+                                                      profile.email.toLowerCase().contains(query.toLowerCase());
+                                                }).toList(growable: false)
+                                                  ..sort((a, b) => a.userName
+                                                      .toLowerCase()
+                                                      .indexOf(lowercaseQuery)
+                                                      .compareTo(b.userName.toLowerCase().indexOf(lowercaseQuery)));
+                                              }
+                                              return users;
                                             },
-                                            materialTapTargetSize:
-                                                MaterialTapTargetSize
-                                                    .shrinkWrap,
-                                          );
-                                        },
-                                        suggestionBuilder:
-                                            (context, state, dynamic profile) {
-                                          return ListTile(
-                                            key: ObjectKey(profile),
-                                            leading: CircleAvatar(
-                                              backgroundImage:
-                                                  NetworkImage(profile.avatar),
-                                            ),
-                                            title: Text(profile.userName),
-                                            onTap: () {
-                                              if (!checkUserAvailable(
-                                                  profile.userID)) {
-                                                state.selectSuggestion(profile);
-                                                selectedUsers.add(profile);
-                                                setState(() {
-                                                  futureUserList =
-                                                      getListUser();
-                                                });
-                                              } else
-
-                                                ///TODO: can't close dialog
-                                                showAlertDialog(context,
-                                                    "Thành viên này đã trong bảng!");
+                                            onChanged: (data) {
+                                              // print(data);
                                             },
-                                          );
-                                        },
+                                            chipBuilder: (context, state, dynamic profile) {
+                                              return InputChip(
+                                                key: ObjectKey(profile),
+                                                label: Text(profile.userName),
+                                                avatar: CircleAvatar(
+                                                  backgroundImage: NetworkImage(profile.avatar),
+                                                ),
+                                                onDeleted: () {
+                                                  state.deleteChip(profile);
+                                                  selectedUsers.remove(profile);
+                                                },
+                                                materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                                              );
+                                            },
+                                            suggestionBuilder: (context, state, dynamic profile) {
+                                              return ListTile(
+                                                key: ObjectKey(profile),
+                                                leading: CircleAvatar(
+                                                  backgroundImage: NetworkImage(profile.avatar),
+                                                ),
+                                                title: Text(profile.userName),
+                                                onTap: () {
+                                                  if (checkUserAvailable(profile.userID)) {
+                                                    state.selectSuggestion(profile);
+                                                    selectedUsers.add(profile);
+                                                    setState(() {
+                                                      users.remove(profile);
+                                                    });
+                                                  } else {
+                                                    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                                                      content: const Text('Thành viên đã có trong không gian làm việc'),
+                                                      duration: const Duration(seconds: 1),
+                                                    ));
+                                                  }
+                                                  ;
+                                                },
+                                              );
+                                            },
+                                          ),
+                                        ],
                                       ),
-                                    ],
+                                    ),
+                                  ],
+                                ),
+                                actions: [
+                                  TextButton(
+                                    child: Text('HỦY', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+                                    onPressed: () {
+                                      selectedUsers.clear();
+                                      Navigator.of(context).pop();
+                                    },
                                   ),
-                                ),
-                              ],
-                            ),
-                            actions: [
-                              TextButton(
-                                child: Text('HỦY',
-                                    style: TextStyle(
-                                        fontWeight: FontWeight.bold,
-                                        fontSize: 16)),
-                                onPressed: () {
-                                  Navigator.of(context).pop();
-                                },
-                              ),
-                              TextButton(
-                                child: Text(
-                                  'THÊM',
-                                  style: TextStyle(
-                                      fontWeight: FontWeight.bold,
-                                      fontSize: 16),
-                                ),
-                                onPressed: () {
-                                  DatabaseService.addUserToWorkspace(
-                                      workspaces.workspaceID, selectedUsers);
-                                },
-                              )
-                            ],
-                          ),
-                        ),
+                                  TextButton(
+                                    child: Text(
+                                      'THÊM',
+                                      style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+                                    ),
+                                    onPressed: () {
+                                      print("ACCESSSSSSS");
+                                      print("SELECTEDUSER: " + selectedUsers[0].userName);
+                                      DatabaseService.addUserToWorkspace(workspaces.workspaceID, selectedUsers);
+                                      print("GO OUTTTT");
+                                      selectedUsers.clear();
+                                      refresh();
+                                      Navigator.of(context).pop();
+                                    },
+                                  )
+                                ],
+                              );
+                            }),
                         icon: Icon(
                           Icons.group_add,
                         ),
@@ -259,21 +246,18 @@ class MemberListState extends State<MemberList> {
         });
   }
 
-  Future<List<Users>> getListUser() async {
-    var doc = await DatabaseService.getListUserData(workspaces.userList);
-    List<Users> temp = [];
-    for (var item in doc) {
-      Users _user = Users.fromDocument(item);
-      temp.add(_user);
-    }
-    return temp;
-  }
-
   bool checkUserAvailable(String userID) {
     for (var item in users) {
       if (userID == item.userID) return true;
     }
     return false;
+  }
+
+  void refresh()
+  {
+    setState(() {
+
+    });
   }
 
   showAlertDialog(BuildContext context, String alertdialog) {
@@ -292,6 +276,8 @@ class MemberListState extends State<MemberList> {
         cancelButton,
       ],
     );
+
+
 
     // show the dialog
     showDialog(
