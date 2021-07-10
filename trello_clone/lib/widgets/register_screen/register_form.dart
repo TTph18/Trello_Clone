@@ -144,6 +144,7 @@ class _RegisterFormState extends State<RegisterForm> {
                                             if (_registerFormKey.currentState!.validate()) {
                                               String? shouldNavigate = await register(_emailTextController.text, _passwordTextController.text,
                                                   _userNameTextController.text, _profileNameTextController.text);
+
                                               if (shouldNavigate == "Registered") {
                                                 Navigator.of(context).pushNamed(LOGIN);
                                               } else {

@@ -1,5 +1,8 @@
+import 'dart:math';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:provider/provider.dart';
 import 'package:trello_clone/models/cards.dart';
 import 'package:trello_clone/models/lists.dart';
@@ -27,10 +30,20 @@ class DatabaseService {
   //add a new user
   static Future<void> addUser(
       String userID, String email, String userName, String profileName) async {
+    Random random = new Random();
+    int randomNumber = random.nextInt(8) + 1;
+    String path = "Landscape" + randomNumber.toString() + "BG.jpg";
+    final ref = FirebaseStorage.instance
+        .ref()
+        .child(path);
+    //File imageFile = new File();
+    //ref.putFile(imageFile);
+    String url = await ref.getDownloadURL() as String;
+
     await FirebaseFirestore.instance.collection('users').doc(userID).set({
       'userID': userID,
       'email': email,
-      "avatar": "",
+      "avatar": url,
       "profileName": profileName,
       'userName': userName,
       'workspaceList': []
