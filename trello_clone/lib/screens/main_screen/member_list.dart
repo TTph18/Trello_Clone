@@ -28,7 +28,7 @@ class MemberInfo extends StatelessWidget {
                   shape: BoxShape.circle,
                   image: new DecorationImage(
                     fit: BoxFit.fill,
-                    image: AssetImage(user.avatar),
+                    image: NetworkImage(user.avatar),
                   ),
                 ),
               ),
