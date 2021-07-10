@@ -160,16 +160,13 @@ class _cardState extends State<_card> {
       tag(Color(int.parse("0xffffab4a"))),
     ];
     card.assignedUser.contains(uid) ? iconSeen = true : iconSeen = false;
-    card.description =="" ? iconDetail= false : iconDetail = true;
+    card.description == "" ? iconDetail = false : iconDetail = true;
     numCom = 2;
     numFile = 0;
 
-    for(int i = 0; i< card.assignedUser.length; i++){}
-
-    avas = [
-      Image.asset('assets/images/BlueBG.png'),
-      Image.asset('assets/images/BlueBG.png'),
-    ];
+    for (int i = 0; i < card.assignedUser.length; i++) {
+      avas.add(Image.network(''));
+    }
   }
 
   @override
@@ -245,16 +242,34 @@ class _cardState extends State<_card> {
     if (numTotal > 0) contentItem.add(CreateChecklistItem(numFinish, numTotal));
     contents.add(Padding(
         padding: const EdgeInsets.fromLTRB(0, 8, 0, 0),
-        child: Align(child: Wrap(spacing: 4, runSpacing: 4, children: contentItem), alignment: Alignment.topLeft,)));
+        child: Align(
+          child: Wrap(spacing: 4, runSpacing: 4, children: contentItem),
+          alignment: Alignment.topLeft,
+        )));
 
     /// Avatar line
     contentItem = <Widget>[];
     if (avas.length != 0)
       for (var i = 0; i < avas.length; i++)
-        contentItem.add(Padding(
-          padding: const EdgeInsets.fromLTRB(8, 0, 0, 0),
-          child: avatar(40, 40, Color.fromRGBO(255, 255, 255, 0), avas[i]),
-        ));
+        contentItem.add(StreamBuilder(
+            stream: DatabaseService.streamListUser(card.assignedUser),
+            builder: (BuildContext context, AsyncSnapshot snapshot) {
+              if (!snapshot.hasData) {
+                return Container(
+                    alignment: FractionalOffset.center,
+                    child: CircularProgressIndicator());
+              } else {
+                for (int i = 0; i<snapshot.data.length;i++){
+                  Users _user = Users.fromDocument(snapshot.data[i]);
+                  avas.insert(i, Image.network(_user.avatar));
+                }
+              }
+              return Padding(
+                padding: const EdgeInsets.fromLTRB(8, 0, 0, 0),
+                child:
+                    avatar(40, 40, Color.fromRGBO(255, 255, 255, 0), avas[i]),
+              );
+            }));
     contents.add(Padding(
         padding: const EdgeInsets.fromLTRB(0, 8, 0, 0),
         child: Row(
@@ -437,7 +452,8 @@ class BoardScreenState extends State<BoardScreen> {
       assignedUser: [],
       status: false,
       listID: "",
-      boardID: "", checklistNumber: 0);
+      boardID: "",
+      checklistNumber: 0);
   late List<ListCard> _lists;
   late List<bool> isTapNewCard = List.filled(_lists.length, false);
   TextEditingController newCardController = TextEditingController();
@@ -537,54 +553,54 @@ class BoardScreenState extends State<BoardScreen> {
             boardOwner = snapshot.data[1];
           } else
             return Scaffold(
-              key: _scaffoldKey,
-              backgroundColor: const Color.fromRGBO(0, 121, 190, 1.0),
-              appBar: AppBar(
-                title: isTapNewList
-                    ? Text("Thêm danh sách")
-                    : isTapNewCard.contains(true)
-                    ? Text("Thêm thẻ")
-                    : isTapChangeListName.contains(true)
-                    ? Text("Chỉnh sửa tên danh sách")
-                    : Text(boards.boardName),
-                backgroundColor: const Color.fromRGBO(0, 64, 126, 1.0),
-                leading: (isTapNewList ||
-                    isTapNewCard.contains(true) ||
-                    isTapChangeListName.contains(true))
-                    ? IconButton(
-                    onPressed: () {
-                      setState(
-                            () {
-                          if (isTapNewList) {
-                            isTapNewList = false;
-                            newListController.text = "";
-                          }
-                          int index = isTapNewCard
-                              .indexWhere((element) => element == true);
-                          if (index != -1) {
-                            isTapNewCard[index] = false;
-                            newCardController.text = "";
-                          }
-                          index = isTapChangeListName
-                              .indexWhere((element) => element == true);
-                          if (index != -1) {
-                            isTapChangeListName[index] = false;
-                            changeListNameController.text = "";
-                          }
-                        },
-                      );
-                    },
-                    icon: Icon(Icons.close))
-                    : Builder(
-                  builder: (BuildContext context) {
-                    return IconButton(
-                      icon: const Icon(Icons.arrow_back),
-                      onPressed: () {
-                        Navigator.of(context).pushNamed(MAIN_SCREEN);
-                      },
-                    );
-                  },
-                )));
+                key: _scaffoldKey,
+                backgroundColor: const Color.fromRGBO(0, 121, 190, 1.0),
+                appBar: AppBar(
+                    title: isTapNewList
+                        ? Text("Thêm danh sách")
+                        : isTapNewCard.contains(true)
+                            ? Text("Thêm thẻ")
+                            : isTapChangeListName.contains(true)
+                                ? Text("Chỉnh sửa tên danh sách")
+                                : Text(boards.boardName),
+                    backgroundColor: const Color.fromRGBO(0, 64, 126, 1.0),
+                    leading: (isTapNewList ||
+                            isTapNewCard.contains(true) ||
+                            isTapChangeListName.contains(true))
+                        ? IconButton(
+                            onPressed: () {
+                              setState(
+                                () {
+                                  if (isTapNewList) {
+                                    isTapNewList = false;
+                                    newListController.text = "";
+                                  }
+                                  int index = isTapNewCard
+                                      .indexWhere((element) => element == true);
+                                  if (index != -1) {
+                                    isTapNewCard[index] = false;
+                                    newCardController.text = "";
+                                  }
+                                  index = isTapChangeListName
+                                      .indexWhere((element) => element == true);
+                                  if (index != -1) {
+                                    isTapChangeListName[index] = false;
+                                    changeListNameController.text = "";
+                                  }
+                                },
+                              );
+                            },
+                            icon: Icon(Icons.close))
+                        : Builder(
+                            builder: (BuildContext context) {
+                              return IconButton(
+                                icon: const Icon(Icons.arrow_back),
+                                onPressed: () {
+                                  Navigator.of(context).pushNamed(MAIN_SCREEN);
+                                },
+                              );
+                            },
+                          )));
           return Scaffold(
             key: _scaffoldKey,
             backgroundColor: const Color.fromRGBO(0, 121, 190, 1.0),
@@ -655,7 +671,11 @@ class BoardScreenState extends State<BoardScreen> {
                                 for (int i = 0; i < boards.listNumber; i++) {
                                   listName.add("");
                                   listList.add(new Lists(
-                                      listID: "", listName: "", position: 0, cardList: [], cardNumber: 0));
+                                      listID: "",
+                                      listName: "",
+                                      position: 0,
+                                      cardList: [],
+                                      cardNumber: 0));
                                 }
                                 newListController.text = "";
                               });
@@ -668,11 +688,23 @@ class BoardScreenState extends State<BoardScreen> {
                               DatabaseService.addCard(
                                   boards.boardID,
                                   listList[index].listID,
-                                  newCardController.text, "", uid, [], "", "", "", "");
+                                  newCardController.text,
+                                  "",
+                                  uid,
+                                  [],
+                                  "",
+                                  "",
+                                  "",
+                                  "");
                               setState(
                                 () {
                                   isTapNewCard[index] = false;
                                   newListController.text = "";
+                                  cards = [];
+                                  Route route = MaterialPageRoute(
+                                      builder: (context) =>
+                                          BoardScreen(boards, false));
+                                  Navigator.push(context, route);
                                 },
                               );
                             }

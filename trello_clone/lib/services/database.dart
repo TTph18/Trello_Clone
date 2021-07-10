@@ -283,6 +283,55 @@ class DatabaseService {
         .delete();
   }
 
+  //move a list to other board
+  static Future<void> moveCardToABoard(
+      String oldBoardID, String newBoardID, String oldlistID, String newListID, String cardID) async {
+    var boards = await FirebaseFirestore.instance
+        .collection('boards')
+        .doc(newBoardID)
+        .get();
+    int cardNumber = boards['cardNumber'] + 1;
+    await FirebaseFirestore.instance
+        .collection('boards')
+        .doc(newBoardID)
+        .update({'cardNumber': cardNumber});
+
+    var list = await FirebaseFirestore.instance
+        .collection('boards')
+        .doc(newListID)
+        .get();
+    int _cardNumber = list['cardNumber'] + 1;
+    await FirebaseFirestore.instance
+        .collection('boards')
+        .doc(newListID)
+        .update({'cardNumber': _cardNumber, 'cardList':FieldValue.arrayUnion([cardID])});
+
+    await FirebaseFirestore.instance
+        .collection('cards')
+        .doc(cardID).update({'boardID': newBoardID, 'listID': newListID});
+
+    var _boards = await FirebaseFirestore.instance
+        .collection('boards')
+        .doc(oldBoardID)
+        .get();
+    int oldcardNumber = _boards['cardNumber'] - 1;
+    if (oldcardNumber<0) oldcardNumber = 0;
+    await FirebaseFirestore.instance
+        .collection('boards')
+        .doc(oldBoardID)
+        .update({'cardNumber': cardNumber});
+
+    var _list = await FirebaseFirestore.instance
+        .collection('boards')
+        .doc(newListID)
+        .get();
+    int oldscardNumber = _list['cardNumber'] - 1;
+    await FirebaseFirestore.instance
+        .collection('boards')
+        .doc(newListID)
+        .update({'cardNumber': oldscardNumber, 'cardList':FieldValue.arrayRemove([cardID])});
+  }
+
   //move a list to other position
   static Future<void> moveListPosition(
       String boardID, String listID, int oldPosition, int newPosition) async {
@@ -576,18 +625,18 @@ class DatabaseService {
     await FirebaseFirestore.instance.collection('boards').doc(boardID).delete();
     //delete board from wp
     List<String> boardList;
-    await FirebaseFirestore.instance
+    var snap = await FirebaseFirestore.instance
         .collection('workspaces')
         .doc(oldWorkspaceID)
-        .get()
-        .then((value) {
-      boardList = value['boardList'].cast<String>();
+        .get();
+
+      boardList = snap['boardList'].cast<String>();
       boardList.remove(boardID);
-      FirebaseFirestore.instance
+      await FirebaseFirestore.instance
           .collection('workspaces')
           .doc(oldWorkspaceID)
           .update({"boardList": boardList});
-    });
+
   }
 
   //delete a user in a board

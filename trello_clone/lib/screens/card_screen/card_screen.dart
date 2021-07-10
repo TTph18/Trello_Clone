@@ -49,7 +49,36 @@ class CardScreenState extends State<CardScreen> {
 
   var descriptionTxtCtrl = TextEditingController();
 
-  List<Users> users = [];
+  List<Users> users = [
+    Users(
+      userID: "12345",
+      userName: "name1",
+      profileName: "Name 1",
+      email: '123456@gmail.com',
+      avatar: 'assets/images/BlueBG.png',
+    ),
+    Users(
+      userID: "12345",
+      userName: "name2",
+      profileName: "Name 2",
+      email: '123456@gmail.com',
+      avatar: 'assets/images/BlueBG.png',
+    ),
+    Users(
+      userID: "12345",
+      userName: "name3",
+      profileName: "Name 3",
+      email: '123456@gmail.com',
+      avatar: 'assets/images/BlueBG.png',
+    ),
+    Users(
+      userID: "12345",
+      userName: "Test4",
+      profileName: "Cun cun cute",
+      email: '123456@gmail.com',
+      avatar: 'assets/images/BlueBG.png',
+    ),
+  ];
   List<Users> pickedUsers = [];
 
   ///TODO: Load users from database to pickedUsers
@@ -211,39 +240,39 @@ class CardScreenState extends State<CardScreen> {
   List<TextEditingController> controllersList = [];
 
   ///For comment
-  ///var commentEnterTxtCtrl = TextEditingController();
-  //
-  //   ///TODO: Load currentUser data
-  //   ///Users currentUser = ...;
-  //   ///TODO: Delete this when load current data
-  //   String currentUserID = "12345";
-  //   String currentUserName = "Test4";
-  //   String currentUserAvatar = "assets/images/BlueBG.png";
-  //
-  //   ///TODO: Load comment list
-  //   List<Comments> commentList = [];
-  //
-  //   ///TODO: Delete these when comment list is loaded
-  //   ///TODO: in UI, change the commentUserIDList to commentList and match suitable values
-  //   List<String> commentUserIDList = ["12345", "1234", "1234"];
-  //   List<String> commentUserNameList = ["Test4", "name1", "name1"];
-  //   List<String> commentUserAvatarList = [
-  //     "assets/images/BlueBG.png",
-  //     "assets/images/BlueBG.png",
-  //     "assets/images/BlueBG.png"
-  //   ];
-  //   List<String> commentContentList = [
-  //     "Test comment for Test4",
-  //     "Test comment for name1",
-  //     "Test test test test test comment 2 for name1"
-  //   ];
-  //   List<DateTime> commentDateList = [
-  //     DateTime(2021, 7, 7, 8, 30),
-  //     DateTime(2021, 7, 4, 9, 30),
-  //     DateTime(2021, 6, 30, 10, 30)
-  //   ];
-  //
-  //   List<TextEditingController> commentContentTxtCtrlList = [];
+  var commentEnterTxtCtrl = TextEditingController();
+
+  ///TODO: Load currentUser data
+  ///Users currentUser = ...;
+  ///TODO: Delete this when load current data
+  String currentUserID = "12345";
+  String currentUserName = "Test4";
+  String currentUserAvatar = "assets/images/BlueBG.png";
+
+  ///TODO: Load comment list
+  List<Comments> commentList = [];
+
+  ///TODO: Delete these when comment list is loaded
+  ///TODO: in UI, change the commentUserIDList to commentList and match suitable values
+  List<String> commentUserIDList = ["12345", "1234", "1234"];
+  List<String> commentUserNameList = ["Test4", "name1", "name1"];
+  List<String> commentUserAvatarList = [
+    "assets/images/BlueBG.png",
+    "assets/images/BlueBG.png",
+    "assets/images/BlueBG.png"
+  ];
+  List<String> commentContentList = [
+    "Test comment for Test4",
+    "Test comment for name1",
+    "Test test test test test comment 2 for name1"
+  ];
+  List<DateTime> commentDateList = [
+    DateTime(2021, 7, 7, 8, 30),
+    DateTime(2021, 7, 4, 9, 30),
+    DateTime(2021, 6, 30, 10, 30)
+  ];
+
+  List<TextEditingController> commentContentTxtCtrlList = [];
 
   Future getCurrentBoard(String boardID) async {
     var doc = await DatabaseService.getBoardData(boardID);
@@ -256,7 +285,6 @@ class CardScreenState extends State<CardScreen> {
     Lists _list = Lists.fromDocument(doc);
     return _list;
   }
-
   Future getCurrentCheckList(String cardID) async {
     var doc = await DatabaseService.getCheckLists(cardID);
     Lists _list = Lists.fromDocument(doc);
@@ -342,9 +370,8 @@ class CardScreenState extends State<CardScreen> {
     futureBoards = getCurrentBoard(card.boardID);
     futureLists = getCurrentList(card.boardID, card.listID);
 
-    for (int i = 0; i < card.checklistNumber; i++) {
-      taskListNames
-          .add(CheckLists(title: "", checklistID: "", content: [], status: []));
+    for (int i = 0 ; i<card.checklistNumber;i++){
+      taskListNames.add(CheckLists(title: "", checklistID: "", content: [], status: []));
     }
     for (Users user in users) {
       var foundUser =
@@ -355,10 +382,10 @@ class CardScreenState extends State<CardScreen> {
         flagPickedUsers.add(false);
     }
 
-    ///for (int index = 0; index < commentUserIDList.length; index++) {
-    //       commentContentTxtCtrlList.add(TextEditingController());
-    //       commentContentTxtCtrlList[index].text = commentContentList[index];
-    //     }
+    for (int index = 0; index < commentUserIDList.length; index++) {
+      commentContentTxtCtrlList.add(TextEditingController());
+      commentContentTxtCtrlList[index].text = commentContentList[index];
+    }
 
     if (card.startDate != "") {
       selectedStartDate = DateFormat("yyyy-MM-dd").parse(card.startDate);
@@ -389,6 +416,7 @@ class CardScreenState extends State<CardScreen> {
       endDateStr =
           "Hết hạn vào ngày $selectedDay tháng $selectedMonth, năm $selectedYear lúc $selectedTimeStr";
     }
+
   }
 
   void addPickedMember(Users pickedUser) {
@@ -431,26 +459,22 @@ class CardScreenState extends State<CardScreen> {
                             alignment: FractionalOffset.center,
                             child: CircularProgressIndicator());
                       } else {
-                        taskListNames = snapshot.data;
-                        if (taskListNames.isNotEmpty) {
-                          for (int i = 0; i < taskListNames.length; i++) {
-                            tasks[i] = taskListNames[i].content;
-                          }
-                          controllers = [];
-                          for (int i = 0; i < tasks.length; i++) {
-                            controllersList.add(TextEditingController.fromValue(
-                                TextEditingValue(
-                                    text: taskListNames == []
-                                        ? ""
-                                        : taskListNames[i].title)));
-                            controllers.add([]);
-                            for (int j = 0; j < tasks[i].length; j++) {
-                              controllers[i].add(
-                                  new TextEditingController.fromValue(
-                                      TextEditingValue(text: tasks[i][j])));
-                            }
-                          }
-                        }
+                       taskListNames = snapshot.data;
+                       if(taskListNames.isNotEmpty){
+                       for (int i = 0 ; i<taskListNames.length;i++) {
+                           tasks[i] = taskListNames[i].content;
+                         }
+                       controllers = [];
+                       for (int i = 0; i < tasks.length; i++) {
+                         controllersList.add(TextEditingController.fromValue(
+                             TextEditingValue(text: taskListNames == [] ? "" : taskListNames[i].title)));
+                         controllers.add([]);
+                         for (int j = 0; j < tasks[i].length; j++) {
+                           controllers[i].add(new TextEditingController.fromValue(
+                               TextEditingValue(text: tasks[i][j])));
+                         }
+                       }
+                       }
                       }
                       return Scaffold(
                         resizeToAvoidBottomInset: true,
@@ -588,16 +612,20 @@ class CardScreenState extends State<CardScreen> {
                                                                           .bold),
                                                             ),
                                                             onPressed: () {
-                                                              setState(() {
+                                                              setState(
+                                                                  ()  {
                                                                 DatabaseService
                                                                     .deleteCard(
                                                                         card.cardID);
-                                                                Navigator.of(
-                                                                        context)
-                                                                    .pop();
-                                                                Navigator.of(
-                                                                        context)
-                                                                    .pop();
+
+                                                                Route route = MaterialPageRoute(
+                                                                    builder: (context) =>
+                                                                        BoardScreen(
+                                                                            boards,
+                                                                            false));
+                                                                Navigator.push(
+                                                                    context,
+                                                                    route);
                                                               });
                                                             },
                                                           )
@@ -1638,302 +1666,322 @@ class CardScreenState extends State<CardScreen> {
                                           ),
                                         ),
                                         Column(
-                                          children: taskListNames == []
-                                              ? []
-                                              : List.generate(
-                                                  taskListNames.length,
-                                                  (index) => Column(
-                                                        children: [
-                                                          ///Header
-                                                          InkWell(
-                                                            onTap: () {
-                                                              setState(() {});
-                                                            },
-                                                            child: Container(
-                                                              padding:
-                                                                  const EdgeInsets
-                                                                          .fromLTRB(
-                                                                      20,
-                                                                      8,
-                                                                      20,
-                                                                      8),
-                                                              decoration:
-                                                                  BoxDecoration(
-                                                                      color: Colors
-                                                                          .white,
-                                                                      border:
-                                                                          Border(
-                                                                        top: BorderSide(
-                                                                            color:
-                                                                                Colors.grey.shade400),
-                                                                        bottom: BorderSide(
-                                                                            color:
-                                                                                Colors.grey.shade400),
-                                                                      )),
-                                                              child: Row(
-                                                                mainAxisAlignment:
-                                                                    MainAxisAlignment
-                                                                        .spaceBetween,
-                                                                children: [
-                                                                  //Text(
-                                                                  //  taskListNames[index],
-                                                                  //  style: TextStyle(
-                                                                  //    fontSize: 20,
-                                                                  //  ),
-                                                                  //),
-                                                                  Container(
-                                                                    width: MediaQuery.of(context)
-                                                                            .size
-                                                                            .width -
-                                                                        140,
-                                                                    child:
-                                                                        Focus(
-                                                                      child:
-                                                                          TextField(
-                                                                        controller:
-                                                                            controllersList[index],
-                                                                        style: TextStyle(
-                                                                            fontSize:
-                                                                                20),
-                                                                        decoration:
-                                                                            InputDecoration(
-                                                                          border:
-                                                                              InputBorder.none,
-                                                                          focusedBorder:
-                                                                              InputBorder.none,
-                                                                          enabledBorder:
-                                                                              InputBorder.none,
-                                                                          errorBorder:
-                                                                              InputBorder.none,
-                                                                          disabledBorder:
-                                                                              InputBorder.none,
-                                                                          hintStyle:
-                                                                              TextStyle(fontSize: 20),
-                                                                        ),
-                                                                      ),
-                                                                      onFocusChange:
-                                                                          (hasFocus) {
-                                                                        if (hasFocus) {
-                                                                          setState(
-                                                                              () {
-                                                                            isChangeListName =
-                                                                                true;
-                                                                            xChangeTaskListName =
-                                                                                index;
-                                                                          });
-                                                                        } else {
-                                                                          setState(
-                                                                              () {
-                                                                            isChangeListName =
-                                                                                false;
-                                                                            xChangeTaskListName =
-                                                                                -1;
-                                                                          });
-                                                                        }
-                                                                      },
+                                          children: taskListNames == [] ? [] : List.generate(
+                                              taskListNames.length,
+                                              (index) => Column(
+                                                    children: [
+                                                      ///Header
+                                                      InkWell(
+                                                        onTap: () {
+                                                          setState(() {});
+                                                        },
+                                                        child: Container(
+                                                          padding:
+                                                              const EdgeInsets
+                                                                      .fromLTRB(
+                                                                  20, 8, 20, 8),
+                                                          decoration:
+                                                              BoxDecoration(
+                                                                  color: Colors
+                                                                      .white,
+                                                                  border:
+                                                                      Border(
+                                                                    top: BorderSide(
+                                                                        color: Colors
+                                                                            .grey
+                                                                            .shade400),
+                                                                    bottom: BorderSide(
+                                                                        color: Colors
+                                                                            .grey
+                                                                            .shade400),
+                                                                  )),
+                                                          child: Row(
+                                                            mainAxisAlignment:
+                                                                MainAxisAlignment
+                                                                    .spaceBetween,
+                                                            children: [
+                                                              //Text(
+                                                              //  taskListNames[index],
+                                                              //  style: TextStyle(
+                                                              //    fontSize: 20,
+                                                              //  ),
+                                                              //),
+                                                              Container(
+                                                                width: MediaQuery.of(
+                                                                            context)
+                                                                        .size
+                                                                        .width -
+                                                                    140,
+                                                                child: Focus(
+                                                                  child:
+                                                                      TextField(
+                                                                    controller:
+                                                                        controllersList[
+                                                                            index],
+                                                                    style: TextStyle(
+                                                                        fontSize:
+                                                                            20),
+                                                                    decoration:
+                                                                        InputDecoration(
+                                                                      border: InputBorder
+                                                                          .none,
+                                                                      focusedBorder:
+                                                                          InputBorder
+                                                                              .none,
+                                                                      enabledBorder:
+                                                                          InputBorder
+                                                                              .none,
+                                                                      errorBorder:
+                                                                          InputBorder
+                                                                              .none,
+                                                                      disabledBorder:
+                                                                          InputBorder
+                                                                              .none,
+                                                                      hintStyle:
+                                                                          TextStyle(
+                                                                              fontSize: 20),
                                                                     ),
                                                                   ),
-                                                                  Row(
-                                                                    children: [
-                                                                      AnimatedIconButton(
-                                                                          size:
-                                                                              25,
-                                                                          onPressed: () =>
+                                                                  onFocusChange:
+                                                                      (hasFocus) {
+                                                                    if (hasFocus) {
+                                                                      setState(
+                                                                          () {
+                                                                        isChangeListName =
+                                                                            true;
+                                                                        xChangeTaskListName =
+                                                                            index;
+                                                                      });
+                                                                    } else {
+                                                                      setState(
+                                                                          () {
+                                                                        isChangeListName =
+                                                                            false;
+                                                                        xChangeTaskListName =
+                                                                            -1;
+                                                                      });
+                                                                    }
+                                                                  },
+                                                                ),
+                                                              ),
+                                                              Row(
+                                                                children: [
+                                                                  AnimatedIconButton(
+                                                                      size: 25,
+                                                                      onPressed:
+                                                                          () =>
                                                                               {
                                                                                 setState(() {
                                                                                   isShow[index] = !isShow[index];
                                                                                 })
                                                                               },
-                                                                          icons: [
-                                                                            AnimatedIconItem(
-                                                                              icon: Icon(
-                                                                                Icons.keyboard_arrow_down,
-                                                                                color: Colors.black,
-                                                                              ),
-                                                                            ),
-                                                                            AnimatedIconItem(
-                                                                              icon: Icon(
-                                                                                Icons.keyboard_arrow_up,
-                                                                                color: Colors.black,
-                                                                              ),
-                                                                            ),
-                                                                          ]),
-                                                                      PopupMenuButton(
-                                                                        iconSize:
-                                                                            30,
-                                                                        padding:
-                                                                            EdgeInsets.zero,
-                                                                        icon: Icon(
-                                                                            Icons.more_horiz),
-                                                                        onSelected:
-                                                                            (value) {
-                                                                          ///TODO: Delete task list
-                                                                        },
-                                                                        itemBuilder:
-                                                                            (context) =>
-                                                                                [
-                                                                          PopupMenuItem(
-                                                                            value:
-                                                                                1,
-                                                                            child:
-                                                                                Text(
-                                                                              'Xóa',
-                                                                              style: TextStyle(
-                                                                                fontSize: 20,
-                                                                              ),
-                                                                            ),
+                                                                      icons: [
+                                                                        AnimatedIconItem(
+                                                                          icon:
+                                                                              Icon(
+                                                                            Icons.keyboard_arrow_down,
+                                                                            color:
+                                                                                Colors.black,
                                                                           ),
-                                                                        ],
-                                                                      )
-                                                                    ],
-                                                                  )
-                                                                ],
-                                                              ),
-                                                            ),
-                                                          ),
-                                                          Container(
-                                                            height: 5,
-                                                            decoration:
-                                                                BoxDecoration(
-                                                                    color: Color
-                                                                        .fromRGBO(
-                                                                            188,
-                                                                            217,
-                                                                            234,
-                                                                            1)),
-                                                            child: Row(),
-                                                          ),
-                                                          isShow[index]
-                                                              ? Container(
-                                                                  decoration:
-                                                                      BoxDecoration(
-                                                                    color: Colors
-                                                                        .white,
-                                                                  ),
-                                                                  child: Column(
-                                                                    children: [
-                                                                      Column(
-                                                                        children:
-                                                                            List.generate(
-                                                                          tasks[index]
-                                                                              .length,
-                                                                          (innerIndex) =>
-                                                                              Column(
-                                                                            children: [
-                                                                              Row(
-                                                                                children: [
-                                                                                  Transform.scale(
-                                                                                    scale: 1.2,
-                                                                                    child: Checkbox(
-                                                                                      value: isTaskDone[index][innerIndex],
-                                                                                      onChanged: (value) {
-                                                                                        setState(() {
-                                                                                          isTaskDone[index][innerIndex] = !isTaskDone[index][innerIndex];
-
-                                                                                          ///TODO: Change state of task
-                                                                                        });
-                                                                                      },
-                                                                                    ),
-                                                                                  ),
-                                                                                  Container(
-                                                                                    width: MediaQuery.of(context).size.width - 100,
-                                                                                    child: Focus(
-                                                                                      child: TextField(
-                                                                                        controller: controllers[index][innerIndex],
-                                                                                        style: TextStyle(fontSize: 20),
-                                                                                        decoration: InputDecoration(
-                                                                                          border: InputBorder.none,
-                                                                                          focusedBorder: InputBorder.none,
-                                                                                          enabledBorder: InputBorder.none,
-                                                                                          errorBorder: InputBorder.none,
-                                                                                          disabledBorder: InputBorder.none,
-                                                                                          hintStyle: TextStyle(fontSize: 20),
-                                                                                        ),
-                                                                                      ),
-                                                                                      onFocusChange: (hasFocus) {
-                                                                                        if (hasFocus) {
-                                                                                          setState(() {
-                                                                                            isChangeTaskListName = true;
-                                                                                            xChangeTaskListName = index;
-                                                                                            yChangeTaskListName = innerIndex;
-                                                                                          });
-                                                                                        } else {
-                                                                                          setState(() {
-                                                                                            isChangeTaskListName = false;
-                                                                                            xChangeTaskListName = -1;
-                                                                                            yChangeTaskListName = -1;
-                                                                                          });
-                                                                                        }
-                                                                                      },
-                                                                                    ),
-                                                                                  ),
-                                                                                  isChangeTaskListName && index == xChangeTaskListName && innerIndex == yChangeTaskListName
-                                                                                      ? IconButton(onPressed: () {}, icon: Icon(Icons.delete))
-                                                                                      : SizedBox(
-                                                                                          width: 0,
-                                                                                        ),
-                                                                                ],
-                                                                              ),
-                                                                              Padding(
-                                                                                padding: const EdgeInsets.fromLTRB(50, 0, 0, 0),
-                                                                                child: Divider(),
-                                                                              ),
-                                                                            ],
+                                                                        ),
+                                                                        AnimatedIconItem(
+                                                                          icon:
+                                                                              Icon(
+                                                                            Icons.keyboard_arrow_up,
+                                                                            color:
+                                                                                Colors.black,
+                                                                          ),
+                                                                        ),
+                                                                      ]),
+                                                                  PopupMenuButton(
+                                                                    iconSize:
+                                                                        30,
+                                                                    padding:
+                                                                        EdgeInsets
+                                                                            .zero,
+                                                                    icon: Icon(Icons
+                                                                        .more_horiz),
+                                                                    onSelected:
+                                                                        (value) {
+                                                                      ///TODO: Delete task list
+                                                                    },
+                                                                    itemBuilder:
+                                                                        (context) =>
+                                                                            [
+                                                                      PopupMenuItem(
+                                                                        value:
+                                                                            1,
+                                                                        child:
+                                                                            Text(
+                                                                          'Xóa',
+                                                                          style:
+                                                                              TextStyle(
+                                                                            fontSize:
+                                                                                20,
                                                                           ),
                                                                         ),
                                                                       ),
-                                                                      Padding(
-                                                                        padding: const EdgeInsets.fromLTRB(
+                                                                    ],
+                                                                  )
+                                                                ],
+                                                              )
+                                                            ],
+                                                          ),
+                                                        ),
+                                                      ),
+                                                      Container(
+                                                        height: 5,
+                                                        decoration:
+                                                            BoxDecoration(
+                                                                color: Color
+                                                                    .fromRGBO(
+                                                                        188,
+                                                                        217,
+                                                                        234,
+                                                                        1)),
+                                                        child: Row(),
+                                                      ),
+                                                      isShow[index]
+                                                          ? Container(
+                                                              decoration:
+                                                                  BoxDecoration(
+                                                                color: Colors
+                                                                    .white,
+                                                              ),
+                                                              child: Column(
+                                                                children: [
+                                                                  Column(
+                                                                    children: List
+                                                                        .generate(
+                                                                      tasks[index]
+                                                                          .length,
+                                                                      (innerIndex) =>
+                                                                          Column(
+                                                                        children: [
+                                                                          Row(
+                                                                            children: [
+                                                                              Transform.scale(
+                                                                                scale: 1.2,
+                                                                                child: Checkbox(
+                                                                                  value: isTaskDone[index][innerIndex],
+                                                                                  onChanged: (value) {
+                                                                                    setState(() {
+                                                                                      isTaskDone[index][innerIndex] = !isTaskDone[index][innerIndex];
+
+                                                                                      ///TODO: Change state of task
+                                                                                    });
+                                                                                  },
+                                                                                ),
+                                                                              ),
+                                                                              Container(
+                                                                                width: MediaQuery.of(context).size.width - 100,
+                                                                                child: Focus(
+                                                                                  child: TextField(
+                                                                                    controller: controllers[index][innerIndex],
+                                                                                    style: TextStyle(fontSize: 20),
+                                                                                    decoration: InputDecoration(
+                                                                                      border: InputBorder.none,
+                                                                                      focusedBorder: InputBorder.none,
+                                                                                      enabledBorder: InputBorder.none,
+                                                                                      errorBorder: InputBorder.none,
+                                                                                      disabledBorder: InputBorder.none,
+                                                                                      hintStyle: TextStyle(fontSize: 20),
+                                                                                    ),
+                                                                                  ),
+                                                                                  onFocusChange: (hasFocus) {
+                                                                                    if (hasFocus) {
+                                                                                      setState(() {
+                                                                                        isChangeTaskListName = true;
+                                                                                        xChangeTaskListName = index;
+                                                                                        yChangeTaskListName = innerIndex;
+                                                                                      });
+                                                                                    } else {
+                                                                                      setState(() {
+                                                                                        isChangeTaskListName = false;
+                                                                                        xChangeTaskListName = -1;
+                                                                                        yChangeTaskListName = -1;
+                                                                                      });
+                                                                                    }
+                                                                                  },
+                                                                                ),
+                                                                              ),
+                                                                              isChangeTaskListName && index == xChangeTaskListName && innerIndex == yChangeTaskListName
+                                                                                  ? IconButton(onPressed: () {}, icon: Icon(Icons.delete))
+                                                                                  : SizedBox(
+                                                                                      width: 0,
+                                                                                    ),
+                                                                            ],
+                                                                          ),
+                                                                          Padding(
+                                                                            padding: const EdgeInsets.fromLTRB(
+                                                                                50,
+                                                                                0,
+                                                                                0,
+                                                                                0),
+                                                                            child:
+                                                                                Divider(),
+                                                                          ),
+                                                                        ],
+                                                                      ),
+                                                                    ),
+                                                                  ),
+                                                                  Padding(
+                                                                    padding:
+                                                                        const EdgeInsets.fromLTRB(
                                                                             0,
                                                                             2,
                                                                             0,
                                                                             8),
-                                                                        child:
-                                                                            Row(
-                                                                          children: [
-                                                                            SizedBox(
-                                                                              width: 50,
-                                                                            ),
-                                                                            Container(
-                                                                              width: MediaQuery.of(context).size.width - 70,
-                                                                              child: Focus(
-                                                                                child: TextField(
-                                                                                  style: TextStyle(fontSize: 20),
-                                                                                  cursorColor: Colors.blue,
-                                                                                  decoration: InputDecoration(
-                                                                                    border: InputBorder.none,
-                                                                                    focusedBorder: InputBorder.none,
-                                                                                    enabledBorder: InputBorder.none,
-                                                                                    errorBorder: InputBorder.none,
-                                                                                    disabledBorder: InputBorder.none,
-                                                                                    hintText: "Thêm mục…",
-                                                                                    hintStyle: TextStyle(fontSize: 20),
-                                                                                  ),
-                                                                                ),
-                                                                                onFocusChange: (hasFocus) {
-                                                                                  if (hasFocus) {
-                                                                                    setState(() {
-                                                                                      isAddTask = true;
-                                                                                    });
-                                                                                  } else {
-                                                                                    setState(() {
-                                                                                      isAddTask = false;
-                                                                                    });
-                                                                                  }
-                                                                                },
+                                                                    child: Row(
+                                                                      children: [
+                                                                        SizedBox(
+                                                                          width:
+                                                                              50,
+                                                                        ),
+                                                                        Container(
+                                                                          width:
+                                                                              MediaQuery.of(context).size.width - 70,
+                                                                          child:
+                                                                              Focus(
+                                                                            child:
+                                                                                TextField(
+                                                                              style: TextStyle(fontSize: 20),
+                                                                              cursorColor: Colors.blue,
+                                                                              decoration: InputDecoration(
+                                                                                border: InputBorder.none,
+                                                                                focusedBorder: InputBorder.none,
+                                                                                enabledBorder: InputBorder.none,
+                                                                                errorBorder: InputBorder.none,
+                                                                                disabledBorder: InputBorder.none,
+                                                                                hintText: "Thêm mục…",
+                                                                                hintStyle: TextStyle(fontSize: 20),
                                                                               ),
                                                                             ),
-                                                                          ],
+                                                                            onFocusChange:
+                                                                                (hasFocus) {
+                                                                              if (hasFocus) {
+                                                                                setState(() {
+                                                                                  isAddTask = true;
+                                                                                });
+                                                                              } else {
+                                                                                setState(() {
+                                                                                  isAddTask = false;
+                                                                                });
+                                                                              }
+                                                                            },
+                                                                          ),
                                                                         ),
-                                                                      ),
-                                                                    ],
+                                                                      ],
+                                                                    ),
                                                                   ),
-                                                                )
-                                                              : SizedBox(
-                                                                  height: 0,
-                                                                ),
-                                                        ],
-                                                      )),
+                                                                ],
+                                                              ),
+                                                            )
+                                                          : SizedBox(
+                                                              height: 0,
+                                                            ),
+                                                    ],
+                                                  )),
                                         ),
                                       ],
                                     )
@@ -1942,235 +1990,241 @@ class CardScreenState extends State<CardScreen> {
                                     ),
 
                               ///Comment display here
-                              //////TODO: remember to change list to the loaded commentList
-                              //                               commentUserIDList.length < 1
-                              //                                   ? SizedBox(height: 30)
-                              //                                   : Column(
-                              //                                       children: List.generate(
-                              //                                       commentUserIDList.length,
-                              //                                       (index) => Padding(
-                              //                                         padding: const EdgeInsets.only(
-                              //                                             left: 25, right: 20, top: 20),
-                              //                                         child: Row(
-                              //                                           crossAxisAlignment:
-                              //                                               CrossAxisAlignment.start,
-                              //                                           children: [
-                              //                                             Padding(
-                              //                                               padding: const EdgeInsets.only(
-                              //                                                   top: 20),
-                              //                                               child: CircleAvatar(
-                              //                                                 radius: 25,
-                              //
-                              //                                                 ///TODO: Load Avatar
-                              //                                                 backgroundImage: AssetImage(
-                              //                                                     commentUserAvatarList[
-                              //                                                         index]),
-                              //                                               ),
-                              //                                             ),
-                              //                                             SizedBox(width: 20),
-                              //                                             Column(
-                              //                                               mainAxisAlignment:
-                              //                                                   MainAxisAlignment.start,
-                              //                                               children: [
-                              //                                                 ///User Name
-                              //                                                 Container(
-                              //                                                   width: MediaQuery.of(context)
-                              //                                                           .size
-                              //                                                           .width -
-                              //                                                       115,
-                              //                                                   child: Row(
-                              //                                                     mainAxisAlignment:
-                              //                                                         MainAxisAlignment
-                              //                                                             .spaceBetween,
-                              //                                                     children: [
-                              //                                                       ///TODO: Load User Name who comments this
-                              //                                                       Text(
-                              //                                                         commentUserNameList[
-                              //                                                             index],
-                              //                                                         style: TextStyle(
-                              //                                                             fontWeight:
-                              //                                                                 FontWeight.bold,
-                              //                                                             fontSize: 18),
-                              //                                                       ),
-                              //
-                              //                                                       PopupMenuButton(
-                              //                                                           icon: Icon(
-                              //                                                               Icons.more_horiz),
-                              //                                                           itemBuilder: (BuildContext
-                              //                                                                   context) =>
-                              //                                                               <
-                              //                                                                   PopupMenuEntry<
-                              //                                                                       String>>[
-                              //                                                                 const PopupMenuItem<
-                              //                                                                     String>(
-                              //                                                                   value:
-                              //                                                                       "Chỉnh sửa",
-                              //                                                                   child: Text(
-                              //                                                                       'Chỉnh sửa'),
-                              //                                                                 ),
-                              //                                                                 const PopupMenuItem<
-                              //                                                                     String>(
-                              //                                                                   value: "Xóa",
-                              //                                                                   child: Text(
-                              //                                                                       'Xóa'),
-                              //                                                                 ),
-                              //                                                               ]),
-                              //                                                     ],
-                              //                                                   ),
-                              //                                                 ),
+                              ///TODO: remember to change list to the loaded commentList
+                              commentUserIDList.length < 1
+                                  ? SizedBox(height: 30)
+                                  : Column(
+                                      children: List.generate(
+                                      commentUserIDList.length,
+                                      (index) => Padding(
+                                        padding: const EdgeInsets.only(
+                                            left: 25, right: 20, top: 20),
+                                        child: Row(
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.start,
+                                          children: [
+                                            Padding(
+                                              padding: const EdgeInsets.only(
+                                                  top: 20),
+                                              child: CircleAvatar(
+                                                radius: 25,
 
-                              ///Comment content
-                              ///Container(
-                              //                                                   width: MediaQuery.of(context)
-                              //                                                           .size
-                              //                                                           .width -
-                              //                                                       115,
-                              //                                                   decoration: BoxDecoration(
-                              //                                                     color: Colors.white,
-                              //                                                     borderRadius:
-                              //                                                         BorderRadius.all(
-                              //                                                             Radius.circular(
-                              //                                                                 10)),
-                              //                                                   ),
-                              //                                                   child: TextField(
-                              //                                                     controller:
-                              //                                                         commentContentTxtCtrlList[
-                              //                                                             index],
-                              //                                                     readOnly: true,
-                              //                                                     keyboardType:
-                              //                                                         TextInputType.multiline,
-                              //                                                     maxLines: null,
-                              //                                                     decoration: InputDecoration(
-                              //                                                       contentPadding:
-                              //                                                           const EdgeInsets.all(
-                              //                                                               5),
-                              //                                                       border: InputBorder.none,
-                              //                                                       focusedBorder:
-                              //                                                           InputBorder.none,
-                              //                                                       enabledBorder:
-                              //                                                           InputBorder.none,
-                              //                                                       errorBorder:
-                              //                                                           InputBorder.none,
-                              //                                                       disabledBorder:
-                              //                                                           InputBorder.none,
-                              //                                                     ),
-                              //                                                   ),
-                              //                                                 ),
-                              //
-                              //                                                 SizedBox(height: 10),
+                                                ///TODO: Load Avatar
+                                                backgroundImage: AssetImage(
+                                                    commentUserAvatarList[
+                                                        index]),
+                                              ),
+                                            ),
+                                            SizedBox(width: 20),
+                                            Column(
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment.start,
+                                              children: [
+                                                ///User Name
+                                                Container(
+                                                  width: MediaQuery.of(context)
+                                                          .size
+                                                          .width -
+                                                      115,
+                                                  child: Row(
+                                                    mainAxisAlignment:
+                                                        MainAxisAlignment
+                                                            .spaceBetween,
+                                                    children: [
+                                                      ///TODO: Load User Name who comments this
+                                                      Text(
+                                                        commentUserNameList[
+                                                            index],
+                                                        style: TextStyle(
+                                                            fontWeight:
+                                                                FontWeight.bold,
+                                                            fontSize: 18),
+                                                      ),
 
-                              ///Load date comment
-                              //////TODO: change suitable variable to the
-                              //                                                 ///Format hh:mm dd/mm/yyyy if year is different from current year
-                              //                                                 ///Format hh:mm dd/mm if year is equal to current year
-                              //                                                 Container(
-                              //                                                   alignment:
-                              //                                                       Alignment.centerLeft,
-                              //                                                   width: MediaQuery.of(context)
-                              //                                                           .size
-                              //                                                           .width -
-                              //                                                       115,
-                              //                                                   child: commentDateList[index].year ==
-                              //                                                           DateTime.now().year
-                              //                                                       ? Text(commentDateList[index].hour.toString() +
-                              //                                                           ":" +
-                              //                                                           (commentDateList[index].minute >= 10
-                              //                                                               ? commentDateList[index]
-                              //                                                                   .minute
-                              //                                                                   .toString()
-                              //                                                               : "0" +
-                              //                                                                   commentDateList[index]
-                              //                                                                       .minute
-                              //                                                                       .toString()) +
-                              //                                                           " " +
-                              //                                                           commentDateList[index]
-                              //                                                               .day
-                              //                                                               .toString() +
-                              //                                                           "/" +
-                              //                                                           commentDateList[index]
-                              //                                                               .month
-                              //                                                               .toString())
-                              //                                                       : Text(commentDateList[index].hour.toString() +
-                              //                                                           ":" +
-                              //                                                           (commentDateList[index].minute >= 10
-                              //                                                               ? commentDateList[index]
-                              //                                                                   .minute
-                              //                                                                   .toString()
-                              //                                                               : "0" +
-                              //                                                                   commentDateList[index]
-                              //                                                                       .minute
-                              //                                                                       .toString()) +
-                              //                                                           " " +
-                              //                                                           commentDateList[index]
-                              //                                                               .day
-                              //                                                               .toString() +
-                              //                                                           "/" +
-                              //                                                           commentDateList[index]
-                              //                                                               .month
-                              //                                                               .toString() +
-                              //                                                           "/" +
-                              //                                                           commentDateList[index]
-                              //                                                               .year
-                              //                                                               .toString()),
-                              //                                                 ),
-                              //
-                              //                                                 SizedBox(height: 20),
+                                                      PopupMenuButton(
+                                                          icon: Icon(
+                                                              Icons.more_horiz),
+                                                          itemBuilder: (BuildContext
+                                                                  context) =>
+                                                              <
+                                                                  PopupMenuEntry<
+                                                                      String>>[
+                                                                const PopupMenuItem<
+                                                                    String>(
+                                                                  value:
+                                                                      "Chỉnh sửa",
+                                                                  child: Text(
+                                                                      'Chỉnh sửa'),
+                                                                ),
+                                                                const PopupMenuItem<
+                                                                    String>(
+                                                                  value: "Xóa",
+                                                                  child: Text(
+                                                                      'Xóa'),
+                                                                ),
+                                                              ]),
+                                                    ],
+                                                  ),
+                                                ),
+
+                                                ///Comment content
+                                                Container(
+                                                  width: MediaQuery.of(context)
+                                                          .size
+                                                          .width -
+                                                      115,
+                                                  decoration: BoxDecoration(
+                                                    color: Colors.white,
+                                                    borderRadius:
+                                                        BorderRadius.all(
+                                                            Radius.circular(
+                                                                10)),
+                                                  ),
+                                                  child: TextField(
+                                                    controller:
+                                                        commentContentTxtCtrlList[
+                                                            index],
+                                                    readOnly: true,
+                                                    keyboardType:
+                                                        TextInputType.multiline,
+                                                    maxLines: null,
+                                                    decoration: InputDecoration(
+                                                      contentPadding:
+                                                          const EdgeInsets.all(
+                                                              5),
+                                                      border: InputBorder.none,
+                                                      focusedBorder:
+                                                          InputBorder.none,
+                                                      enabledBorder:
+                                                          InputBorder.none,
+                                                      errorBorder:
+                                                          InputBorder.none,
+                                                      disabledBorder:
+                                                          InputBorder.none,
+                                                    ),
+                                                  ),
+                                                ),
+
+                                                SizedBox(height: 10),
+
+                                                ///Load date comment
+                                                ///TODO: change suitable variable to the
+                                                ///Format hh:mm dd/mm/yyyy if year is different from current year
+                                                ///Format hh:mm dd/mm if year is equal to current year
+                                                Container(
+                                                  alignment:
+                                                      Alignment.centerLeft,
+                                                  width: MediaQuery.of(context)
+                                                          .size
+                                                          .width -
+                                                      115,
+                                                  child: commentDateList[index].year ==
+                                                          DateTime.now().year
+                                                      ? Text(commentDateList[index].hour.toString() +
+                                                          ":" +
+                                                          (commentDateList[index].minute >= 10
+                                                              ? commentDateList[index]
+                                                                  .minute
+                                                                  .toString()
+                                                              : "0" +
+                                                                  commentDateList[index]
+                                                                      .minute
+                                                                      .toString()) +
+                                                          " " +
+                                                          commentDateList[index]
+                                                              .day
+                                                              .toString() +
+                                                          "/" +
+                                                          commentDateList[index]
+                                                              .month
+                                                              .toString())
+                                                      : Text(commentDateList[index].hour.toString() +
+                                                          ":" +
+                                                          (commentDateList[index].minute >= 10
+                                                              ? commentDateList[index]
+                                                                  .minute
+                                                                  .toString()
+                                                              : "0" +
+                                                                  commentDateList[index]
+                                                                      .minute
+                                                                      .toString()) +
+                                                          " " +
+                                                          commentDateList[index]
+                                                              .day
+                                                              .toString() +
+                                                          "/" +
+                                                          commentDateList[index]
+                                                              .month
+                                                              .toString() +
+                                                          "/" +
+                                                          commentDateList[index]
+                                                              .year
+                                                              .toString()),
+                                                ),
+
+                                                SizedBox(height: 20),
+                                              ],
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                    )),
+
+                              ///for bottom sheet not cover last element
+                              SizedBox(
+                                height: 69,
+                              )
                             ],
                           ),
                         ),
 
-                        ///for bottom sheet not cover last element
-                        ///SizedBox(
-                        //                                 height: 69,
-                        //                               )
-
                         ///comment
-                        ///bottomSheet: BottomAppBar(
-                        //                           child: Container(
-                        //                             padding: const EdgeInsets.all(5.0),
-                        //                             decoration: BoxDecoration(
-                        //                               color: Colors.white,
-                        //                               boxShadow: [
-                        //                                 BoxShadow(
-                        //                                   color: Colors.grey.withOpacity(0.5),
-                        //                                   spreadRadius: 2,
-                        //                                   blurRadius: 3,
-                        //                                   offset: Offset(
-                        //                                       0, 3), // changes position of shadow
-                        //                                 ),
-                        //                               ],
-                        //                             ),
-                        //                             child: Row(
-                        //                               children: [
-                        //                                 avatar(50, 50, Colors.grey,
-                        //                                     Image.asset('assets/images/BlueBG.png')),
-                        //                                 SizedBox(
-                        //                                   width: 10,
-                        //                                 ),
-                        //                                 Expanded(
-                        //                                   child: TextField(
-                        //                                     controller: commentEnterTxtCtrl,
-                        //                                     decoration: InputDecoration(
-                        //                                       hintText: 'Enter a message',
-                        //                                       suffixIcon: IconButton(
-                        //                                         onPressed: () {},
-                        //                                         icon: Icon(
-                        //                                           Icons.send,
-                        //                                           size: 30,
-                        //                                         ),
-                        //                                       ),
-                        //                                       border: new OutlineInputBorder(
-                        //                                         borderRadius: const BorderRadius.all(
-                        //                                           const Radius.circular(30.0),
-                        //                                         ),
-                        //                                       ),
-                        //                                     ),
-                        //                                   ),
-                        //                                 ),
-                        //                               ],
-                        //                             ),
-                        //                           ),
-                        //                         ),
+                        bottomSheet: BottomAppBar(
+                          child: Container(
+                            padding: const EdgeInsets.all(5.0),
+                            decoration: BoxDecoration(
+                              color: Colors.white,
+                              boxShadow: [
+                                BoxShadow(
+                                  color: Colors.grey.withOpacity(0.5),
+                                  spreadRadius: 2,
+                                  blurRadius: 3,
+                                  offset: Offset(
+                                      0, 3), // changes position of shadow
+                                ),
+                              ],
+                            ),
+                            child: Row(
+                              children: [
+                                avatar(50, 50, Colors.grey,
+                                    Image.asset('assets/images/BlueBG.png')),
+                                SizedBox(
+                                  width: 10,
+                                ),
+                                Expanded(
+                                  child: TextField(
+                                    controller: commentEnterTxtCtrl,
+                                    decoration: InputDecoration(
+                                      hintText: 'Enter a message',
+                                      suffixIcon: IconButton(
+                                        onPressed: () {},
+                                        icon: Icon(
+                                          Icons.send,
+                                          size: 30,
+                                        ),
+                                      ),
+                                      border: new OutlineInputBorder(
+                                        borderRadius: const BorderRadius.all(
+                                          const Radius.circular(30.0),
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
                       );
                     });
               });
