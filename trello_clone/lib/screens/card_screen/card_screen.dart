@@ -390,7 +390,7 @@ class CardScreenState extends State<CardScreen> {
     if (card.startDate != "") {
       selectedStartDate = DateFormat("yyyy-MM-dd").parse(card.startDate);
       selectedStartTime =
-          TimeOfDay.fromDateTime(DateFormat("hh:mm a").parse(card.startTime));
+          TimeOfDay.fromDateTime(DateFormat("hh:mm").parse(card.startTime));
       var selectedDay = selectedStartDate.day;
       var selectedMonth = selectedStartDate.month;
       var selectedYear = selectedStartDate.year;
@@ -405,7 +405,7 @@ class CardScreenState extends State<CardScreen> {
     if (card.dueDate != "") {
       selectedEndDate = DateFormat("yyyy-MM-dd").parse(card.dueDate);
       selectedEndTime =
-          TimeOfDay.fromDateTime(DateFormat("hh:mm a").parse(card.dueTime));
+          TimeOfDay.fromDateTime(DateFormat("hh:mm").parse(card.dueTime));
       var selectedDay = selectedEndDate.day;
       var selectedMonth = selectedEndDate.month;
       var selectedYear = selectedEndDate.year;
